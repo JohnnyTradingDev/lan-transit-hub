@@ -31,12 +31,10 @@
   </script>
   <style>
     :root {
-      --sat: env(safe-area-inset-top, 0px);
       --sab: env(safe-area-inset-bottom, 0px);
     }
     body {
-      padding-top: var(--sat);
-      padding-bottom: var(--sab);
+      padding-bottom: max(var(--sab), 16px);
       -webkit-tap-highlight-color: transparent;
       user-select: none;
     }
@@ -51,12 +49,17 @@
       min-height: 44px;
       min-width: 44px;
     }
+
+    /* Pushes the header comfortably down below iPhone Notch, Dynamic Island, and Status Bar */
+    .ios-safe-header {
+      padding-top: max(calc(env(safe-area-inset-top, 0px) + 14px), 1.5rem);
+    }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-blue-600 selection:text-white pb-6">
 
   <!-- TOP APP BAR -->
-  <header class="sticky top-0 z-30 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 px-3.5 py-2.5 sm:py-3 shadow-md">
+  <header class="sticky top-0 z-30 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 px-3.5 pb-2.5 sm:pb-3 shadow-md ios-safe-header">
     <div class="max-w-4xl mx-auto flex items-center justify-between gap-2">
       
       <!-- Logo & Connection Status -->
@@ -376,6 +379,72 @@
     </div>
   </div>
 
+  <!-- FIRST VISIT / ONBOARDING PERMISSION MODAL -->
+  <div id="welcomePermissionModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-700/80 rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl relative text-left">
+      <!-- Header -->
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-500 to-indigo-500 flex items-center justify-center text-xl shadow-lg shadow-blue-500/30 flex-shrink-0">
+          🚀
+        </div>
+        <div>
+          <h3 class="text-base sm:text-lg font-bold text-white leading-tight">Welcome to LAN Transit!</h3>
+          <p class="text-xs text-slate-400">One-time setup for zero-click transfers</p>
+        </div>
+      </div>
+
+      <p class="text-xs text-slate-300 mb-4 leading-relaxed">
+        Grant permissions once so this device can receive files, text, and alerts seamlessly:
+      </p>
+
+      <!-- Permissions List -->
+      <div class="space-y-2.5 mb-5 text-xs">
+        <div class="flex items-start gap-3 p-2.5 bg-slate-950/80 rounded-xl border border-slate-800">
+          <span class="text-base">🔔</span>
+          <div>
+            <p class="font-semibold text-slate-200">Push Notifications</p>
+            <p class="text-[11px] text-slate-400">Alerts you when new files or messages arrive from other devices.</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3 p-2.5 bg-slate-950/80 rounded-xl border border-slate-800">
+          <span class="text-base">📋</span>
+          <div>
+            <p class="font-semibold text-slate-200">Clipboard Auto-Copy</p>
+            <p class="text-[11px] text-slate-400">Instantly copy received codes, links, and text for quick paste.</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3 p-2.5 bg-slate-950/80 rounded-xl border border-slate-800">
+          <span class="text-base">⚡</span>
+          <div>
+            <p class="font-semibold text-slate-200">Auto-Download Files</p>
+            <p class="text-[11px] text-slate-400">Automatically save incoming photos & files directly to Downloads.</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3 p-2.5 bg-slate-950/80 rounded-xl border border-slate-800">
+          <span class="text-base">🔊</span>
+          <div>
+            <p class="font-semibold text-slate-200">Audio Chimes</p>
+            <p class="text-[11px] text-slate-400">Unlocks background audio chime when incoming items finish transferring.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-col gap-2">
+        <button id="btnGrantAllPermissions" class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-95 text-white font-semibold text-xs sm:text-sm py-3 rounded-xl shadow-lg shadow-blue-500/25 transition">
+          <span>Enable All & Get Started</span>
+          <span>✨</span>
+        </button>
+        <button id="btnSkipPermissions" class="w-full py-2 text-xs font-medium text-slate-400 hover:text-slate-300 text-center transition">
+          Maybe later
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- TOAST NOTIFICATION CONTAINER -->
   <div id="toastContainer" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4"></div>
 
@@ -619,6 +688,20 @@
       if (!isTargetedToMe) return;
 
       playChime();
+
+      // Trigger native desktop / mobile notification if allowed
+      if ('Notification' in window && Notification.permission === 'granted') {
+        try {
+          const notifTitle = `From ${item.senderName}`;
+          const notifBody = item.contentType === 'text' 
+            ? item.text 
+            : `Sent ${item.contentType}: ${item.file.originalName}`;
+          new Notification(notifTitle, {
+            body: notifBody,
+            icon: '/icon.svg'
+          });
+        } catch (e) {}
+      }
 
       if (item.contentType === 'text') {
         if (settings.autoCopy && item.text) {
@@ -1248,6 +1331,51 @@
 
       // Target All button
       document.querySelector('[data-target="all"]').onclick = () => selectTarget('all', 'All Devices');
+
+      // First Visit / Onboarding Permission Modal Check
+      const welcomeModal = document.getElementById('welcomePermissionModal');
+      const btnGrant = document.getElementById('btnGrantAllPermissions');
+      const btnSkip = document.getElementById('btnSkipPermissions');
+
+      if (!localStorage.getItem('lan_hub_setup_completed')) {
+        setTimeout(() => {
+          welcomeModal.classList.remove('hidden');
+        }, 400);
+      }
+
+      btnGrant.onclick = async () => {
+        // Request Notification permission
+        if ('Notification' in window && Notification.permission !== 'granted') {
+          try {
+            await Notification.requestPermission();
+          } catch (e) {}
+        }
+
+        // Unlock audio context for mobile Safari / Chrome
+        playChime();
+
+        // Enable default zero-click capabilities
+        settings.autoDownload = true;
+        settings.autoCopy = true;
+        settings.sound = true;
+        localStorage.setItem('lan_hub_auto_download', 'true');
+        localStorage.setItem('lan_hub_auto_copy', 'true');
+        localStorage.setItem('lan_hub_sound', 'true');
+        localStorage.setItem('lan_hub_setup_completed', 'true');
+
+        // Update settings modal checkboxes
+        document.getElementById('settingAutoDownload').checked = true;
+        document.getElementById('settingAutoCopy').checked = true;
+        document.getElementById('settingSound').checked = true;
+
+        welcomeModal.classList.add('hidden');
+        showToast('Permissions enabled! Zero-click ready 🎉', 'success');
+      };
+
+      btnSkip.onclick = () => {
+        localStorage.setItem('lan_hub_setup_completed', 'true');
+        welcomeModal.classList.add('hidden');
+      };
 
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/sw.js').catch(() => {});
