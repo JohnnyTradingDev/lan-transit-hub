@@ -7,6 +7,7 @@ const fs = require('fs');
 const os = require('os');
 const qrcode = require('qrcode');
 const cors = require('cors');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const PORT = process.env.PORT || 7777;
 const STORAGE_DIR = path.join(__dirname, 'storage');
@@ -63,6 +64,25 @@ const upload = multer({
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server, path: '/ws' });
+
+// 1. Reverse Proxy RedNote Downloader APIs to port 5556 (Before body parsers!)
+app.use(
+  ['/api/server-info', '/api/cookie', '/api/parse', '/api/download-zip', '/api/proxy-image', '/api/proxy-video'],
+  createProxyMiddleware({
+    target: 'http://127.0.0.1:5556',
+    changeOrigin: true
+  })
+);
+
+// 2. Serve RedNote Downloader Web App on /rednote
+app.get('/rednote', (req, res) => {
+  const xhsWeb = '/home/johnny/projects/XHS-Downloader/web/index.html';
+  if (fs.existsSync(xhsWeb)) {
+    res.sendFile(xhsWeb);
+  } else {
+    res.status(404).send('RedNote Downloader Web UI not found on server');
+  }
+});
 
 app.use(cors());
 app.use(express.json({ limit: '100mb' }));
@@ -209,6 +229,102 @@ app.get('/api/info', async (req, res) => {
     qrCode: qrCodeDataUrl,
     qrTailscale: qrTailscaleDataUrl
   });
+});
+
+app.get('/api/server-tools', (req, res) => {
+  const ips = getLanIps();
+  const primary = ips.find(i => i.ip.startsWith('192.168.')) || ips[0] || { ip: 'localhost' };
+  const tailscale = ips.find(i => i.name === 'tailscale0' || i.ip.startsWith('100.'));
+  const host = primary.ip;
+  const tsHost = tailscale ? tailscale.ip : null;
+
+  const tools = [
+    {
+      id: 'lan-transit',
+      name: 'LAN Transit Hub',
+      category: 'Core System',
+      icon: '⚡',
+      port: 7777,
+      url: '/',
+      description: 'Zero-click local device file & text relay',
+      isIntegrated: true,
+      tag: 'Active App'
+    },
+    {
+      id: 'rednote',
+      name: 'RedNote Downloader',
+      category: 'Media Tools',
+      icon: '📕',
+      port: 5556,
+      url: '/rednote',
+      directLanUrl: `http://${host}:5556`,
+      description: 'Download Xiaohongshu (Rednote) videos & HD photos without watermark',
+      isIntegrated: true,
+      tag: 'Integrated on Port 7777'
+    },
+    {
+      id: 'crypto-hub',
+      name: 'Crypto Autopost Hub',
+      category: 'Trading & Bot',
+      icon: '🪙',
+      port: 8080,
+      url: `http://${host}:8080`,
+      tailscaleUrl: tsHost ? `http://${tsHost}:8080` : null,
+      description: 'Automated crypto trading signals & social poster',
+      isIntegrated: false,
+      tag: 'Port 8080'
+    },
+    {
+      id: 'prompt-manager',
+      name: 'Prompt Manager Studio',
+      category: 'AI & Templates',
+      icon: '📝',
+      port: 4000,
+      url: `http://${host}:4000`,
+      tailscaleUrl: tsHost ? `http://${tsHost}:4000` : null,
+      description: 'System prompts manager & AI playground',
+      isIntegrated: false,
+      tag: 'Port 4000'
+    },
+    {
+      id: 'manager-email',
+      name: 'Email Operations Hub',
+      category: 'Automation',
+      icon: '📧',
+      port: 3000,
+      url: `http://${host}:3000`,
+      tailscaleUrl: tsHost ? `http://${tsHost}:3000` : null,
+      description: 'Automated inbox manager and notifier dashboard',
+      isIntegrated: false,
+      tag: 'Port 3000'
+    },
+    {
+      id: 'yensaotamhieu',
+      name: 'Yến Sào Tâm Hiếu',
+      category: 'E-Commerce',
+      icon: '🕊️',
+      port: 3001,
+      url: `http://${host}:3001`,
+      tailscaleUrl: tsHost ? `http://${tsHost}:3001` : null,
+      description: 'Online store and product catalog system',
+      isIntegrated: false,
+      tag: 'Port 3001'
+    },
+    {
+      id: 'lili-dashboard',
+      name: 'Lili Dashboard',
+      category: 'Monitoring',
+      icon: '📊',
+      port: 8888,
+      url: `http://${host}:8888`,
+      tailscaleUrl: tsHost ? `http://${tsHost}:8888` : null,
+      description: 'System monitoring & scheduled scraping analytics',
+      isIntegrated: false,
+      tag: 'Port 8888'
+    }
+  ];
+
+  res.json(tools);
 });
 
 app.get('/api/devices', (req, res) => {
