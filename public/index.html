@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="vi" class="dark">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>LAN Transit Hub - Trạm Trung Chuyển Dữ Liệu</title>
+  <title>LAN Transit Hub - Seamless Cross-Device Relay</title>
   <link rel="manifest" href="/manifest.json">
   <link rel="icon" href="/icon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#0f172a">
@@ -30,7 +30,6 @@
     }
   </script>
   <style>
-    /* Safe area handling for iOS notches */
     :root {
       --sat: env(safe-area-inset-top, 0px);
       --sab: env(safe-area-inset-bottom, 0px);
@@ -43,20 +42,14 @@
     }
     input, textarea {
       user-select: text;
-      font-size: 16px !important; /* Critical to prevent iOS Safari auto-zoom */
+      font-size: 16px !important; /* Prevents iOS auto-zoom on focus */
     }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     
-    /* Lightbox animations */
-    .lightbox-enter {
-      opacity: 0;
-      transform: scale(0.95);
-    }
-    .lightbox-enter-active {
-      opacity: 1;
-      transform: scale(1);
-      transition: opacity 200ms ease-out, transform 200ms ease-out;
+    .touch-target {
+      min-height: 44px;
+      min-width: 44px;
     }
   </style>
 </head>
@@ -66,7 +59,7 @@
   <header class="sticky top-0 z-30 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 px-3.5 py-2.5 sm:py-3 shadow-md">
     <div class="max-w-4xl mx-auto flex items-center justify-between gap-2">
       
-      <!-- Brand & Status -->
+      <!-- Logo & Connection Status -->
       <div class="flex items-center gap-2.5 min-w-0">
         <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20 flex-shrink-0">
           <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -81,30 +74,30 @@
               Online
             </span>
           </div>
-          <p id="serverIpLabel" class="text-[11px] text-slate-400 font-mono truncate">Đang dò mạng...</p>
+          <p id="serverIpLabel" class="text-[11px] text-slate-400 font-mono truncate">Connecting...</p>
         </div>
       </div>
 
-      <!-- Quick Action Buttons -->
+      <!-- Action Buttons -->
       <div class="flex items-center gap-1.5 flex-shrink-0">
-        <!-- Current Device Button / Name -->
-        <button id="btnDeviceName" class="flex items-center gap-1 bg-slate-800/90 active:scale-95 border border-slate-700/80 text-xs px-2.5 py-1.5 rounded-lg transition" title="Bấm để đổi tên máy này">
+        <!-- Device Profile Pill -->
+        <button id="btnDeviceName" class="flex items-center gap-1 bg-slate-800/90 active:scale-95 border border-slate-700/80 text-xs px-2.5 py-1.5 rounded-lg transition" title="Rename this device">
           <span id="myDeviceIcon">📱</span>
-          <span id="myDeviceName" class="font-medium max-w-[85px] sm:max-w-[140px] truncate">Thiết bị này</span>
+          <span id="myDeviceName" class="font-medium max-w-[85px] sm:max-w-[140px] truncate">This Device</span>
           <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
           </svg>
         </button>
 
         <!-- QR Code -->
-        <button id="btnShowQr" class="p-2 bg-slate-800/90 active:scale-95 border border-slate-700/80 rounded-lg text-slate-300 hover:text-white transition" title="Mã QR chia sẻ">
+        <button id="btnShowQr" class="p-2 bg-slate-800/90 active:scale-95 border border-slate-700/80 rounded-lg text-slate-300 hover:text-white transition" title="Show QR Code">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
           </svg>
         </button>
 
         <!-- Settings -->
-        <button id="btnSettings" class="p-2 bg-slate-800/90 active:scale-95 border border-slate-700/80 rounded-lg text-slate-300 hover:text-white transition" title="Cài đặt">
+        <button id="btnSettings" class="p-2 bg-slate-800/90 active:scale-95 border border-slate-700/80 rounded-lg text-slate-300 hover:text-white transition" title="Settings">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -115,151 +108,127 @@
     </div>
   </header>
 
-  <!-- MAIN WRAPPER -->
-  <main class="max-w-4xl mx-auto w-full px-3 py-3 sm:py-5 flex-1 flex flex-col gap-4">
+  <!-- MAIN CONTAINER -->
+  <main class="max-w-4xl mx-auto w-full px-3 py-3 sm:py-5 flex-1 flex flex-col gap-3.5">
 
-    <!-- TARGET SELECTOR (Mobile Touch-Friendly Scroll) -->
+    <!-- RECIPIENT / TARGET SELECTOR -->
     <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3 sm:p-4 shadow-lg">
       <div class="flex items-center justify-between mb-2">
         <label class="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
           <svg class="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
           </svg>
-          Mục tiêu gửi đến:
+          Send Target:
         </label>
-        <span id="targetSelectedLabel" class="text-[11px] font-semibold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-full border border-blue-500/20 truncate max-w-[180px]">
-          🌐 Tất cả thiết bị
+        <span id="targetSelectedLabel" class="text-[11px] font-semibold text-blue-400 bg-blue-500/10 px-2.5 py-0.5 rounded-full border border-blue-500/20 truncate max-w-[200px]">
+          🌐 All Devices
         </span>
       </div>
 
       <!-- Horizontal Pills Scroll -->
       <div id="targetDevicesList" class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
-        <button data-target="all" data-name="Tất cả" class="target-btn active flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border bg-blue-600 text-white border-blue-500 shadow-sm whitespace-nowrap active:scale-95 transition">
+        <button data-target="all" data-name="All Devices" class="target-btn active flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border bg-blue-600 text-white border-blue-500 shadow-sm whitespace-nowrap active:scale-95 transition">
           <span>🌐</span>
-          <span>Tất cả</span>
+          <span>All Devices</span>
           <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
         </button>
       </div>
     </section>
 
-    <!-- SEND CARD -->
-    <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-lg">
+    <!-- UNIFIED SMART COMPOSER (Send Text, Photos, Videos & Files in One Place) -->
+    <section id="composerSection" class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 sm:p-4 shadow-lg flex flex-col gap-2.5 transition">
       
-      <!-- Mode Tabs -->
-      <div class="flex items-center gap-2 border-b border-slate-800 pb-3 mb-3.5">
-        <button id="tabTextBtn" class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-800 text-blue-400 transition active:scale-95">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          Văn bản / Link
-        </button>
-        <button id="tabFileBtn" class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-400 hover:text-slate-200 transition active:scale-95">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-          Ảnh, Video & File
-        </button>
+      <!-- Staged Files Preview Tray -->
+      <div id="selectedFilesContainer" class="hidden space-y-1.5">
+        <div class="flex items-center justify-between text-xs text-slate-400 font-medium">
+          <span>Attached Files (<span id="selectedFilesCount">0</span>):</span>
+          <button id="btnClearFiles" class="text-rose-400 hover:text-rose-300 font-semibold text-[11px] transition">Clear all</button>
+        </div>
+        <div id="selectedFilesList" class="max-h-36 overflow-y-auto space-y-1.5 pr-1"></div>
       </div>
 
-      <!-- TAB 1: TEXT / LINK -->
-      <div id="tabTextContent" class="space-y-3">
-        <div class="relative">
-          <textarea id="textInput" rows="3" placeholder="Nhập tin nhắn, link, mã OTP, số tài khoản... để chuyển tức thì" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition resize-none"></textarea>
-          <button id="btnPasteText" class="absolute bottom-2.5 right-2.5 text-xs bg-slate-800/90 active:scale-95 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-lg border border-slate-700 flex items-center gap-1 transition" title="Dán nhanh">
-            📋 Dán
-          </button>
+      <!-- Upload Progress Indicator -->
+      <div id="uploadProgressContainer" class="hidden space-y-1">
+        <div class="flex justify-between text-[11px] text-slate-400">
+          <span id="uploadStatusText">Transferring data...</span>
+          <span id="uploadPercentText" class="font-mono font-bold text-blue-400">0%</span>
         </div>
-        <div class="flex items-center justify-between">
-          <span class="text-[11px] text-slate-500" id="textCharCount">0 ký tự</span>
-          <button id="btnSendText" class="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow-lg shadow-blue-600/30 transition active:scale-95">
-            <span>Gửi ngay</span>
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-            </svg>
-          </button>
+        <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+          <div id="uploadProgressBar" class="h-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all duration-150 w-0"></div>
         </div>
       </div>
 
-      <!-- TAB 2: FILES & MEDIA -->
-      <div id="tabFileContent" class="space-y-3 hidden">
-        <!-- Hidden Inputs for Files and Direct Camera -->
-        <input type="file" id="fileInput" multiple class="hidden">
-        <input type="file" id="cameraInput" accept="image/*,video/*" capture="environment" class="hidden">
+      <!-- Unified Text / Input Box -->
+      <div class="relative">
+        <textarea id="textInput" rows="2" placeholder="Type a message, paste a link, or drop files here..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition resize-none"></textarea>
+      </div>
 
-        <!-- Mobile Quick Buttons Grid -->
-        <div class="grid grid-cols-2 gap-2.5 sm:hidden">
-          <button id="btnQuickCamera" class="flex items-center justify-center gap-2 p-3 bg-slate-950 border border-slate-800 active:border-blue-500 rounded-xl text-xs font-semibold text-slate-200 active:bg-blue-950/30 transition">
-            <span class="text-base">📸</span> Chụp ảnh / Video
+      <!-- Action Toolbar (Single Tap Actions) -->
+      <div class="flex items-center justify-between gap-2 pt-0.5">
+        
+        <!-- Left Shortcuts: Files, Camera, Paste -->
+        <div class="flex items-center gap-1.5 sm:gap-2">
+          <!-- File Attach Button -->
+          <input type="file" id="fileInput" multiple class="hidden">
+          <button id="btnAttachFile" class="flex items-center gap-1 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 text-xs font-semibold px-3 py-2 rounded-xl border border-slate-700 transition" title="Choose Files / Photos">
+            <span class="text-sm">📁</span>
+            <span class="hidden sm:inline">Files</span>
           </button>
-          <button id="btnQuickGallery" class="flex items-center justify-center gap-2 p-3 bg-slate-950 border border-slate-800 active:border-blue-500 rounded-xl text-xs font-semibold text-slate-200 active:bg-blue-950/30 transition">
-            <span class="text-base">🖼️</span> Chọn từ Album
+
+          <!-- Camera Button (Mobile) -->
+          <input type="file" id="cameraInput" accept="image/*,video/*" capture="environment" class="hidden">
+          <button id="btnQuickCamera" class="flex items-center gap-1 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 text-xs font-semibold px-3 py-2 rounded-xl border border-slate-700 transition" title="Open Camera">
+            <span class="text-sm">📸</span>
+            <span class="hidden sm:inline">Camera</span>
           </button>
-        </div>
 
-        <!-- Dropzone (Desktop & Tablet) -->
-        <div id="dropZone" class="border-2 border-dashed border-slate-700/80 hover:border-blue-500 bg-slate-950/60 rounded-2xl p-5 text-center transition cursor-pointer flex flex-col items-center justify-center gap-1.5">
-          <div class="w-10 h-10 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-            </svg>
-          </div>
-          <p class="text-xs sm:text-sm font-medium text-slate-200">
-            Kéo thả hoặc bấm để chọn Ảnh, Video, File
-          </p>
-          <span class="text-[10px] sm:text-xs text-slate-500">Hỗ trợ nhiều file cùng lúc qua mạng LAN tốc độ cao</span>
-        </div>
-
-        <!-- Selected Files List -->
-        <div id="selectedFilesContainer" class="hidden space-y-2">
-          <div class="flex items-center justify-between text-xs text-slate-400 font-medium">
-            <span>Sẵn sàng gửi (<span id="selectedFilesCount">0</span> file):</span>
-            <button id="btnClearFiles" class="text-rose-400 hover:text-rose-300 font-semibold text-[11px]">Xóa hết</button>
-          </div>
-          <div id="selectedFilesList" class="max-h-36 overflow-y-auto space-y-1.5 pr-1"></div>
-        </div>
-
-        <!-- Upload Progress -->
-        <div id="uploadProgressContainer" class="hidden space-y-1.5">
-          <div class="flex justify-between text-[11px] text-slate-400">
-            <span id="uploadStatusText">Đang tải dữ liệu lên server...</span>
-            <span id="uploadPercentText" class="font-mono font-bold text-blue-400">0%</span>
-          </div>
-          <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-            <div id="uploadProgressBar" class="h-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all duration-150 w-0"></div>
-          </div>
-        </div>
-
-        <div class="flex justify-end">
-          <button id="btnSendFiles" disabled class="w-full sm:w-auto flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-800 disabled:text-slate-600 text-white font-semibold text-xs sm:text-sm px-6 py-2.5 rounded-xl shadow-lg shadow-blue-600/30 transition active:scale-95">
-            <span>Gửi file đã chọn</span>
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-            </svg>
+          <!-- Clipboard Paste Button -->
+          <button id="btnPasteText" class="flex items-center gap-1 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 text-xs font-semibold px-3 py-2 rounded-xl border border-slate-700 transition" title="Paste Clipboard">
+            <span class="text-sm">📋</span>
+            <span class="hidden sm:inline">Paste</span>
           </button>
         </div>
+
+        <!-- Right: Instant Send Button -->
+        <button id="btnSendMain" class="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-semibold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow-lg shadow-blue-600/30 transition">
+          <span>Send</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+          </svg>
+        </button>
+
+      </div>
+
+      <!-- Quick Hint -->
+      <div class="flex items-center justify-between text-[10px] text-slate-500 px-0.5 pt-0.5">
+        <span>Tip: Press <strong>Ctrl+V</strong> anywhere to attach or paste</span>
+        <label class="flex items-center gap-1 cursor-pointer">
+          <input type="checkbox" id="chkAutoSendFiles" class="rounded accent-blue-600 w-3.5 h-3.5">
+          <span>Auto-send on file pick</span>
+        </label>
       </div>
 
     </section>
 
     <!-- INBOX / FEED -->
-    <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-lg flex-1 flex flex-col">
-      <div class="flex items-center justify-between gap-2 mb-3 pb-3 border-b border-slate-800">
+    <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 sm:p-4 shadow-lg flex-1 flex flex-col">
+      <div class="flex items-center justify-between gap-2 mb-3 pb-2.5 border-b border-slate-800">
         <div class="flex items-center gap-2">
-          <h2 class="text-sm sm:text-base font-bold text-white flex items-center gap-1.5">
-            <span>📥 Đã chuyển</span>
-            <span id="historyCountBadge" class="text-[11px] bg-slate-800 text-slate-300 px-2 py-0.2 rounded-full border border-slate-700">0</span>
+          <h2 class="text-xs sm:text-sm font-bold text-white flex items-center gap-1.5">
+            <span>📥 Feed</span>
+            <span id="historyCountBadge" class="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.2 rounded-full border border-slate-700">0</span>
           </h2>
         </div>
 
         <!-- Filter tabs & Clear -->
         <div class="flex items-center gap-1.5">
           <div class="flex items-center bg-slate-950 p-0.5 rounded-xl border border-slate-800 text-[11px]">
-            <button data-filter="all" class="filter-btn active px-2 py-1 rounded-lg bg-blue-600 text-white font-medium transition">Tất cả</button>
-            <button data-filter="media" class="filter-btn px-2 py-1 rounded-lg text-slate-400 hover:text-white transition">Ảnh/Video</button>
-            <button data-filter="text" class="filter-btn px-2 py-1 rounded-lg text-slate-400 hover:text-white transition">Text</button>
-            <button data-filter="file" class="filter-btn px-2 py-1 rounded-lg text-slate-400 hover:text-white transition">File</button>
+            <button data-filter="all" class="filter-btn active px-2.5 py-1 rounded-lg bg-blue-600 text-white font-medium transition">All</button>
+            <button data-filter="media" class="filter-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">Media</button>
+            <button data-filter="text" class="filter-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">Text</button>
+            <button data-filter="file" class="filter-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">Files</button>
           </div>
-          <button id="btnClearAllHistory" class="p-1.5 text-slate-500 hover:text-rose-400 transition" title="Xóa tất cả lịch sử">
+          <button id="btnClearAllHistory" class="p-1.5 text-slate-500 hover:text-rose-400 transition" title="Clear all history">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>
@@ -269,13 +238,14 @@
 
       <!-- Feed Container -->
       <div id="historyList" class="space-y-3 flex-1 overflow-y-auto pr-0.5">
-        <div id="emptyHistoryPlaceholder" class="text-center py-10 text-slate-500">
+        <div id="emptyHistoryPlaceholder" class="text-center py-12 text-slate-500">
           <div class="w-10 h-10 mx-auto mb-2 text-slate-600">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
             </svg>
           </div>
-          <p class="text-xs">Chưa có dữ liệu nào được chuyển qua lại</p>
+          <p class="text-xs">No items transferred yet</p>
+          <p class="text-[11px] text-slate-600 mt-0.5">Sent or received files will instantly appear here</p>
         </div>
       </div>
     </section>
@@ -284,15 +254,15 @@
 
   <!-- IMAGE LIGHTBOX MODAL (Click to Zoom & Fullscreen Preview) -->
   <div id="lightboxModal" class="fixed inset-0 bg-black/95 z-50 flex flex-col justify-between hidden transition-opacity duration-200">
-    <!-- Lightbox Header -->
-    <div class="flex items-center justify-between p-3.5 bg-gradient-to-b from-black/80 to-transparent z-10">
+    <!-- Header -->
+    <div class="flex items-center justify-between p-3.5 bg-gradient-to-b from-black/90 to-transparent z-10">
       <div class="min-w-0 pr-3">
         <p id="lightboxFilename" class="text-xs sm:text-sm font-semibold text-white truncate">image.jpg</p>
         <p id="lightboxFilesize" class="text-[10px] text-slate-400 font-mono">0 KB</p>
       </div>
       <div class="flex items-center gap-2 flex-shrink-0">
         <a id="lightboxDownloadBtn" href="#" download class="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow transition active:scale-95">
-          <span>⬇️ Tải về</span>
+          <span>⬇️ Download</span>
         </a>
         <button id="lightboxCloseBtn" class="p-2 text-slate-300 hover:text-white rounded-lg bg-slate-800/80 active:scale-95 transition">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -302,14 +272,14 @@
       </div>
     </div>
 
-    <!-- Lightbox Image Center Area -->
+    <!-- Center Image -->
     <div id="lightboxBackdrop" class="flex-1 flex items-center justify-center p-2 overflow-hidden cursor-zoom-out relative">
       <img id="lightboxImage" src="" alt="Preview" class="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl transition-transform duration-200 select-none">
     </div>
 
-    <!-- Lightbox Footer / Touch Hint -->
-    <div class="p-2 text-center text-[10px] text-slate-400 bg-gradient-to-t from-black/80 to-transparent">
-      Chạm vào ảnh để phóng to/thu nhỏ • Bấm X hoặc chạm ngoài để đóng
+    <!-- Footer Hint -->
+    <div class="p-2.5 text-center text-[11px] text-slate-400 bg-gradient-to-t from-black/90 to-transparent">
+      Tap image to zoom in/out • Tap background or X to close
     </div>
   </div>
 
@@ -321,12 +291,12 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
-      <h3 class="text-sm sm:text-base font-bold text-white mb-1">Mã QR Quét Nhanh</h3>
-      <p class="text-xs text-slate-400 mb-3">Mở Camera trên điện thoại để quét truy cập ngay</p>
+      <h3 class="text-sm sm:text-base font-bold text-white mb-1">Instant QR Connect</h3>
+      <p class="text-xs text-slate-400 mb-3">Scan with your phone's camera to join the hub</p>
 
       <!-- Network Mode Switcher -->
       <div id="qrNetworkSwitcher" class="inline-flex bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs mb-3">
-        <button id="btnQrLan" class="px-3 py-1 rounded-lg bg-blue-600 text-white font-medium transition">📶 Mạng Wi-Fi (LAN)</button>
+        <button id="btnQrLan" class="px-3 py-1 rounded-lg bg-blue-600 text-white font-medium transition">📶 Local Wi-Fi (LAN)</button>
         <button id="btnQrTailscale" class="px-3 py-1 rounded-lg text-slate-400 hover:text-white font-medium transition hidden">🔒 Tailscale</button>
       </div>
       
@@ -347,46 +317,46 @@
         </svg>
       </button>
 
-      <h3 class="text-base font-bold text-white mb-1">⚙️ Tự Nhận & Thông Báo</h3>
-      <p class="text-xs text-slate-400 mb-4">Cấu hình cách máy này phản ứng khi có thiết bị khác bắn file tới</p>
+      <h3 class="text-base font-bold text-white mb-1">⚙️ Auto-Receive & Alerts</h3>
+      <p class="text-xs text-slate-400 mb-4">Configure how this device responds when data arrives</p>
 
       <div class="space-y-3">
         <label class="flex items-start justify-between gap-3 p-3 bg-slate-950 rounded-xl border border-slate-800 cursor-pointer">
           <div>
-            <p class="text-xs sm:text-sm font-semibold text-slate-200">⚡ Tự động tải file về (Không hỏi)</p>
-            <p class="text-[11px] text-slate-400 mt-0.5">Tự động tải ngầm về Downloads mà không cần bấm chấp nhận.</p>
+            <p class="text-xs sm:text-sm font-semibold text-slate-200">⚡ Auto-Download Files (Zero-Click)</p>
+            <p class="text-[11px] text-slate-400 mt-0.5">Silently downloads incoming files straight to Downloads without confirmation.</p>
           </div>
           <input type="checkbox" id="settingAutoDownload" class="mt-1 w-5 h-5 accent-blue-600 rounded">
         </label>
 
         <label class="flex items-start justify-between gap-3 p-3 bg-slate-950 rounded-xl border border-slate-800 cursor-pointer">
           <div>
-            <p class="text-xs sm:text-sm font-semibold text-slate-200">📋 Tự động sao chép Clipboard</p>
-            <p class="text-[11px] text-slate-400 mt-0.5">Tự copy nội dung văn bản, OTP hoặc link vào bộ nhớ tạm.</p>
+            <p class="text-xs sm:text-sm font-semibold text-slate-200">📋 Auto-Copy Text to Clipboard</p>
+            <p class="text-[11px] text-slate-400 mt-0.5">Automatically copies incoming texts, links, or OTPs to system clipboard.</p>
           </div>
           <input type="checkbox" id="settingAutoCopy" class="mt-1 w-5 h-5 accent-blue-600 rounded">
         </label>
 
         <label class="flex items-start justify-between gap-3 p-3 bg-slate-950 rounded-xl border border-slate-800 cursor-pointer">
           <div>
-            <p class="text-xs sm:text-sm font-semibold text-slate-200">🔔 Âm thanh thông báo (Ting)</p>
-            <p class="text-[11px] text-slate-400 mt-0.5">Phát chuông nhẹ khi nhận dữ liệu mới.</p>
+            <p class="text-xs sm:text-sm font-semibold text-slate-200">🔔 Sound Alert (Chime)</p>
+            <p class="text-[11px] text-slate-400 mt-0.5">Plays a subtle chime when new data arrives.</p>
           </div>
           <input type="checkbox" id="settingSound" class="mt-1 w-5 h-5 accent-blue-600 rounded">
         </label>
 
         <label class="flex items-start justify-between gap-3 p-3 bg-slate-950 rounded-xl border border-slate-800 cursor-pointer">
           <div>
-            <p class="text-xs sm:text-sm font-semibold text-slate-200">☀️ Giữ màn hình luôn sáng</p>
-            <p class="text-[11px] text-slate-400 mt-0.5">Thích hợp đặt iPad / Tab Samsung trên bàn làm việc.</p>
+            <p class="text-xs sm:text-sm font-semibold text-slate-200">☀️ Keep Screen Awake</p>
+            <p class="text-[11px] text-slate-400 mt-0.5">Prevents tablet or phone screen from sleeping (ideal for desk displays).</p>
           </div>
           <input type="checkbox" id="settingWakeLock" class="mt-1 w-5 h-5 accent-blue-600 rounded">
         </label>
       </div>
 
       <div class="mt-4 p-3 rounded-xl bg-blue-950/40 border border-blue-900/50 text-[11px] text-blue-300">
-        <p class="font-bold mb-0.5">🍏 Mẹo cho iPhone / iPad:</p>
-        <p>Bấm biểu tượng <strong>Chia sẻ</strong> trên Safari -> Chọn <strong>"Thêm vào Màn hình chính"</strong> để dùng toàn màn hình mượt mà như app gốc.</p>
+        <p class="font-bold mb-0.5">🍏 Tip for iPhone / iPad:</p>
+        <p>Tap <strong>Share</strong> in Safari -> Select <strong>"Add to Home Screen"</strong> to run as a full-screen standalone native app.</p>
       </div>
     </div>
   </div>
@@ -394,22 +364,22 @@
   <!-- DEVICE RENAME MODAL -->
   <div id="renameModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-5 shadow-2xl relative">
-      <h3 class="text-sm sm:text-base font-bold text-white mb-1">Đổi Tên Thiết Bị Này</h3>
-      <p class="text-xs text-slate-400 mb-3">Tên này giúp người khác nhận diện khi chọn gửi riêng cho bạn.</p>
+      <h3 class="text-sm sm:text-base font-bold text-white mb-1">Rename This Device</h3>
+      <p class="text-xs text-slate-400 mb-3">This name helps other devices recognize you when sending files.</p>
       
-      <input type="text" id="inputDeviceName" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white mb-4 focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="VD: iPhone của Johnny, Tab Samsung...">
+      <input type="text" id="inputDeviceName" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white mb-4 focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="e.g., Johnny's iPhone, Samsung Tab...">
       
       <div class="flex items-center justify-end gap-2">
-        <button id="btnCancelRename" class="px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-white transition">Hủy</button>
-        <button id="btnSaveRename" class="px-4 py-1.5 text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition">Lưu tên</button>
+        <button id="btnCancelRename" class="px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-white transition">Cancel</button>
+        <button id="btnSaveRename" class="px-4 py-1.5 text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition">Save</button>
       </div>
     </div>
   </div>
 
-  <!-- TOAST CONTAINER -->
+  <!-- TOAST NOTIFICATION CONTAINER -->
   <div id="toastContainer" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4"></div>
 
-  <!-- APP JAVASCRIPT -->
+  <!-- APPLICATION LOGIC -->
   <script>
     // State
     let myDevice = {
@@ -420,12 +390,13 @@
     localStorage.setItem('lan_hub_device_id', myDevice.id);
     localStorage.setItem('lan_hub_device_name', myDevice.name);
 
-    let currentTarget = { id: 'all', name: 'Tất cả' };
+    let currentTarget = { id: 'all', name: 'All Devices' };
     let settings = {
       autoDownload: localStorage.getItem('lan_hub_auto_download') === 'true',
       autoCopy: localStorage.getItem('lan_hub_auto_copy') === 'true',
       sound: localStorage.getItem('lan_hub_sound') !== 'false',
-      wakeLock: localStorage.getItem('lan_hub_wakelock') === 'true'
+      wakeLock: localStorage.getItem('lan_hub_wakelock') === 'true',
+      autoSendFiles: localStorage.getItem('lan_hub_auto_send_files') === 'true'
     };
 
     let onlineDevices = [];
@@ -445,14 +416,14 @@
 
     function detectDeviceName() {
       const ua = navigator.userAgent;
-      if (/iPhone/i.test(ua)) return 'iPhone của tôi';
+      if (/iPhone/i.test(ua)) return 'My iPhone';
       if (/iPad/i.test(ua)) return 'iPad';
-      if (/Samsung/i.test(ua) && /Tablet|SM-T|SM-X/i.test(ua)) return 'Tab Samsung';
-      if (/Android/i.test(ua)) return 'Điện thoại Android';
+      if (/Samsung/i.test(ua) && /Tablet|SM-T|SM-X/i.test(ua)) return 'Samsung Tab';
+      if (/Android/i.test(ua)) return 'Android Phone';
       if (/Macintosh/i.test(ua)) return 'MacBook';
-      if (/Windows/i.test(ua)) return 'Laptop Windows';
-      if (/Linux/i.test(ua)) return 'Máy tính Linux';
-      return 'Thiết bị mới';
+      if (/Windows/i.test(ua)) return 'Windows PC';
+      if (/Linux/i.test(ua)) return 'Linux Server';
+      return 'New Device';
     }
 
     function getDeviceEmoji(type, name = '') {
@@ -464,7 +435,7 @@
       return '📱';
     }
 
-    // Audio Chime (Web Audio API Synthesizer)
+    // Audio Feedback (Web Audio API Synthesizer)
     function playChime() {
       if (!settings.sound) return;
       try {
@@ -530,10 +501,10 @@
       setTimeout(() => {
         toast.classList.add('opacity-0', '-translate-y-2');
         setTimeout(() => toast.remove(), 300);
-      }, 4500);
+      }, 4000);
     }
 
-    // Screen Wake Lock
+    // Screen WakeLock
     async function updateWakeLock() {
       if ('wakeLock' in navigator && settings.wakeLock) {
         try {
@@ -596,7 +567,7 @@
       ws.onerror = () => ws.close();
     }
 
-    // Render Target Devices
+    // Render Targets
     function renderDevices(devices) {
       onlineDevices = devices;
       const container = document.getElementById('targetDevicesList');
@@ -616,7 +587,7 @@
         btn.className = `target-btn flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition whitespace-nowrap active:scale-95 ${activeClass}`;
         btn.innerHTML = `
           <span>${getDeviceEmoji(d.type, d.name)}</span>
-          <span>${d.name}${isMe ? ' (Tôi)' : ''}</span>
+          <span>${d.name}${isMe ? ' (You)' : ''}</span>
           <span class="w-1.5 h-1.5 rounded-full ${d.isOnline ? 'bg-emerald-400' : 'bg-slate-600'}"></span>
         `;
 
@@ -634,10 +605,10 @@
           btn.className = 'target-btn flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700 whitespace-nowrap active:scale-95 transition';
         }
       });
-      document.getElementById('targetSelectedLabel').textContent = targetId === 'all' ? '🌐 Tất cả thiết bị' : `🎯 Gửi: ${targetName}`;
+      document.getElementById('targetSelectedLabel').textContent = targetId === 'all' ? '🌐 All Devices' : `🎯 Target: ${targetName}`;
     }
 
-    // Incoming Item
+    // Incoming Item Handling
     async function handleIncomingItem(item) {
       if (!historyItems.some(h => h.id === item.id)) {
         historyItems.unshift(item);
@@ -653,31 +624,31 @@
         if (settings.autoCopy && item.text) {
           try {
             await navigator.clipboard.writeText(item.text);
-            showToast(`Đã tự copy text từ ${item.senderName}!`, 'copy');
+            showToast(`Copied text from ${item.senderName} to Clipboard!`, 'copy');
           } catch (e) {
             const copyBtn = document.createElement('button');
             copyBtn.className = 'bg-blue-600 px-2 py-1 rounded text-white text-[11px] font-bold';
-            copyBtn.textContent = 'Copy ngay';
+            copyBtn.textContent = 'Copy';
             copyBtn.onclick = () => {
               navigator.clipboard.writeText(item.text);
-              showToast('Đã chép vào clipboard!', 'success');
+              showToast('Copied to clipboard!', 'success');
             };
-            showToast(`Tin nhắn từ [${item.senderName}]`, 'copy', copyBtn);
+            showToast(`Message from ${item.senderName}`, 'copy', copyBtn);
           }
         } else {
-          showToast(`Tin mới từ ${item.senderName}: "${item.text.slice(0, 30)}..."`, 'info');
+          showToast(`From ${item.senderName}: "${item.text.slice(0, 30)}..."`, 'info');
         }
       } else if (item.file) {
         if (settings.autoDownload) {
           triggerAutoDownload(item.file.downloadUrl, item.file.originalName);
-          showToast(`Đang tự động tải: ${item.file.originalName}`, 'download');
+          showToast(`Downloading: ${item.file.originalName}`, 'download');
         } else {
           const dlBtn = document.createElement('a');
           dlBtn.href = item.file.downloadUrl;
           dlBtn.download = item.file.originalName;
           dlBtn.className = 'bg-blue-600 px-2.5 py-1 rounded text-white text-[11px] font-bold';
-          dlBtn.textContent = 'Tải về';
-          showToast(`Đã nhận ${item.file.originalName}`, 'download', dlBtn);
+          dlBtn.textContent = 'Download';
+          showToast(`Received ${item.file.originalName}`, 'download', dlBtn);
         }
       }
     }
@@ -733,8 +704,8 @@
 
       if (filtered.length === 0) {
         list.innerHTML = `
-          <div class="text-center py-8 text-slate-500">
-            <p class="text-xs">Không có dữ liệu trong mục này</p>
+          <div class="text-center py-10 text-slate-500">
+            <p class="text-xs">No items in this filter</p>
           </div>
         `;
         return;
@@ -749,20 +720,17 @@
         const isMe = item.senderId === myDevice.id;
         const timeAgo = formatTime(item.timestamp);
         const targetBadge = item.target === 'all' 
-          ? '<span class="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded">🌐 Tất cả</span>'
+          ? '<span class="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded">🌐 All</span>'
           : `<span class="text-[10px] bg-blue-500/10 text-blue-400 border border-blue-500/20 px-1.5 py-0.5 rounded">🎯 ${item.targetName}</span>`;
 
         let contentHtml = '';
 
         if (item.contentType === 'text') {
+          // Tap text to copy immediately
           contentHtml = `
-            <div class="text-xs sm:text-sm text-slate-200 whitespace-pre-wrap break-words bg-slate-900/60 p-2.5 rounded-lg border border-slate-800/50">
+            <div onclick="copyText('${escapeHtml(item.text).replace(/'/g, "\\'")}', this)" class="cursor-pointer group relative text-xs sm:text-sm text-slate-200 whitespace-pre-wrap break-words bg-slate-900/60 hover:bg-slate-900 active:bg-blue-950/30 p-2.5 rounded-lg border border-slate-800/50 transition">
               ${linkify(escapeHtml(item.text))}
-            </div>
-            <div class="flex items-center justify-end gap-2">
-              <button onclick="copyText('${escapeHtml(item.text).replace(/'/g, "\\'")}', this)" class="flex items-center gap-1 text-[11px] text-blue-400 hover:text-blue-300 font-semibold px-2.5 py-1 rounded-lg bg-blue-500/10 active:scale-95 transition">
-                <span>📋</span> <span>Sao chép</span>
-              </button>
+              <span class="absolute top-2 right-2 text-[10px] font-semibold text-slate-400 group-hover:text-blue-400 bg-slate-800/80 px-1.5 py-0.5 rounded opacity-80 group-hover:opacity-100 transition">📋 Tap to copy</span>
             </div>
           `;
         } else if (item.contentType === 'image') {
@@ -771,7 +739,7 @@
               <div onclick="openLightbox('${item.file.downloadUrl}', '${escapeHtml(item.file.originalName)}', '${formatFileSize(item.file.size)}')" class="cursor-pointer group relative w-full rounded-xl overflow-hidden bg-slate-900 border border-slate-800 aspect-video max-h-64 flex items-center justify-center">
                 <img src="${item.file.downloadUrl}" alt="${item.file.originalName}" loading="lazy" class="w-full h-full object-cover group-hover:scale-102 transition duration-200">
                 <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
-                  <span class="bg-black/70 text-white text-xs px-2.5 py-1 rounded-full font-medium">🔍 Bấm để phóng to</span>
+                  <span class="bg-black/70 text-white text-xs px-2.5 py-1 rounded-full font-medium">🔍 Tap to Zoom</span>
                 </div>
               </div>
               <div class="flex items-center justify-between text-xs pt-0.5">
@@ -779,12 +747,12 @@
                   <p class="font-semibold text-white truncate text-[11px] sm:text-xs">${item.file.originalName}</p>
                   <p class="text-[10px] text-slate-400 font-mono">${formatFileSize(item.file.size)}</p>
                 </div>
-                <div class="flex items-center gap-2 flex-shrink-0">
+                <div class="flex items-center gap-1.5 flex-shrink-0">
                   <button onclick="openLightbox('${item.file.downloadUrl}', '${escapeHtml(item.file.originalName)}', '${formatFileSize(item.file.size)}')" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 px-2.5 py-1.5 rounded-lg active:scale-95 transition">
-                    🔍 Xem
+                    🔍 View
                   </button>
                   <a href="${item.file.downloadUrl}" download="${item.file.originalName}" class="flex items-center gap-1 text-xs bg-blue-600 hover:bg-blue-500 text-white font-semibold px-3 py-1.5 rounded-lg shadow transition active:scale-95">
-                    ⬇️ Tải
+                    ⬇️ Download
                   </a>
                 </div>
               </div>
@@ -802,13 +770,13 @@
                   <p class="text-[10px] text-slate-400 font-mono">${formatFileSize(item.file.size)}</p>
                 </div>
                 <a href="${item.file.downloadUrl}" download="${item.file.originalName}" class="flex items-center gap-1 text-xs bg-blue-600 hover:bg-blue-500 text-white font-semibold px-3 py-1.5 rounded-lg shadow transition active:scale-95 flex-shrink-0">
-                  ⬇️ Tải video
+                  ⬇️ Download
                 </a>
               </div>
             </div>
           `;
         } else {
-          // File / Doc
+          // File / Document
           contentHtml = `
             <div class="flex items-center justify-between gap-2.5 bg-slate-900/60 p-2.5 rounded-xl border border-slate-800/60">
               <div class="flex items-center gap-2.5 overflow-hidden">
@@ -821,7 +789,7 @@
                 </div>
               </div>
               <a href="${item.file.downloadUrl}" download="${item.file.originalName}" class="flex-shrink-0 flex items-center gap-1 text-xs bg-blue-600 hover:bg-blue-500 text-white font-semibold px-3 py-1.5 rounded-lg shadow transition active:scale-95">
-                ⬇️ Tải
+                ⬇️ Download
               </a>
             </div>
           `;
@@ -831,13 +799,13 @@
           <div class="flex items-center justify-between text-[11px] text-slate-400">
             <div class="flex items-center gap-1.5 truncate">
               <span>${getDeviceEmoji(item.senderType, item.senderName)}</span>
-              <span class="font-semibold text-slate-300 truncate">${item.senderName}${isMe ? ' (Tôi)' : ''}</span>
+              <span class="font-semibold text-slate-300 truncate">${item.senderName}${isMe ? ' (You)' : ''}</span>
               <span class="text-slate-600">•</span>
               ${targetBadge}
             </div>
             <div class="flex items-center gap-2 flex-shrink-0">
               <span class="text-[10px] text-slate-500 font-mono">${timeAgo}</span>
-              <button onclick="deleteItem('${item.id}')" class="text-slate-500 hover:text-rose-400 p-0.5 transition" title="Xóa">
+              <button onclick="deleteItem('${item.id}')" class="text-slate-500 hover:text-rose-400 p-0.5 transition" title="Delete">
                 ✕
               </button>
             </div>
@@ -861,87 +829,72 @@
       } catch (e) {}
     }
 
-    // Send Logic
-    async function sendText() {
-      const input = document.getElementById('textInput');
-      const text = input.value.trim();
-      if (!text) return;
+    // Unified Send Action
+    async function sendData() {
+      const textInput = document.getElementById('textInput');
+      const text = textInput.value.trim();
+      const hasFiles = selectedFiles.length > 0;
 
-      const formData = new FormData();
-      formData.append('text', text);
-      formData.append('senderId', myDevice.id);
-      formData.append('senderName', myDevice.name);
-      formData.append('senderType', myDevice.type);
-      formData.append('target', currentTarget.id);
-      formData.append('targetName', currentTarget.name);
-
-      const btn = document.getElementById('btnSendText');
-      btn.disabled = true;
-      btn.innerHTML = 'Đang gửi...';
-
-      try {
-        const res = await fetch('/api/send', { method: 'POST', body: formData });
-        if (res.ok) {
-          input.value = '';
-          document.getElementById('textCharCount').textContent = '0 ký tự';
-          showToast('Đã gửi tin nhắn!', 'success');
-        }
-      } catch (e) {
-        showToast('Lỗi khi gửi', 'error');
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = `<span>Gửi ngay</span><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>`;
+      if (!text && !hasFiles) {
+        showToast('Please type a message or select files to send', 'info');
+        return;
       }
-    }
-
-    async function sendFiles() {
-      if (selectedFiles.length === 0) return;
 
       const formData = new FormData();
+      if (text) formData.append('text', text);
       selectedFiles.forEach(file => formData.append('files', file));
+
       formData.append('senderId', myDevice.id);
       formData.append('senderName', myDevice.name);
       formData.append('senderType', myDevice.type);
       formData.append('target', currentTarget.id);
       formData.append('targetName', currentTarget.name);
 
+      const sendBtn = document.getElementById('btnSendMain');
       const progressContainer = document.getElementById('uploadProgressContainer');
       const progressBar = document.getElementById('uploadProgressBar');
       const progressText = document.getElementById('uploadPercentText');
       const statusText = document.getElementById('uploadStatusText');
-      const sendBtn = document.getElementById('btnSendFiles');
 
-      progressContainer.classList.remove('hidden');
       sendBtn.disabled = true;
+      sendBtn.innerHTML = '<span>Sending...</span>';
+
+      if (hasFiles) {
+        progressContainer.classList.remove('hidden');
+      }
 
       const xhr = new XMLHttpRequest();
       xhr.open('POST', '/api/send', true);
 
       xhr.upload.onprogress = (e) => {
-        if (e.lengthComputable) {
+        if (e.lengthComputable && hasFiles) {
           const percent = Math.round((e.loaded / e.total) * 100);
           progressBar.style.width = percent + '%';
           progressText.textContent = percent + '%';
-          statusText.textContent = `Đang chuyển ${formatFileSize(e.loaded)} / ${formatFileSize(e.total)}...`;
+          statusText.textContent = `Uploading ${formatFileSize(e.loaded)} / ${formatFileSize(e.total)}...`;
         }
       };
 
       xhr.onload = () => {
         progressContainer.classList.add('hidden');
         sendBtn.disabled = false;
-        selectedFiles = [];
-        updateSelectedFilesUI();
+        sendBtn.innerHTML = `<span>Send</span><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>`;
+
         if (xhr.status === 200) {
-          showToast('Đã chuyển file thành công!', 'success');
+          textInput.value = '';
+          selectedFiles = [];
+          updateSelectedFilesUI();
+          showToast('Sent successfully!', 'success');
         } else {
-          showToast('Lỗi gửi file', 'error');
+          showToast('Failed to send data', 'error');
         }
       };
 
       xhr.onerror = () => {
         progressContainer.classList.add('hidden');
         sendBtn.disabled = false;
-        showToast('Lỗi kết nối khi gửi', 'error');
+        sendBtn.innerHTML = `<span>Send</span><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>`;
+        showToast('Network error while sending', 'error');
       };
 
       xhr.send(formData);
@@ -951,16 +904,13 @@
       const container = document.getElementById('selectedFilesContainer');
       const list = document.getElementById('selectedFilesList');
       const countEl = document.getElementById('selectedFilesCount');
-      const sendBtn = document.getElementById('btnSendFiles');
 
       if (selectedFiles.length === 0) {
         container.classList.add('hidden');
-        sendBtn.disabled = true;
         return;
       }
 
       container.classList.remove('hidden');
-      sendBtn.disabled = false;
       countEl.textContent = selectedFiles.length;
       list.innerHTML = '';
 
@@ -998,10 +948,10 @@
       const date = new Date(isoString);
       const now = new Date();
       const diffSec = Math.floor((now - date) / 1000);
-      if (diffSec < 10) return 'Vừa xong';
-      if (diffSec < 60) return `${diffSec}s trước`;
-      if (diffSec < 3600) return `${Math.floor(diffSec / 60)}p trước`;
-      return date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+      if (diffSec < 10) return 'Just now';
+      if (diffSec < 60) return `${diffSec}s ago`;
+      if (diffSec < 3600) return `${Math.floor(diffSec / 60)}m ago`;
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
 
     function escapeHtml(text) {
@@ -1014,13 +964,20 @@
       return text.replace(urlRegex, url => `<a href="${url}" target="_blank" rel="noopener" class="text-blue-400 hover:underline break-all">${url}</a>`);
     }
 
-    window.copyText = (text, btn = null) => {
+    window.copyText = (text, element = null) => {
       navigator.clipboard.writeText(text).then(() => {
-        showToast('Đã copy văn bản vào Clipboard!', 'copy');
-        if (btn) {
-          const original = btn.innerHTML;
-          btn.innerHTML = '<span>✅ Đã copy!</span>';
-          setTimeout(() => btn.innerHTML = original, 1800);
+        showToast('Copied to clipboard!', 'copy');
+        if (element) {
+          const badge = element.querySelector('span:last-child');
+          if (badge) {
+            const orig = badge.textContent;
+            badge.textContent = '✅ Copied!';
+            badge.className = badge.className.replace('text-slate-400', 'text-emerald-400');
+            setTimeout(() => {
+              badge.textContent = orig;
+              badge.className = badge.className.replace('text-emerald-400', 'text-slate-400');
+            }, 1800);
+          }
         }
       });
     };
@@ -1030,7 +987,7 @@
       document.getElementById('myDeviceName').textContent = myDevice.name;
       document.getElementById('myDeviceIcon').textContent = getDeviceEmoji(myDevice.type, myDevice.name);
 
-      // Server info
+      // Server Info
       try {
         const infoRes = await fetch('/api/info');
         const info = await infoRes.json();
@@ -1073,131 +1030,124 @@
 
       connectWebSocket();
 
-      // Tab switcher
-      const tabTextBtn = document.getElementById('tabTextBtn');
-      const tabFileBtn = document.getElementById('tabFileBtn');
-      const tabTextContent = document.getElementById('tabTextContent');
-      const tabFileContent = document.getElementById('tabFileContent');
+      // Main Send Button
+      document.getElementById('btnSendMain').onclick = sendData;
 
-      tabTextBtn.onclick = () => {
-        tabTextBtn.className = 'flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-800 text-blue-400 transition active:scale-95';
-        tabFileBtn.className = 'flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-400 hover:text-slate-200 transition active:scale-95';
-        tabTextContent.classList.remove('hidden');
-        tabFileContent.classList.add('hidden');
-      };
-
-      tabFileBtn.onclick = () => {
-        tabFileBtn.className = 'flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-slate-800 text-blue-400 transition active:scale-95';
-        tabTextBtn.className = 'flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-400 hover:text-slate-200 transition active:scale-95';
-        tabFileContent.classList.remove('hidden');
-        tabTextContent.classList.add('hidden');
-      };
-
-      // Text input
-      document.getElementById('btnSendText').onclick = sendText;
-      document.getElementById('textInput').addEventListener('input', (e) => {
-        document.getElementById('textCharCount').textContent = `${e.target.value.length} ký tự`;
-      });
+      // Text input Enter shortcut (Ctrl+Enter or Cmd+Enter)
       document.getElementById('textInput').addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
           e.preventDefault();
-          sendText();
+          sendData();
         }
       });
+
+      // Paste button in toolbar
       document.getElementById('btnPasteText').onclick = async () => {
         try {
           const t = await navigator.clipboard.readText();
           if (t) {
-            document.getElementById('textInput').value = t;
-            document.getElementById('textCharCount').textContent = `${t.length} ký tự`;
+            const input = document.getElementById('textInput');
+            input.value = input.value ? (input.value + '\n' + t) : t;
+            showToast('Pasted text from clipboard', 'copy');
           }
         } catch (e) {
-          showToast('Vui lòng cấp quyền đọc clipboard hoặc dùng Ctrl+V', 'info');
+          showToast('Clipboard permission needed or press Ctrl+V', 'info');
         }
       };
 
       // File Inputs
-      const dropZone = document.getElementById('dropZone');
       const fileInput = document.getElementById('fileInput');
       const cameraInput = document.getElementById('cameraInput');
 
-      dropZone.onclick = () => fileInput.click();
+      document.getElementById('btnAttachFile').onclick = () => fileInput.click();
       document.getElementById('btnQuickCamera').onclick = () => cameraInput.click();
-      document.getElementById('btnQuickGallery').onclick = () => fileInput.click();
+
+      const handleFilesAdded = (filesList) => {
+        if (filesList.length > 0) {
+          selectedFiles.push(...Array.from(filesList));
+          updateSelectedFilesUI();
+          if (settings.autoSendFiles) {
+            sendData();
+          } else {
+            showToast(`Attached ${filesList.length} file(s)`, 'info');
+          }
+        }
+      };
 
       fileInput.onchange = (e) => {
-        if (e.target.files.length > 0) {
-          selectedFiles.push(...Array.from(e.target.files));
-          updateSelectedFilesUI();
-          fileInput.value = '';
-        }
+        handleFilesAdded(e.target.files);
+        fileInput.value = '';
       };
 
       cameraInput.onchange = (e) => {
-        if (e.target.files.length > 0) {
-          selectedFiles.push(...Array.from(e.target.files));
-          updateSelectedFilesUI();
-          cameraInput.value = '';
-        }
-      };
-
-      dropZone.ondragover = (e) => {
-        e.preventDefault();
-        dropZone.classList.add('border-blue-500', 'bg-blue-500/10');
-      };
-      dropZone.ondragleave = () => {
-        dropZone.classList.remove('border-blue-500', 'bg-blue-500/10');
-      };
-      dropZone.ondrop = (e) => {
-        e.preventDefault();
-        dropZone.classList.remove('border-blue-500', 'bg-blue-500/10');
-        if (e.dataTransfer.files.length > 0) {
-          selectedFiles.push(...Array.from(e.dataTransfer.files));
-          updateSelectedFilesUI();
-        }
+        handleFilesAdded(e.target.files);
+        cameraInput.value = '';
       };
 
       document.getElementById('btnClearFiles').onclick = () => {
         selectedFiles = [];
         updateSelectedFilesUI();
       };
-      document.getElementById('btnSendFiles').onclick = sendFiles;
 
-      // Global paste listener (Ctrl+V)
+      // Global Drag and Drop on Composer
+      const composer = document.getElementById('composerSection');
+      composer.ondragover = (e) => {
+        e.preventDefault();
+        composer.classList.add('ring-2', 'ring-blue-500', 'bg-blue-950/20');
+      };
+      composer.ondragleave = () => {
+        composer.classList.remove('ring-2', 'ring-blue-500', 'bg-blue-950/20');
+      };
+      composer.ondrop = (e) => {
+        e.preventDefault();
+        composer.classList.remove('ring-2', 'ring-blue-500', 'bg-blue-950/20');
+        if (e.dataTransfer.files.length > 0) {
+          handleFilesAdded(e.dataTransfer.files);
+        }
+      };
+
+      // Global Clipboard Paste Listener (Ctrl+V)
       window.addEventListener('paste', (e) => {
         const items = e.clipboardData?.items;
         if (!items) return;
-        let hasFiles = false;
+        let fileAdded = false;
         for (const item of items) {
           if (item.kind === 'file') {
             const blob = item.getAsFile();
             if (blob) {
               selectedFiles.push(blob);
-              hasFiles = true;
+              fileAdded = true;
             }
           }
         }
-        if (hasFiles) {
-          tabFileBtn.click();
+        if (fileAdded) {
           updateSelectedFilesUI();
-          showToast('Đã dán ảnh/file từ Clipboard!', 'success');
+          showToast('Attached media from Clipboard!', 'success');
         }
       });
 
-      // Filters
+      // Auto-send checkbox
+      const chkAuto = document.getElementById('chkAutoSendFiles');
+      chkAuto.checked = settings.autoSendFiles;
+      chkAuto.onchange = (e) => {
+        settings.autoSendFiles = e.target.checked;
+        localStorage.setItem('lan_hub_auto_send_files', e.target.checked);
+      };
+
+      // Filter tabs
       document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.onclick = () => {
           document.querySelectorAll('.filter-btn').forEach(b => {
-            b.className = 'filter-btn px-2 py-1 rounded-lg text-slate-400 hover:text-white transition';
+            b.className = 'filter-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition';
           });
-          btn.className = 'filter-btn active px-2 py-1 rounded-lg bg-blue-600 text-white font-medium transition';
+          btn.className = 'filter-btn active px-2.5 py-1 rounded-lg bg-blue-600 text-white font-medium transition';
           renderHistory();
         };
       });
 
-      // Clear all
+      // Clear all feed
       document.getElementById('btnClearAllHistory').onclick = async () => {
-        if (confirm('Bạn có chắc muốn xóa tất cả lịch sử và file trên máy chủ?')) {
+        if (confirm('Are you sure you want to clear all feed items and stored files on the server?')) {
           await fetch('/api/history', { method: 'DELETE' });
         }
       };
@@ -1213,7 +1163,7 @@
       document.getElementById('btnCloseSettings').onclick = () => settingsModal.classList.add('hidden');
       settingsModal.onclick = (e) => { if (e.target === settingsModal) settingsModal.classList.add('hidden'); };
 
-      // Settings state
+      // Settings State
       const setAutoDl = document.getElementById('settingAutoDownload');
       const setAutoCp = document.getElementById('settingAutoCopy');
       const setSound = document.getElementById('settingSound');
@@ -1227,12 +1177,12 @@
       setAutoDl.onchange = (e) => {
         settings.autoDownload = e.target.checked;
         localStorage.setItem('lan_hub_auto_download', e.target.checked);
-        if (e.target.checked) showToast('Đã bật tự tải file!', 'download');
+        if (e.target.checked) showToast('Auto-download enabled!', 'download');
       };
       setAutoCp.onchange = (e) => {
         settings.autoCopy = e.target.checked;
         localStorage.setItem('lan_hub_auto_copy', e.target.checked);
-        if (e.target.checked) showToast('Đã bật tự copy text!', 'copy');
+        if (e.target.checked) showToast('Auto-copy text enabled!', 'copy');
       };
       setSound.onchange = (e) => {
         settings.sound = e.target.checked;
@@ -1245,7 +1195,7 @@
         updateWakeLock();
       };
 
-      // Rename modal
+      // Rename Modal
       const renameModal = document.getElementById('renameModal');
       const inputDeviceName = document.getElementById('inputDeviceName');
       document.getElementById('btnDeviceName').onclick = () => {
@@ -1269,12 +1219,12 @@
               deviceType: myDevice.type
             }));
           }
-          showToast(`Đã đổi tên thành: ${n}`, 'success');
+          showToast(`Device renamed to: ${n}`, 'success');
         }
         renameModal.classList.add('hidden');
       };
 
-      // Lightbox close & zoom toggle
+      // Lightbox Zoom & Dismiss
       document.getElementById('lightboxCloseBtn').onclick = closeLightbox;
       document.getElementById('lightboxBackdrop').onclick = (e) => {
         if (e.target === document.getElementById('lightboxBackdrop')) closeLightbox();
@@ -1283,9 +1233,9 @@
         e.stopPropagation();
         const img = e.target;
         if (currentLightboxZoom === 1) {
-          img.style.transform = 'scale(1.8)';
+          img.style.transform = 'scale(1.85)';
           img.style.cursor = 'zoom-out';
-          currentLightboxZoom = 1.8;
+          currentLightboxZoom = 1.85;
         } else {
           img.style.transform = 'scale(1)';
           img.style.cursor = 'zoom-in';
@@ -1297,7 +1247,7 @@
       });
 
       // Target All button
-      document.querySelector('[data-target="all"]').onclick = () => selectTarget('all', 'Tất cả');
+      document.querySelector('[data-target="all"]').onclick = () => selectTarget('all', 'All Devices');
 
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/sw.js').catch(() => {});

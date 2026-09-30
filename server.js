@@ -11,7 +11,7 @@ const cors = require('cors');
 const PORT = process.env.PORT || 7777;
 const STORAGE_DIR = path.join(__dirname, 'storage');
 const HISTORY_FILE = path.join(STORAGE_DIR, 'history.json');
-const MAX_HISTORY = 150;
+const MAX_HISTORY = 200;
 
 if (!fs.existsSync(STORAGE_DIR)) {
   fs.mkdirSync(STORAGE_DIR, { recursive: true });
@@ -23,7 +23,7 @@ if (fs.existsSync(HISTORY_FILE)) {
   try {
     history = JSON.parse(fs.readFileSync(HISTORY_FILE, 'utf8'));
   } catch (err) {
-    console.error('Lỗi đọc history.json, tạo mới:', err);
+    console.error('Error reading history.json, resetting:', err);
     history = [];
   }
 }
@@ -42,7 +42,7 @@ function saveHistory() {
     }
     fs.writeFileSync(HISTORY_FILE, JSON.stringify(history, null, 2), 'utf8');
   } catch (err) {
-    console.error('Lỗi lưu history:', err);
+    console.error('Error saving history:', err);
   }
 }
 
@@ -69,9 +69,9 @@ app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ extended: true, limit: '100mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Active WebSocket clients: map ws => { deviceId, name, type, ip, joinedAt }
+// Active WebSocket clients: ws => { deviceId, name, type, ip, joinedAt }
 const clients = new Map();
-// Known registered devices cache: deviceId => { name, type, lastSeen, isOnline }
+// Known registered devices cache: deviceId => { id, name, type, ip, isOnline, lastSeen }
 const knownDevices = new Map();
 
 function getLanIps() {
@@ -131,7 +131,7 @@ wss.on('connection', (ws, req) => {
       if (data.type === 'register') {
         const clientInfo = {
           deviceId: data.deviceId || 'dev-' + Math.random().toString(36).substr(2, 9),
-          name: data.name || 'Thiết bị mới',
+          name: data.name || 'New Device',
           type: data.deviceType || 'unknown',
           ip: ip.replace(/^.*:/, ''), // clean ipv6 localhost prefix
           joinedAt: new Date().toISOString()
@@ -186,7 +186,6 @@ function dispatchItem(item) {
 // API Routes
 app.get('/api/info', async (req, res) => {
   const ips = getLanIps();
-  // Prioritize 192.168.x.x
   const primary = ips.find(i => i.ip.startsWith('192.168.')) || ips[0] || { ip: 'localhost' };
   const tailscale = ips.find(i => i.name === 'tailscale0' || i.ip.startsWith('100.'));
   const serverUrl = `http://${primary.ip}:${PORT}`;
@@ -236,18 +235,16 @@ app.delete('/api/history/:id', (req, res) => {
     }
     history.splice(idx, 1);
     saveHistory();
-    // Broadcast delete event
     const msg = JSON.stringify({ type: 'item_deleted', itemId: id });
     for (const [ws] of clients) {
       if (ws.readyState === WebSocket.OPEN) ws.send(msg);
     }
     return res.json({ success: true });
   }
-  res.status(404).json({ error: 'Không tìm thấy mục này' });
+  res.status(404).json({ error: 'Item not found' });
 });
 
 app.delete('/api/history', (req, res) => {
-  // Clear all
   for (const item of history) {
     if (item.file && item.file.filename) {
       const fp = path.join(STORAGE_DIR, item.file.filename);
@@ -267,7 +264,7 @@ app.get('/api/download/:filename', (req, res) => {
   const filename = path.basename(req.params.filename);
   const filePath = path.join(STORAGE_DIR, filename);
   if (!fs.existsSync(filePath)) {
-    return res.status(404).send('File không tồn tại trên máy chủ');
+    return res.status(404).send('File not found on server');
   }
 
   const item = history.find(h => h.file && h.file.filename === filename);
@@ -276,10 +273,10 @@ app.get('/api/download/:filename', (req, res) => {
   res.download(filePath, originalName);
 });
 
-// Quick upload endpoint (Great for Apple Shortcuts or curl)
+// Quick upload endpoint (Optimized for Apple Shortcuts or curl)
 app.post('/api/quick-upload', upload.single('file'), (req, res) => {
   const file = req.file;
-  if (!file) return res.status(400).json({ error: 'Không có file' });
+  if (!file) return res.status(400).json({ error: 'No file uploaded' });
 
   let rawName = file.originalname;
   try {
@@ -294,10 +291,10 @@ app.post('/api/quick-upload', upload.single('file'), (req, res) => {
   const item = {
     id: 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6),
     senderId: req.body.senderId || 'apple-shortcut',
-    senderName: req.body.senderName || 'iPhone Shortcut',
+    senderName: req.body.senderName || 'Apple Shortcut',
     senderType: 'phone',
     target: req.body.target || 'all',
-    targetName: req.body.targetName || 'Tất cả',
+    targetName: req.body.targetName || 'All Devices',
     contentType,
     text: req.body.text || '',
     file: {
@@ -317,15 +314,15 @@ app.post('/api/quick-upload', upload.single('file'), (req, res) => {
 // Quick text endpoint
 app.post('/api/quick-text', (req, res) => {
   const text = req.body.text;
-  if (!text) return res.status(400).json({ error: 'Không có nội dung' });
+  if (!text) return res.status(400).json({ error: 'Empty text' });
 
   const item = {
     id: 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6),
     senderId: req.body.senderId || 'quick-send',
-    senderName: req.body.senderName || 'Thiết bị gửi nhanh',
+    senderName: req.body.senderName || 'Quick Sender',
     senderType: req.body.senderType || 'unknown',
     target: req.body.target || 'all',
-    targetName: req.body.targetName || 'Tất cả',
+    targetName: req.body.targetName || 'All Devices',
     contentType: 'text',
     text,
     file: null,
@@ -336,26 +333,26 @@ app.post('/api/quick-text', (req, res) => {
   res.json({ success: true, item });
 });
 
-// General send endpoint (Multiple files or text)
-app.post('/api/send', upload.array('files', 20), (req, res) => {
+// Unified send endpoint
+app.post('/api/send', upload.array('files', 30), (req, res) => {
   const { senderId, senderName, senderType, target, targetName, text } = req.body;
   const files = req.files || [];
 
   if (!text && files.length === 0) {
-    return res.status(400).json({ error: 'Không có dữ liệu gửi' });
+    return res.status(400).json({ error: 'No data to send' });
   }
 
   const createdItems = [];
 
-  // Text item if present
+  // Text item
   if (text && text.trim()) {
     const textItem = {
       id: 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6),
       senderId: senderId || 'web-client',
-      senderName: senderName || 'Vô danh',
+      senderName: senderName || 'Anonymous',
       senderType: senderType || 'browser',
       target: target || 'all',
-      targetName: targetName || 'Tất cả',
+      targetName: targetName || 'All Devices',
       contentType: 'text',
       text: text.trim(),
       file: null,
@@ -380,10 +377,10 @@ app.post('/api/send', upload.array('files', 20), (req, res) => {
     const fileItem = {
       id: 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6),
       senderId: senderId || 'web-client',
-      senderName: senderName || 'Vô danh',
+      senderName: senderName || 'Anonymous',
       senderType: senderType || 'browser',
       target: target || 'all',
-      targetName: targetName || 'Tất cả',
+      targetName: targetName || 'All Devices',
       contentType,
       text: null,
       file: {
@@ -404,7 +401,7 @@ app.post('/api/send', upload.array('files', 20), (req, res) => {
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`===============================================`);
-  console.log(`🚀 LAN Transit Hub đang chạy tại:`);
+  console.log(`🚀 LAN Transit Hub running on port ${PORT}:`);
   const ips = getLanIps();
   ips.forEach(i => {
     console.log(`   👉 http://${i.ip}:${PORT} (${i.name})`);

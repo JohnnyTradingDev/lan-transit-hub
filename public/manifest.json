@@ -1,7 +1,7 @@
 {
   "name": "LAN Transit Hub",
   "short_name": "LAN Hub",
-  "description": "Trạm trung chuyển dữ liệu siêu tốc trong mạng LAN",
+  "description": "High-speed cross-device local network file & text relay",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f172a",
