@@ -4,6 +4,7 @@ const crypto = require('crypto');
 
 const STORAGE_DIR = path.join(__dirname, 'storage');
 const BUFFET_FILE = path.join(STORAGE_DIR, 'buffet.json');
+const DISMISSED_FILE = path.join(STORAGE_DIR, 'buffet_dismissed.json');
 
 // Authentic Gen Z / Casual English Slang (X & Reddit vibe)
 const CASUAL_TEMPLATES = [
@@ -74,6 +75,91 @@ function generateCaptions(title) {
     debate: pickRandom(DEBATE_TEMPLATES).replace('{title}', cleanTitle),
     short: pickRandom(SHORT_TEMPLATES).replace('{title}', cleanTitle)
   };
+}
+
+function getDismissedMap() {
+  if (fs.existsSync(DISMISSED_FILE)) {
+    try {
+      return JSON.parse(fs.readFileSync(DISMISSED_FILE, 'utf8'));
+    } catch (e) {}
+  }
+  return {};
+}
+
+function saveDismissedMap(map) {
+  try {
+    fs.writeFileSync(DISMISSED_FILE, JSON.stringify(map, null, 2), 'utf8');
+  } catch (e) {
+    console.error('Error saving buffet_dismissed.json:', e);
+  }
+}
+
+function dismissItem(itemId, reason = 'deleted', itemData = null) {
+  const map = getDismissedMap();
+  let found = itemData;
+
+  // Remove from buffet.json
+  if (fs.existsSync(BUFFET_FILE)) {
+    try {
+      const items = JSON.parse(fs.readFileSync(BUFFET_FILE, 'utf8'));
+      if (!found) {
+        found = items.find(i => i.id === itemId);
+      }
+      const filtered = items.filter(i => i.id !== itemId);
+      fs.writeFileSync(BUFFET_FILE, JSON.stringify(filtered, null, 2), 'utf8');
+    } catch (e) {}
+  }
+
+  map[itemId] = {
+    dismissedAt: new Date().toISOString(),
+    reason,
+    item: found || null
+  };
+  saveDismissedMap(map);
+  return true;
+}
+
+function restoreItem(itemId) {
+  const map = getDismissedMap();
+  const record = map[itemId];
+  if (!record) return false;
+
+  const restoredItem = record.item;
+  delete map[itemId];
+  saveDismissedMap(map);
+
+  if (restoredItem && fs.existsSync(BUFFET_FILE)) {
+    try {
+      const items = JSON.parse(fs.readFileSync(BUFFET_FILE, 'utf8'));
+      if (!items.some(i => i.id === itemId)) {
+        items.unshift(restoredItem);
+        fs.writeFileSync(BUFFET_FILE, JSON.stringify(items, null, 2), 'utf8');
+      }
+    } catch (e) {}
+  }
+  return true;
+}
+
+function getDismissedItems() {
+  const map = getDismissedMap();
+  const list = [];
+  for (const [id, data] of Object.entries(map)) {
+    if (data.item) {
+      list.push({
+        ...data.item,
+        dismissedAt: data.dismissedAt,
+        dismissReason: data.reason
+      });
+    } else {
+      list.push({
+        id,
+        title: '(Dismissed Post)',
+        dismissedAt: data.dismissedAt,
+        dismissReason: data.reason
+      });
+    }
+  }
+  return list.sort((a, b) => new Date(b.dismissedAt) - new Date(a.dismissedAt));
 }
 
 async function fetchRssFeed(url, sourceName, category) {
@@ -171,7 +257,6 @@ async function refreshBuffet() {
   );
 
   const allItems = results.flat();
-  // Deduplicate by ID
   const uniqueMap = new Map();
   allItems.forEach(item => {
     if (!uniqueMap.has(item.id)) {
@@ -179,10 +264,13 @@ async function refreshBuffet() {
     }
   });
 
-  const finalItems = Array.from(uniqueMap.values());
+  const dismissedMap = getDismissedMap();
+  // Filter out any dismissed or posted IDs
+  const finalItems = Array.from(uniqueMap.values()).filter(item => !dismissedMap[item.id]);
+
   try {
     fs.writeFileSync(BUFFET_FILE, JSON.stringify(finalItems, null, 2), 'utf8');
-    console.log(`[Content Buffet] Updated buffet with ${finalItems.length} English items.`);
+    console.log(`[Content Buffet] Updated buffet with ${finalItems.length} English items (${Object.keys(dismissedMap).length} dismissed/hidden).`);
   } catch (err) {
     console.error('Error saving buffet.json:', err);
   }
@@ -190,10 +278,13 @@ async function refreshBuffet() {
   return finalItems;
 }
 
-function getBuffetItems() {
+function getBuffetItems(includeDismissed = false) {
   if (fs.existsSync(BUFFET_FILE)) {
     try {
-      return JSON.parse(fs.readFileSync(BUFFET_FILE, 'utf8'));
+      const items = JSON.parse(fs.readFileSync(BUFFET_FILE, 'utf8'));
+      if (includeDismissed) return items;
+      const dismissedMap = getDismissedMap();
+      return items.filter(i => !dismissedMap[i.id]);
     } catch (e) {}
   }
   return [];
@@ -201,5 +292,8 @@ function getBuffetItems() {
 
 module.exports = {
   refreshBuffet,
-  getBuffetItems
+  getBuffetItems,
+  dismissItem,
+  restoreItem,
+  getDismissedItems
 };

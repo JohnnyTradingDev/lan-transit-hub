@@ -599,6 +599,26 @@ app.post('/api/buffet/push', async (req, res) => {
   res.json({ success: true, items: createdItems });
 });
 
+// Dismiss/Delete a buffet item
+app.delete('/api/buffet/:id', (req, res) => {
+  const { id } = req.params;
+  const reason = req.query.reason || 'deleted';
+  feeder.dismissItem(id, reason);
+  res.json({ success: true, id, reason });
+});
+
+// Restore a dismissed buffet item
+app.post('/api/buffet/:id/restore', (req, res) => {
+  const { id } = req.params;
+  const ok = feeder.restoreItem(id);
+  res.json({ success: ok, id });
+});
+
+// List dismissed items
+app.get('/api/buffet/dismissed', (req, res) => {
+  res.json(feeder.getDismissedItems());
+});
+
 app.get('/api/download/:filename', (req, res) => {
   const filename = path.basename(req.params.filename);
   const filePath = path.join(STORAGE_DIR, filename);
