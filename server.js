@@ -65,14 +65,47 @@ const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server, path: '/ws' });
 
+const net = require('net');
+
+function checkPort(port, host = '127.0.0.1', timeout = 400) {
+  return new Promise((resolve) => {
+    const socket = new net.Socket();
+    socket.setTimeout(timeout);
+    socket.on('connect', () => {
+      socket.destroy();
+      resolve(true);
+    });
+    socket.on('timeout', () => {
+      socket.destroy();
+      resolve(false);
+    });
+    socket.on('error', () => {
+      socket.destroy();
+      resolve(false);
+    });
+    socket.connect(port, host);
+  });
+}
+
 // 1. Reverse Proxy RedNote Downloader APIs to port 5556 (Before body parsers!)
-app.use(
-  ['/api/server-info', '/api/cookie', '/api/parse', '/api/download-zip', '/api/proxy-image', '/api/proxy-video'],
-  createProxyMiddleware({
-    target: 'http://127.0.0.1:5556',
-    changeOrigin: true
-  })
-);
+const xhsProxy = createProxyMiddleware({
+  target: 'http://127.0.0.1:5556',
+  changeOrigin: true
+});
+app.use((req, res, next) => {
+  const xhsPaths = [
+    '/api/server-info',
+    '/api/cookie',
+    '/api/parse',
+    '/api/download-zip',
+    '/api/proxy-image',
+    '/api/proxy-video'
+  ];
+  if (xhsPaths.some(p => req.path.startsWith(p))) {
+    return xhsProxy(req, res, next);
+  }
+  next();
+});
 
 // 2. Serve RedNote Downloader Web App on /rednote
 app.get('/rednote', (req, res) => {
@@ -231,24 +264,24 @@ app.get('/api/info', async (req, res) => {
   });
 });
 
-app.get('/api/server-tools', (req, res) => {
+app.get('/api/server-tools', async (req, res) => {
+  const reqHost = req.hostname || (req.headers.host ? req.headers.host.split(':')[0] : 'localhost');
   const ips = getLanIps();
   const primary = ips.find(i => i.ip.startsWith('192.168.')) || ips[0] || { ip: 'localhost' };
   const tailscale = ips.find(i => i.name === 'tailscale0' || i.ip.startsWith('100.'));
-  const host = primary.ip;
   const tsHost = tailscale ? tailscale.ip : null;
 
-  const tools = [
+  const toolDefs = [
     {
       id: 'lan-transit',
       name: 'LAN Transit Hub',
       category: 'Core System',
       icon: '⚡',
       port: 7777,
-      url: '/',
+      path: '#transit',
       description: 'Zero-click local device file & text relay',
       isIntegrated: true,
-      tag: 'Active App'
+      tag: 'Integrated Hub'
     },
     {
       id: 'rednote',
@@ -256,11 +289,10 @@ app.get('/api/server-tools', (req, res) => {
       category: 'Media Tools',
       icon: '📕',
       port: 5556,
-      url: '/rednote',
-      directLanUrl: `http://${host}:5556`,
-      description: 'Download Xiaohongshu (Rednote) videos & HD photos without watermark',
+      path: '/rednote',
+      description: 'Download Xiaohongshu (RedNote) videos & HD photos watermark-free',
       isIntegrated: true,
-      tag: 'Integrated on Port 7777'
+      tag: 'Integrated on 7777'
     },
     {
       id: 'crypto-hub',
@@ -268,8 +300,7 @@ app.get('/api/server-tools', (req, res) => {
       category: 'Trading & Bot',
       icon: '🪙',
       port: 8080,
-      url: `http://${host}:8080`,
-      tailscaleUrl: tsHost ? `http://${tsHost}:8080` : null,
+      path: '/',
       description: 'Automated crypto trading signals & social poster',
       isIntegrated: false,
       tag: 'Port 8080'
@@ -280,8 +311,7 @@ app.get('/api/server-tools', (req, res) => {
       category: 'AI & Templates',
       icon: '📝',
       port: 4000,
-      url: `http://${host}:4000`,
-      tailscaleUrl: tsHost ? `http://${tsHost}:4000` : null,
+      path: '/',
       description: 'System prompts manager & AI playground',
       isIntegrated: false,
       tag: 'Port 4000'
@@ -292,8 +322,7 @@ app.get('/api/server-tools', (req, res) => {
       category: 'Automation',
       icon: '📧',
       port: 3000,
-      url: `http://${host}:3000`,
-      tailscaleUrl: tsHost ? `http://${tsHost}:3000` : null,
+      path: '/',
       description: 'Automated inbox manager and notifier dashboard',
       isIntegrated: false,
       tag: 'Port 3000'
@@ -304,8 +333,7 @@ app.get('/api/server-tools', (req, res) => {
       category: 'E-Commerce',
       icon: '🕊️',
       port: 3001,
-      url: `http://${host}:3001`,
-      tailscaleUrl: tsHost ? `http://${tsHost}:3001` : null,
+      path: '/',
       description: 'Online store and product catalog system',
       isIntegrated: false,
       tag: 'Port 3001'
@@ -316,13 +344,31 @@ app.get('/api/server-tools', (req, res) => {
       category: 'Monitoring',
       icon: '📊',
       port: 8888,
-      url: `http://${host}:8888`,
-      tailscaleUrl: tsHost ? `http://${tsHost}:8888` : null,
+      path: '/',
       description: 'System monitoring & scheduled scraping analytics',
       isIntegrated: false,
       tag: 'Port 8888'
     }
   ];
+
+  const checks = await Promise.all(
+    toolDefs.map(t => checkPort(t.port))
+  );
+
+  const tools = toolDefs.map((t, idx) => {
+    const isOnline = checks[idx];
+    const url = t.isIntegrated && t.path.startsWith('/') 
+      ? t.path 
+      : (t.id === 'lan-transit' ? '#transit' : `http://${reqHost}:${t.port}${t.path || ''}`);
+
+    return {
+      ...t,
+      status: isOnline ? 'online' : 'offline',
+      url,
+      lanUrl: `http://${primary.ip}:${t.port}${t.path || ''}`,
+      tailscaleUrl: tsHost ? `http://${tsHost}:${t.port}${t.path || ''}` : null
+    };
+  });
 
   res.json(tools);
 });

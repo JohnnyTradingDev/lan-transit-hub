@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>LAN Transit Hub - Seamless Cross-Device Relay</title>
+  <title>Server Hub - Dashboard & Transit Relay</title>
   <link rel="manifest" href="/manifest.json">
   <link rel="icon" href="/icon.svg" type="image/svg+xml">
-  <meta name="theme-color" content="#0f172a">
+  <meta name="theme-color" content="#090d16">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   
@@ -32,9 +32,9 @@
   <style>
     :root {
       --sab: env(safe-area-inset-bottom, 0px);
+      --sat: env(safe-area-inset-top, 0px);
     }
     body {
-      padding-bottom: max(var(--sab), 16px);
       -webkit-tap-highlight-color: transparent;
       user-select: none;
     }
@@ -52,220 +52,508 @@
 
     /* Pushes the header comfortably down below iPhone Notch, Dynamic Island, and Status Bar */
     .ios-safe-header {
-      padding-top: max(calc(env(safe-area-inset-top, 0px) + 14px), 1.5rem);
+      padding-top: max(calc(var(--sat) + 12px), 1rem);
+    }
+    .ios-safe-bottom {
+      padding-bottom: max(var(--sab), 0.75rem);
     }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-blue-600 selection:text-white pb-6">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-blue-600 selection:text-white">
 
-  <!-- TOP APP BAR -->
-  <header class="sticky top-0 z-30 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 px-3.5 pb-2.5 sm:pb-3 shadow-md ios-safe-header">
-    <div class="max-w-4xl mx-auto flex items-center justify-between gap-2">
-      
-      <!-- Logo & Connection Status -->
-      <div class="flex items-center gap-2.5 min-w-0">
-        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20 flex-shrink-0">
-          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-          </svg>
-        </div>
-        <div class="min-w-0">
-          <div class="flex items-center gap-1.5">
-            <h1 class="font-bold text-sm sm:text-base text-white tracking-tight truncate">LAN Transit Hub</h1>
-            <span id="connectionBadge" class="inline-flex items-center px-1.5 py-0.2 rounded-full text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-              <span class="w-1.5 h-1.5 mr-1 rounded-full bg-emerald-400 animate-pulse"></span>
-              Online
-            </span>
+  <!-- APP SHELL: SIDEBAR + MAIN CONTENT AREA -->
+  <div class="flex h-screen w-full overflow-hidden">
+    
+    <!-- DESKTOP SIDEBAR (Visible on md+ screens) -->
+    <aside class="hidden md:flex flex-col w-64 bg-slate-900/95 border-r border-slate-800/80 p-4 justify-between flex-shrink-0 z-20">
+      <div class="space-y-6">
+        
+        <!-- Brand Header -->
+        <div class="flex items-center gap-3 px-2 py-1">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/25 flex-shrink-0">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
           </div>
-          <p id="serverIpLabel" class="text-[11px] text-slate-400 font-mono truncate">Connecting...</p>
+          <div class="min-w-0">
+            <h1 class="font-bold text-base text-white tracking-tight truncate">Server Portal</h1>
+            <p id="sidebarHostTag" class="text-[11px] text-slate-400 font-mono truncate">Connecting...</p>
+          </div>
         </div>
+
+        <!-- Navigation Links -->
+        <nav class="space-y-1.5" id="desktopNav">
+          <button data-panel="home" class="nav-item active w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition bg-blue-600 text-white shadow-md shadow-blue-600/20">
+            <span class="text-base">🏠</span>
+            <span class="flex-1 text-left">Home Dashboard</span>
+            <span class="text-[10px] bg-blue-700/60 text-blue-200 px-1.5 py-0.5 rounded font-mono" id="sidebarToolsCount">7</span>
+          </button>
+
+          <button data-panel="transit" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/70 transition">
+            <span class="text-base">⚡</span>
+            <span class="flex-1 text-left">LAN Transit Hub</span>
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          </button>
+
+          <button data-panel="rednote" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/70 transition">
+            <span class="text-base">📕</span>
+            <span class="flex-1 text-left">RedNote Downloader</span>
+            <span class="text-[9px] bg-rose-500/20 text-rose-300 px-1.5 py-0.2 rounded font-mono">Proxy</span>
+          </button>
+
+          <button data-panel="settings" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/70 transition">
+            <span class="text-base">⚙️</span>
+            <span class="flex-1 text-left">Settings & QR</span>
+          </button>
+        </nav>
+
       </div>
 
-      <!-- Action Buttons -->
-      <div class="flex items-center gap-1.5 flex-shrink-0">
-        <!-- Device Profile Pill -->
-        <button id="btnDeviceName" class="flex items-center gap-1 bg-slate-800/90 active:scale-95 border border-slate-700/80 text-xs px-2.5 py-1.5 rounded-lg transition" title="Rename this device">
-          <span id="myDeviceIcon">📱</span>
-          <span id="myDeviceName" class="font-medium max-w-[85px] sm:max-w-[140px] truncate">This Device</span>
-          <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <!-- Bottom Profile / Status in Sidebar -->
+      <div class="space-y-2 pt-4 border-t border-slate-800/80">
+        <div class="flex items-center justify-between px-1">
+          <span class="text-[11px] text-slate-400 font-medium">Device Identity</span>
+          <span id="connectionBadgeDesktop" class="inline-flex items-center px-1.5 py-0.2 rounded-full text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <span class="w-1.5 h-1.5 mr-1 rounded-full bg-emerald-400 animate-pulse"></span>
+            Online
+          </span>
+        </div>
+
+        <button id="btnDeviceNameSidebar" class="w-full flex items-center justify-between p-2 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-slate-700 active:scale-98 transition text-left">
+          <div class="flex items-center gap-2 min-w-0">
+            <span id="myDeviceIconSidebar" class="text-base">📱</span>
+            <div class="min-w-0">
+              <p id="myDeviceNameSidebar" class="text-xs font-semibold text-white truncate">This Device</p>
+              <p class="text-[10px] text-slate-400 font-mono">Tap to rename</p>
+            </div>
+          </div>
+          <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
           </svg>
         </button>
-
-        <!-- QR Code -->
-        <button id="btnShowQr" class="p-2 bg-slate-800/90 active:scale-95 border border-slate-700/80 rounded-lg text-slate-300 hover:text-white transition" title="Show QR Code">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
-          </svg>
-        </button>
-
-        <!-- Server Tools Launcher -->
-        <button id="btnServerTools" class="flex items-center gap-1 p-2 bg-slate-800/90 active:scale-95 border border-slate-700/80 rounded-lg text-slate-300 hover:text-white transition" title="Server Tools & Apps">
-          <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-          </svg>
-          <span class="text-xs font-semibold text-amber-400 hidden sm:inline">Tools</span>
-        </button>
-
-        <!-- Settings -->
-        <button id="btnSettings" class="p-2 bg-slate-800/90 active:scale-95 border border-slate-700/80 rounded-lg text-slate-300 hover:text-white transition" title="Settings">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-        </button>
       </div>
+    </aside>
+
+    <!-- MAIN VIEW AREA -->
+    <div class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+      
+      <!-- TOP MOBILE / COMPACT HEADER -->
+      <header class="ios-safe-header bg-slate-900/95 backdrop-blur-md border-b border-slate-800 px-3.5 pb-2.5 shadow-md flex items-center justify-between gap-2 z-20">
+        
+        <!-- Left: Logo & Active Page Title -->
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/25 flex-shrink-0 md:hidden">
+            <span id="topBarIcon" class="text-sm">🏠</span>
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center gap-1.5">
+              <h2 id="topBarTitle" class="font-bold text-sm sm:text-base text-white tracking-tight truncate">Home Dashboard</h2>
+              <span id="connectionBadge" class="inline-flex items-center px-1.5 py-0.2 rounded-full text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <span class="w-1.5 h-1.5 mr-1 rounded-full bg-emerald-400 animate-pulse"></span>
+                Online
+              </span>
+            </div>
+            <p id="serverIpLabel" class="text-[11px] text-slate-400 font-mono truncate">Connecting...</p>
+          </div>
+        </div>
+
+        <!-- Right Quick Actions -->
+        <div class="flex items-center gap-1.5 flex-shrink-0">
+          <!-- Device Name Pill (Mobile) -->
+          <button id="btnDeviceName" class="md:hidden flex items-center gap-1 bg-slate-800/90 active:scale-95 border border-slate-700/80 text-xs px-2.5 py-1.5 rounded-lg transition" title="Rename this device">
+            <span id="myDeviceIcon">📱</span>
+            <span id="myDeviceName" class="font-medium max-w-[80px] truncate">Device</span>
+          </button>
+
+          <!-- QR Code Quick Button -->
+          <button id="btnShowQr" class="p-2 bg-slate-800/90 active:scale-95 border border-slate-700/80 rounded-lg text-slate-300 hover:text-white transition" title="Connect QR Code">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+            </svg>
+          </button>
+        </div>
+
+      </header>
+
+      <!-- SCROLLABLE TAB PANELS CONTAINER -->
+      <main class="flex-1 overflow-y-auto p-3.5 sm:p-5 no-scrollbar pb-24 md:pb-8">
+
+        <!-- ========================================== -->
+        <!-- PANEL 1: HOME DASHBOARD (SHOWS TOOLS - NO POPUP) -->
+        <!-- ========================================== -->
+        <section id="panel-home" class="panel-section max-w-5xl mx-auto space-y-4">
+          
+          <!-- Hero Overview Banner -->
+          <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-900/40 via-slate-900 to-indigo-950/40 border border-slate-800/90 p-4 sm:p-5 shadow-xl">
+            <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    🟢 All Server Systems Operational
+                  </span>
+                  <span id="homeGatewayBadge" class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono text-blue-300 bg-blue-950/70 border border-blue-800/60 truncate max-w-[200px]">
+                    Host: Auto-detecting...
+                  </span>
+                </div>
+                <h2 class="text-lg sm:text-xl font-bold text-white tracking-tight">PC Server Services Dashboard</h2>
+                <p class="text-xs text-slate-400 mt-0.5">All applications running locally and synced across Wi-Fi & Tailscale.</p>
+              </div>
+
+              <!-- Quick Action to LAN Transit -->
+              <div class="flex items-center gap-2 flex-shrink-0">
+                <button onclick="switchTab('transit')" class="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-lg shadow-blue-600/30 transition">
+                  <span>⚡ Quick Transit Hub</span>
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tools Section Header & Filter -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pt-1">
+            <div>
+              <h3 class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+                <span>🎛️ Server Tools & Apps</span>
+                <span id="toolsLiveBadge" class="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full font-mono border border-slate-700">7 Active</span>
+              </h3>
+              <p class="text-[11px] text-slate-400">Launch any server app with 1-click. URLs automatically resolve to your active IP (Tailscale or Wi-Fi).</p>
+            </div>
+
+            <!-- Categories Filter -->
+            <div id="toolFilters" class="flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5">
+              <button data-cat="all" class="tool-filter active px-2.5 py-1 rounded-lg text-xs font-semibold bg-blue-600 text-white transition">All</button>
+              <button data-cat="Core System" class="tool-filter px-2.5 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 transition">Core</button>
+              <button data-cat="Media Tools" class="tool-filter px-2.5 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 transition">Media</button>
+              <button data-cat="Trading & Bot" class="tool-filter px-2.5 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 transition">Trading</button>
+              <button data-cat="AI & Templates" class="tool-filter px-2.5 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 transition">AI</button>
+              <button data-cat="Automation" class="tool-filter px-2.5 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 transition">Automation</button>
+            </div>
+          </div>
+
+          <!-- DIRECT TOOLS GRID (Displayed right on page, no popup required!) -->
+          <div id="homeToolsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            <!-- Dynamic tool cards injected via JavaScript -->
+            <div class="col-span-full py-12 text-center text-slate-500">
+              <div class="w-8 h-8 mx-auto mb-2 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+              <p class="text-xs">Loading server tools...</p>
+            </div>
+          </div>
+
+          <!-- Network & Firewall Quick Assistance Card -->
+          <div class="rounded-2xl bg-slate-900/80 border border-slate-800 p-4 text-xs text-slate-300 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2 font-bold text-white">
+                <span>🛡️ Network Access & Firewall</span>
+              </div>
+              <span class="text-[10px] text-slate-400 font-mono">UFW Rule</span>
+            </div>
+            <p class="text-[11px] text-slate-400">
+              If accessing from a new device on Wi-Fi or Tailscale and direct ports are blocked, run this on your server terminal:
+            </p>
+            <div class="flex items-center justify-between gap-2 bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+              <code class="text-amber-300 font-mono text-[11px] select-all truncate">sudo ufw allow in on tailscale0 && sudo ufw allow from 192.168.1.0/24</code>
+              <button onclick="copyText('sudo ufw allow in on tailscale0 && sudo ufw allow from 192.168.1.0/24')" class="bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 text-xs px-2.5 py-1 rounded-lg transition font-medium flex-shrink-0">
+                Copy
+              </button>
+            </div>
+          </div>
+
+        </section>
+
+
+        <!-- ========================================== -->
+        <!-- PANEL 2: LAN TRANSIT HUB (FILE & TEXT RELAY) -->
+        <!-- ========================================== -->
+        <section id="panel-transit" class="panel-section max-w-4xl mx-auto space-y-3.5 hidden">
+          
+          <!-- Recipient / Target Selector -->
+          <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3 sm:p-4 shadow-lg">
+            <div class="flex items-center justify-between mb-2">
+              <label class="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                Send Target:
+              </label>
+              <span id="targetSelectedLabel" class="text-[11px] font-semibold text-blue-400 bg-blue-500/10 px-2.5 py-0.5 rounded-full border border-blue-500/20 truncate max-w-[200px]">
+                🌐 All Devices
+              </span>
+            </div>
+
+            <!-- Horizontal Pills Scroll -->
+            <div id="targetDevicesList" class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+              <button data-target="all" data-name="All Devices" class="target-btn active flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border bg-blue-600 text-white border-blue-500 shadow-sm whitespace-nowrap active:scale-95 transition">
+                <span>🌐</span>
+                <span>All Devices</span>
+                <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+              </button>
+            </div>
+          </section>
+
+          <!-- Unified Smart Composer -->
+          <section id="composerSection" class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 sm:p-4 shadow-lg flex flex-col gap-2.5 transition">
+            
+            <!-- Staged Files Preview Tray -->
+            <div id="selectedFilesContainer" class="hidden space-y-1.5">
+              <div class="flex items-center justify-between text-xs text-slate-400 font-medium">
+                <span>Attached Files (<span id="selectedFilesCount">0</span>):</span>
+                <button id="btnClearFiles" class="text-rose-400 hover:text-rose-300 font-semibold text-[11px] transition">Clear all</button>
+              </div>
+              <div id="selectedFilesList" class="max-h-36 overflow-y-auto space-y-1.5 pr-1"></div>
+            </div>
+
+            <!-- Upload Progress Indicator -->
+            <div id="uploadProgressContainer" class="hidden space-y-1">
+              <div class="flex justify-between text-[11px] text-slate-400">
+                <span id="uploadStatusText">Transferring data...</span>
+                <span id="uploadPercentText" class="font-mono font-bold text-blue-400">0%</span>
+              </div>
+              <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                <div id="uploadProgressBar" class="h-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all duration-150 w-0"></div>
+              </div>
+            </div>
+
+            <!-- Unified Text / Input Box -->
+            <div class="relative">
+              <textarea id="textInput" rows="2" placeholder="Type a message, paste a link, or drop files here..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition resize-none"></textarea>
+            </div>
+
+            <!-- Action Toolbar (Single Tap Actions) -->
+            <div class="flex items-center justify-between gap-2 pt-0.5">
+              
+              <!-- Left Shortcuts: Files, Camera, Paste -->
+              <div class="flex items-center gap-1.5 sm:gap-2">
+                <!-- File Attach Button -->
+                <input type="file" id="fileInput" multiple class="hidden">
+                <button id="btnAttachFile" class="flex items-center gap-1 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 text-xs font-semibold px-3 py-2 rounded-xl border border-slate-700 transition" title="Choose Files / Photos">
+                  <span class="text-sm">📁</span>
+                  <span class="hidden sm:inline">Files</span>
+                </button>
+
+                <!-- Camera Button (Mobile) -->
+                <input type="file" id="cameraInput" accept="image/*,video/*" capture="environment" class="hidden">
+                <button id="btnQuickCamera" class="flex items-center gap-1 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 text-xs font-semibold px-3 py-2 rounded-xl border border-slate-700 transition" title="Open Camera">
+                  <span class="text-sm">📸</span>
+                  <span class="hidden sm:inline">Camera</span>
+                </button>
+
+                <!-- Clipboard Paste Button -->
+                <button id="btnPasteText" class="flex items-center gap-1 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 text-xs font-semibold px-3 py-2 rounded-xl border border-slate-700 transition" title="Paste Clipboard">
+                  <span class="text-sm">📋</span>
+                  <span class="hidden sm:inline">Paste</span>
+                </button>
+              </div>
+
+              <!-- Right: Instant Send Button -->
+              <button id="btnSendMain" class="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-semibold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow-lg shadow-blue-600/30 transition">
+                <span>Send</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+              </button>
+
+            </div>
+
+            <!-- Quick Hint -->
+            <div class="flex items-center justify-between text-[10px] text-slate-500 px-0.5 pt-0.5">
+              <span>Tip: Press <strong>Ctrl+V</strong> anywhere to attach or paste</span>
+              <label class="flex items-center gap-1 cursor-pointer">
+                <input type="checkbox" id="chkAutoSendFiles" class="rounded accent-blue-600 w-3.5 h-3.5">
+                <span>Auto-send on file pick</span>
+              </label>
+            </div>
+
+          </section>
+
+          <!-- Inbox / Feed -->
+          <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 sm:p-4 shadow-lg flex-1 flex flex-col">
+            <div class="flex items-center justify-between gap-2 mb-3 pb-2.5 border-b border-slate-800">
+              <div class="flex items-center gap-2">
+                <h2 class="text-xs sm:text-sm font-bold text-white flex items-center gap-1.5">
+                  <span>📥 Feed</span>
+                  <span id="historyCountBadge" class="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.2 rounded-full border border-slate-700">0</span>
+                </h2>
+              </div>
+
+              <!-- Filter tabs & Clear -->
+              <div class="flex items-center gap-1.5">
+                <div class="flex items-center bg-slate-950 p-0.5 rounded-xl border border-slate-800 text-[11px]">
+                  <button data-filter="all" class="filter-btn active px-2.5 py-1 rounded-lg bg-blue-600 text-white font-medium transition">All</button>
+                  <button data-filter="media" class="filter-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">Media</button>
+                  <button data-filter="text" class="filter-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">Text</button>
+                  <button data-filter="file" class="filter-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">Files</button>
+                </div>
+                <button id="btnClearAllHistory" class="p-1.5 text-slate-500 hover:text-rose-400 transition" title="Clear all history">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Feed Container -->
+            <div id="historyList" class="space-y-3 flex-1 overflow-y-auto pr-0.5">
+              <div id="emptyHistoryPlaceholder" class="text-center py-12 text-slate-500">
+                <div class="w-10 h-10 mx-auto mb-2 text-slate-600">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                  </svg>
+                </div>
+                <p class="text-xs">No items transferred yet</p>
+                <p class="text-[11px] text-slate-600 mt-0.5">Sent or received files will instantly appear here</p>
+              </div>
+            </div>
+          </section>
+
+        </section>
+
+
+        <!-- ========================================== -->
+        <!-- PANEL 3: REDNOTE DOWNLOADER (EMBEDDED) -->
+        <!-- ========================================== -->
+        <section id="panel-rednote" class="panel-section max-w-5xl mx-auto h-[82vh] flex flex-col space-y-3 hidden">
+          
+          <div class="flex items-center justify-between gap-2 p-3 bg-slate-900/90 rounded-2xl border border-slate-800">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center font-bold text-base flex-shrink-0">
+                📕
+              </div>
+              <div>
+                <h3 class="text-xs sm:text-sm font-bold text-white">RedNote (Xiaohongshu) Downloader</h3>
+                <p class="text-[10px] text-slate-400">Integrated reverse proxy on Port 7777 (Firewall bypass)</p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              <button onclick="document.getElementById('rednoteFrame').src = '/rednote'" class="p-2 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 rounded-lg text-xs transition" title="Reload Frame">
+                🔄
+              </button>
+              <a href="/rednote" target="_blank" class="flex items-center gap-1 bg-rose-600 hover:bg-rose-500 active:scale-95 text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow transition">
+                <span>New Tab</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+              </a>
+            </div>
+          </div>
+
+          <div class="flex-1 w-full rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 shadow-2xl relative">
+            <iframe id="rednoteFrame" src="/rednote" class="w-full h-full border-0"></iframe>
+          </div>
+
+        </section>
+
+
+        <!-- ========================================== -->
+        <!-- PANEL 4: SETTINGS & QR CONNECT -->
+        <!-- ========================================== -->
+        <section id="panel-settings" class="panel-section max-w-2xl mx-auto space-y-4 hidden">
+          
+          <!-- Instant QR Connect Card -->
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center shadow-xl">
+            <h3 class="text-sm sm:text-base font-bold text-white mb-1">Instant QR Connect</h3>
+            <p class="text-xs text-slate-400 mb-3">Scan with your phone's camera to join this server portal</p>
+
+            <!-- Network Mode Switcher -->
+            <div id="qrNetworkSwitcher" class="inline-flex bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs mb-3">
+              <button id="btnQrLan" class="px-3 py-1 rounded-lg bg-blue-600 text-white font-medium transition">📶 Local Wi-Fi (LAN)</button>
+              <button id="btnQrTailscale" class="px-3 py-1 rounded-lg text-slate-400 hover:text-white font-medium transition hidden">🔒 Tailscale</button>
+            </div>
+            
+            <div class="bg-white p-2.5 rounded-xl inline-block shadow-inner mb-3">
+              <img id="qrImage" src="" alt="QR Code" class="w-48 h-48 sm:w-52 sm:h-52 object-contain">
+            </div>
+            
+            <p id="qrServerUrl" class="text-xs font-mono text-blue-400 bg-slate-950 p-2 rounded-lg border border-slate-800 break-all select-all"></p>
+          </div>
+
+          <!-- Device Profile Rename Card -->
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
+            <h3 class="text-sm sm:text-base font-bold text-white mb-1">Device Profile</h3>
+            <p class="text-xs text-slate-400 mb-3">Set how this device is displayed to others in the relay.</p>
+
+            <div class="flex items-center gap-2">
+              <input type="text" id="inputDeviceNameSettings" class="flex-1 bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-white focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="e.g. Johnny's iPhone">
+              <button id="btnSaveDeviceNameSettings" class="bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition">
+                Save
+              </button>
+            </div>
+          </div>
+
+          <!-- Auto-Receive Preferences Card -->
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-3">
+            <h3 class="text-base font-bold text-white mb-1">⚙️ Auto-Receive & Alerts</h3>
+            <p class="text-xs text-slate-400 mb-2">Configure how this device responds when data arrives</p>
+
+            <label class="flex items-start justify-between gap-3 p-3 bg-slate-950 rounded-xl border border-slate-800 cursor-pointer">
+              <div>
+                <p class="text-xs sm:text-sm font-semibold text-slate-200">⚡ Auto-Download Files (Zero-Click)</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">Silently downloads incoming files straight to Downloads without confirmation.</p>
+              </div>
+              <input type="checkbox" id="settingAutoDownload" class="mt-1 w-5 h-5 accent-blue-600 rounded">
+            </label>
+
+            <label class="flex items-start justify-between gap-3 p-3 bg-slate-950 rounded-xl border border-slate-800 cursor-pointer">
+              <div>
+                <p class="text-xs sm:text-sm font-semibold text-slate-200">📋 Auto-Copy Text to Clipboard</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">Automatically copies incoming texts, links, or OTPs to system clipboard.</p>
+              </div>
+              <input type="checkbox" id="settingAutoCopy" class="mt-1 w-5 h-5 accent-blue-600 rounded">
+            </label>
+
+            <label class="flex items-start justify-between gap-3 p-3 bg-slate-950 rounded-xl border border-slate-800 cursor-pointer">
+              <div>
+                <p class="text-xs sm:text-sm font-semibold text-slate-200">🔔 Sound Alert (Chime)</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">Plays a subtle chime when new data arrives.</p>
+              </div>
+              <input type="checkbox" id="settingSound" class="mt-1 w-5 h-5 accent-blue-600 rounded">
+            </label>
+
+            <label class="flex items-start justify-between gap-3 p-3 bg-slate-950 rounded-xl border border-slate-800 cursor-pointer">
+              <div>
+                <p class="text-xs sm:text-sm font-semibold text-slate-200">☀️ Keep Screen Awake</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">Prevents tablet or phone screen from sleeping (ideal for desk displays).</p>
+              </div>
+              <input type="checkbox" id="settingWakeLock" class="mt-1 w-5 h-5 accent-blue-600 rounded">
+            </label>
+          </div>
+
+          <!-- iOS PWA Tip -->
+          <div class="p-3.5 rounded-xl bg-blue-950/40 border border-blue-900/50 text-[11px] text-blue-300">
+            <p class="font-bold mb-0.5">🍏 Tip for iPhone / iPad:</p>
+            <p>Tap <strong>Share</strong> in Safari -> Select <strong>"Add to Home Screen"</strong> to run as a full-screen standalone native app.</p>
+          </div>
+
+        </section>
+
+      </main>
+
+      <!-- MOBILE BOTTOM NAVIGATION (Visible on < md screens) -->
+      <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-900/95 backdrop-blur-lg border-t border-slate-800 px-3 pt-1.5 pb-[max(env(safe-area-inset-bottom),0.6rem)] flex items-center justify-around shadow-2xl">
+        <button data-panel="home" class="mob-nav-btn active flex flex-col items-center gap-1 text-blue-500 font-bold text-[10px] px-3 py-1 transition">
+          <span class="text-lg">🏠</span>
+          <span>Home</span>
+        </button>
+
+        <button data-panel="transit" class="mob-nav-btn flex flex-col items-center gap-1 text-slate-400 font-medium text-[10px] px-3 py-1 transition">
+          <span class="text-lg">⚡</span>
+          <span>Transit</span>
+        </button>
+
+        <button data-panel="rednote" class="mob-nav-btn flex flex-col items-center gap-1 text-slate-400 font-medium text-[10px] px-3 py-1 transition">
+          <span class="text-lg">📕</span>
+          <span>RedNote</span>
+        </button>
+
+        <button data-panel="settings" class="mob-nav-btn flex flex-col items-center gap-1 text-slate-400 font-medium text-[10px] px-3 py-1 transition">
+          <span class="text-lg">⚙️</span>
+          <span>Settings</span>
+        </button>
+      </nav>
 
     </div>
-  </header>
-
-  <!-- MAIN CONTAINER -->
-  <main class="max-w-4xl mx-auto w-full px-3 py-3 sm:py-5 flex-1 flex flex-col gap-3.5">
-
-    <!-- RECIPIENT / TARGET SELECTOR -->
-    <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3 sm:p-4 shadow-lg">
-      <div class="flex items-center justify-between mb-2">
-        <label class="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-          <svg class="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-          </svg>
-          Send Target:
-        </label>
-        <span id="targetSelectedLabel" class="text-[11px] font-semibold text-blue-400 bg-blue-500/10 px-2.5 py-0.5 rounded-full border border-blue-500/20 truncate max-w-[200px]">
-          🌐 All Devices
-        </span>
-      </div>
-
-      <!-- Horizontal Pills Scroll -->
-      <div id="targetDevicesList" class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
-        <button data-target="all" data-name="All Devices" class="target-btn active flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border bg-blue-600 text-white border-blue-500 shadow-sm whitespace-nowrap active:scale-95 transition">
-          <span>🌐</span>
-          <span>All Devices</span>
-          <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
-        </button>
-      </div>
-    </section>
-
-    <!-- UNIFIED SMART COMPOSER (Send Text, Photos, Videos & Files in One Place) -->
-    <section id="composerSection" class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 sm:p-4 shadow-lg flex flex-col gap-2.5 transition">
-      
-      <!-- Staged Files Preview Tray -->
-      <div id="selectedFilesContainer" class="hidden space-y-1.5">
-        <div class="flex items-center justify-between text-xs text-slate-400 font-medium">
-          <span>Attached Files (<span id="selectedFilesCount">0</span>):</span>
-          <button id="btnClearFiles" class="text-rose-400 hover:text-rose-300 font-semibold text-[11px] transition">Clear all</button>
-        </div>
-        <div id="selectedFilesList" class="max-h-36 overflow-y-auto space-y-1.5 pr-1"></div>
-      </div>
-
-      <!-- Upload Progress Indicator -->
-      <div id="uploadProgressContainer" class="hidden space-y-1">
-        <div class="flex justify-between text-[11px] text-slate-400">
-          <span id="uploadStatusText">Transferring data...</span>
-          <span id="uploadPercentText" class="font-mono font-bold text-blue-400">0%</span>
-        </div>
-        <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-          <div id="uploadProgressBar" class="h-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all duration-150 w-0"></div>
-        </div>
-      </div>
-
-      <!-- Unified Text / Input Box -->
-      <div class="relative">
-        <textarea id="textInput" rows="2" placeholder="Type a message, paste a link, or drop files here..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition resize-none"></textarea>
-      </div>
-
-      <!-- Action Toolbar (Single Tap Actions) -->
-      <div class="flex items-center justify-between gap-2 pt-0.5">
-        
-        <!-- Left Shortcuts: Files, Camera, Paste -->
-        <div class="flex items-center gap-1.5 sm:gap-2">
-          <!-- File Attach Button -->
-          <input type="file" id="fileInput" multiple class="hidden">
-          <button id="btnAttachFile" class="flex items-center gap-1 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 text-xs font-semibold px-3 py-2 rounded-xl border border-slate-700 transition" title="Choose Files / Photos">
-            <span class="text-sm">📁</span>
-            <span class="hidden sm:inline">Files</span>
-          </button>
-
-          <!-- Camera Button (Mobile) -->
-          <input type="file" id="cameraInput" accept="image/*,video/*" capture="environment" class="hidden">
-          <button id="btnQuickCamera" class="flex items-center gap-1 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 text-xs font-semibold px-3 py-2 rounded-xl border border-slate-700 transition" title="Open Camera">
-            <span class="text-sm">📸</span>
-            <span class="hidden sm:inline">Camera</span>
-          </button>
-
-          <!-- Clipboard Paste Button -->
-          <button id="btnPasteText" class="flex items-center gap-1 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 text-xs font-semibold px-3 py-2 rounded-xl border border-slate-700 transition" title="Paste Clipboard">
-            <span class="text-sm">📋</span>
-            <span class="hidden sm:inline">Paste</span>
-          </button>
-        </div>
-
-        <!-- Right: Instant Send Button -->
-        <button id="btnSendMain" class="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-semibold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow-lg shadow-blue-600/30 transition">
-          <span>Send</span>
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-          </svg>
-        </button>
-
-      </div>
-
-      <!-- Quick Hint -->
-      <div class="flex items-center justify-between text-[10px] text-slate-500 px-0.5 pt-0.5">
-        <span>Tip: Press <strong>Ctrl+V</strong> anywhere to attach or paste</span>
-        <label class="flex items-center gap-1 cursor-pointer">
-          <input type="checkbox" id="chkAutoSendFiles" class="rounded accent-blue-600 w-3.5 h-3.5">
-          <span>Auto-send on file pick</span>
-        </label>
-      </div>
-
-    </section>
-
-    <!-- INBOX / FEED -->
-    <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 sm:p-4 shadow-lg flex-1 flex flex-col">
-      <div class="flex items-center justify-between gap-2 mb-3 pb-2.5 border-b border-slate-800">
-        <div class="flex items-center gap-2">
-          <h2 class="text-xs sm:text-sm font-bold text-white flex items-center gap-1.5">
-            <span>📥 Feed</span>
-            <span id="historyCountBadge" class="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.2 rounded-full border border-slate-700">0</span>
-          </h2>
-        </div>
-
-        <!-- Filter tabs & Clear -->
-        <div class="flex items-center gap-1.5">
-          <div class="flex items-center bg-slate-950 p-0.5 rounded-xl border border-slate-800 text-[11px]">
-            <button data-filter="all" class="filter-btn active px-2.5 py-1 rounded-lg bg-blue-600 text-white font-medium transition">All</button>
-            <button data-filter="media" class="filter-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">Media</button>
-            <button data-filter="text" class="filter-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">Text</button>
-            <button data-filter="file" class="filter-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">Files</button>
-          </div>
-          <button id="btnClearAllHistory" class="p-1.5 text-slate-500 hover:text-rose-400 transition" title="Clear all history">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      <!-- Feed Container -->
-      <div id="historyList" class="space-y-3 flex-1 overflow-y-auto pr-0.5">
-        <div id="emptyHistoryPlaceholder" class="text-center py-12 text-slate-500">
-          <div class="w-10 h-10 mx-auto mb-2 text-slate-600">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-            </svg>
-          </div>
-          <p class="text-xs">No items transferred yet</p>
-          <p class="text-[11px] text-slate-600 mt-0.5">Sent or received files will instantly appear here</p>
-        </div>
-      </div>
-    </section>
-
-  </main>
+  </div>
 
   <!-- IMAGE LIGHTBOX MODAL (Click to Zoom & Fullscreen Preview) -->
   <div id="lightboxModal" class="fixed inset-0 bg-black/95 z-50 flex flex-col justify-between hidden transition-opacity duration-200">
-    <!-- Header -->
     <div class="flex items-center justify-between p-3.5 bg-gradient-to-b from-black/90 to-transparent z-10">
       <div class="min-w-0 pr-3">
         <p id="lightboxFilename" class="text-xs sm:text-sm font-semibold text-white truncate">image.jpg</p>
@@ -283,96 +571,16 @@
       </div>
     </div>
 
-    <!-- Center Image -->
     <div id="lightboxBackdrop" class="flex-1 flex items-center justify-center p-2 overflow-hidden cursor-zoom-out relative">
       <img id="lightboxImage" src="" alt="Preview" class="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl transition-transform duration-200 select-none">
     </div>
 
-    <!-- Footer Hint -->
     <div class="p-2.5 text-center text-[11px] text-slate-400 bg-gradient-to-t from-black/90 to-transparent">
       Tap image to zoom in/out • Tap background or X to close
     </div>
   </div>
 
-  <!-- QR CODE MODAL -->
-  <div id="qrModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-5 text-center shadow-2xl relative">
-      <button id="btnCloseQr" class="absolute top-4 right-4 text-slate-400 hover:text-white p-1">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-      <h3 class="text-sm sm:text-base font-bold text-white mb-1">Instant QR Connect</h3>
-      <p class="text-xs text-slate-400 mb-3">Scan with your phone's camera to join the hub</p>
-
-      <!-- Network Mode Switcher -->
-      <div id="qrNetworkSwitcher" class="inline-flex bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs mb-3">
-        <button id="btnQrLan" class="px-3 py-1 rounded-lg bg-blue-600 text-white font-medium transition">📶 Local Wi-Fi (LAN)</button>
-        <button id="btnQrTailscale" class="px-3 py-1 rounded-lg text-slate-400 hover:text-white font-medium transition hidden">🔒 Tailscale</button>
-      </div>
-      
-      <div class="bg-white p-2.5 rounded-xl inline-block shadow-inner mb-3">
-        <img id="qrImage" src="" alt="QR Code" class="w-48 h-48 sm:w-52 sm:h-52 object-contain">
-      </div>
-      
-      <p id="qrServerUrl" class="text-xs font-mono text-blue-400 bg-slate-950 p-2 rounded-lg border border-slate-800 break-all select-all"></p>
-    </div>
-  </div>
-
-  <!-- SETTINGS MODAL -->
-  <div id="settingsModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl relative">
-      <button id="btnCloseSettings" class="absolute top-4 right-4 text-slate-400 hover:text-white p-1">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-
-      <h3 class="text-base font-bold text-white mb-1">⚙️ Auto-Receive & Alerts</h3>
-      <p class="text-xs text-slate-400 mb-4">Configure how this device responds when data arrives</p>
-
-      <div class="space-y-3">
-        <label class="flex items-start justify-between gap-3 p-3 bg-slate-950 rounded-xl border border-slate-800 cursor-pointer">
-          <div>
-            <p class="text-xs sm:text-sm font-semibold text-slate-200">⚡ Auto-Download Files (Zero-Click)</p>
-            <p class="text-[11px] text-slate-400 mt-0.5">Silently downloads incoming files straight to Downloads without confirmation.</p>
-          </div>
-          <input type="checkbox" id="settingAutoDownload" class="mt-1 w-5 h-5 accent-blue-600 rounded">
-        </label>
-
-        <label class="flex items-start justify-between gap-3 p-3 bg-slate-950 rounded-xl border border-slate-800 cursor-pointer">
-          <div>
-            <p class="text-xs sm:text-sm font-semibold text-slate-200">📋 Auto-Copy Text to Clipboard</p>
-            <p class="text-[11px] text-slate-400 mt-0.5">Automatically copies incoming texts, links, or OTPs to system clipboard.</p>
-          </div>
-          <input type="checkbox" id="settingAutoCopy" class="mt-1 w-5 h-5 accent-blue-600 rounded">
-        </label>
-
-        <label class="flex items-start justify-between gap-3 p-3 bg-slate-950 rounded-xl border border-slate-800 cursor-pointer">
-          <div>
-            <p class="text-xs sm:text-sm font-semibold text-slate-200">🔔 Sound Alert (Chime)</p>
-            <p class="text-[11px] text-slate-400 mt-0.5">Plays a subtle chime when new data arrives.</p>
-          </div>
-          <input type="checkbox" id="settingSound" class="mt-1 w-5 h-5 accent-blue-600 rounded">
-        </label>
-
-        <label class="flex items-start justify-between gap-3 p-3 bg-slate-950 rounded-xl border border-slate-800 cursor-pointer">
-          <div>
-            <p class="text-xs sm:text-sm font-semibold text-slate-200">☀️ Keep Screen Awake</p>
-            <p class="text-[11px] text-slate-400 mt-0.5">Prevents tablet or phone screen from sleeping (ideal for desk displays).</p>
-          </div>
-          <input type="checkbox" id="settingWakeLock" class="mt-1 w-5 h-5 accent-blue-600 rounded">
-        </label>
-      </div>
-
-      <div class="mt-4 p-3 rounded-xl bg-blue-950/40 border border-blue-900/50 text-[11px] text-blue-300">
-        <p class="font-bold mb-0.5">🍏 Tip for iPhone / iPad:</p>
-        <p>Tap <strong>Share</strong> in Safari -> Select <strong>"Add to Home Screen"</strong> to run as a full-screen standalone native app.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- DEVICE RENAME MODAL -->
+  <!-- DEVICE RENAME QUICK MODAL -->
   <div id="renameModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-5 shadow-2xl relative">
       <h3 class="text-sm sm:text-base font-bold text-white mb-1">Rename This Device</h3>
@@ -387,46 +595,15 @@
     </div>
   </div>
 
-  <!-- SERVER TOOLS & APPS MODAL -->
-  <div id="serverToolsModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4 hidden">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-4 sm:p-6 shadow-2xl relative max-h-[90vh] flex flex-col">
-      <button id="btnCloseServerTools" class="absolute top-4 right-4 text-slate-400 hover:text-white p-1">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-
-      <div class="flex items-center gap-2.5 mb-1">
-        <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold text-base">
-          🎛️
-        </div>
-        <div>
-          <h3 class="text-base font-bold text-white leading-tight">Server Apps & Tools</h3>
-          <p class="text-xs text-slate-400">Services running on your PC Server</p>
-        </div>
-      </div>
-
-      <!-- Tools List Container -->
-      <div id="serverToolsList" class="space-y-2.5 my-3.5 flex-1 overflow-y-auto pr-1"></div>
-
-      <!-- Quick Firewall Note -->
-      <div class="p-2.5 bg-slate-950 rounded-xl border border-slate-800 text-[11px] text-slate-400 flex items-center justify-between gap-2">
-        <span class="truncate">Allow all tools on Wi-Fi: <code class="text-amber-300 font-mono">sudo ufw allow from 192.168.1.0/24</code></span>
-        <button onclick="copyText('sudo ufw allow from 192.168.1.0/24')" class="text-xs bg-slate-800 hover:bg-slate-700 px-2 py-1 rounded text-slate-300 flex-shrink-0 font-medium">Copy</button>
-      </div>
-    </div>
-  </div>
-
   <!-- FIRST VISIT / ONBOARDING PERMISSION MODAL -->
   <div id="welcomePermissionModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-slate-900 border border-slate-700/80 rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl relative text-left">
-      <!-- Header -->
       <div class="flex items-center gap-3 mb-3">
         <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-500 to-indigo-500 flex items-center justify-center text-xl shadow-lg shadow-blue-500/30 flex-shrink-0">
           🚀
         </div>
         <div>
-          <h3 class="text-base sm:text-lg font-bold text-white leading-tight">Welcome to LAN Transit!</h3>
+          <h3 class="text-base sm:text-lg font-bold text-white leading-tight">Welcome to Server Portal!</h3>
           <p class="text-xs text-slate-400">One-time setup for zero-click transfers</p>
         </div>
       </div>
@@ -435,7 +612,6 @@
         Grant permissions once so this device can receive files, text, and alerts seamlessly:
       </p>
 
-      <!-- Permissions List -->
       <div class="space-y-2.5 mb-5 text-xs">
         <div class="flex items-start gap-3 p-2.5 bg-slate-950/80 rounded-xl border border-slate-800">
           <span class="text-base">🔔</span>
@@ -470,7 +646,6 @@
         </div>
       </div>
 
-      <!-- Action Buttons -->
       <div class="flex flex-col gap-2">
         <button id="btnGrantAllPermissions" class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-95 text-white font-semibold text-xs sm:text-sm py-3 rounded-xl shadow-lg shadow-blue-500/25 transition">
           <span>Enable All & Get Started</span>
@@ -486,9 +661,10 @@
   <!-- TOAST NOTIFICATION CONTAINER -->
   <div id="toastContainer" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4"></div>
 
-  <!-- APPLICATION LOGIC -->
+  <!-- APPLICATION JAVASCRIPT LOGIC -->
   <script>
     // State
+    let currentTab = 'home';
     let myDevice = {
       id: localStorage.getItem('lan_hub_device_id') || 'dev-' + Math.random().toString(36).substr(2, 9),
       name: localStorage.getItem('lan_hub_device_name') || detectDeviceName(),
@@ -508,11 +684,13 @@
 
     let onlineDevices = [];
     let historyItems = [];
+    let serverTools = [];
+    let serverInfo = null;
     let ws = null;
     let wakeLockSentinel = null;
     let selectedFiles = [];
 
-    // Device Helpers
+    // Helper functions
     function detectDeviceType() {
       const ua = navigator.userAgent;
       if (/iPad|Tablet/i.test(ua)) return 'tablet';
@@ -542,7 +720,7 @@
       return '📱';
     }
 
-    // Audio Feedback (Web Audio API Synthesizer)
+    // Audio Feedback
     function playChime() {
       if (!settings.sound) return;
       try {
@@ -611,7 +789,7 @@
       }, 4000);
     }
 
-    // Screen WakeLock
+    // WakeLock
     async function updateWakeLock() {
       if ('wakeLock' in navigator && settings.wakeLock) {
         try {
@@ -625,6 +803,168 @@
       }
     }
 
+    // Navigation & Tab Switching
+    function switchTab(tabId) {
+      currentTab = tabId;
+      window.location.hash = tabId;
+
+      // Update Panel visibility
+      document.querySelectorAll('.panel-section').forEach(p => p.classList.add('hidden'));
+      const activePanel = document.getElementById(`panel-${tabId}`);
+      if (activePanel) activePanel.classList.remove('hidden');
+
+      // Update Desktop Sidebar active styling
+      document.querySelectorAll('#desktopNav .nav-item').forEach(btn => {
+        const isCurrent = btn.dataset.panel === tabId;
+        if (isCurrent) {
+          btn.className = 'nav-item active w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition bg-blue-600 text-white shadow-md shadow-blue-600/20';
+        } else {
+          btn.className = 'nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/70 transition';
+        }
+      });
+
+      // Update Mobile Bottom Nav active styling
+      document.querySelectorAll('.mob-nav-btn').forEach(btn => {
+        const isCurrent = btn.dataset.panel === tabId;
+        if (isCurrent) {
+          btn.className = 'mob-nav-btn active flex flex-col items-center gap-1 text-blue-500 font-bold text-[10px] px-3 py-1 transition';
+        } else {
+          btn.className = 'mob-nav-btn flex flex-col items-center gap-1 text-slate-400 font-medium text-[10px] px-3 py-1 transition';
+        }
+      });
+
+      // Update Top Bar titles
+      const titles = {
+        home: { title: 'Home Dashboard', icon: '🏠' },
+        transit: { title: 'LAN Transit Hub', icon: '⚡' },
+        rednote: { title: 'RedNote Downloader', icon: '📕' },
+        settings: { title: 'Settings & QR Connect', icon: '⚙️' }
+      };
+
+      const meta = titles[tabId] || titles.home;
+      document.getElementById('topBarTitle').textContent = meta.title;
+      document.getElementById('topBarIcon').textContent = meta.icon;
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Calculate dynamic tool link using current hostname
+    function getDynamicToolUrl(tool) {
+      if (tool.id === 'lan-transit') return '#transit';
+      if (tool.id === 'rednote') return '/rednote';
+      const host = window.location.hostname;
+      const protocol = window.location.protocol;
+      return `${protocol}//${host}:${tool.port}${tool.path || ''}`;
+    }
+
+    // Load & Render Server Tools directly on Home Dashboard
+    async function loadServerTools() {
+      try {
+        const res = await fetch('/api/server-tools');
+        serverTools = await res.json();
+        renderServerTools();
+      } catch (e) {
+        console.error('Failed to load tools:', e);
+      }
+    }
+
+    function renderServerTools() {
+      const grid = document.getElementById('homeToolsGrid');
+      const activeCat = document.querySelector('.tool-filter.active')?.dataset.cat || 'all';
+      
+      let filtered = serverTools;
+      if (activeCat !== 'all') {
+        filtered = serverTools.filter(t => t.category === activeCat);
+      }
+
+      document.getElementById('sidebarToolsCount').textContent = serverTools.length;
+      document.getElementById('toolsLiveBadge').textContent = `${serverTools.filter(t => t.status === 'online').length} of ${serverTools.length} Online`;
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full py-12 text-center text-slate-500">
+            <p class="text-xs">No tools in this category</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = '';
+      filtered.forEach(tool => {
+        const isOnline = tool.status === 'online';
+        const dynamicUrl = getDynamicToolUrl(tool);
+        const isInternalTransit = tool.id === 'lan-transit';
+        const isRedNote = tool.id === 'rednote';
+
+        const card = document.createElement('div');
+        card.className = 'group relative rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-slate-700/90 p-4 shadow-lg flex flex-col justify-between transition-all duration-150 hover:-translate-y-0.5';
+
+        card.innerHTML = `
+          <div>
+            <!-- Top Badges & Status -->
+            <div class="flex items-center justify-between gap-2 mb-3">
+              <div class="w-11 h-11 rounded-xl bg-slate-800 border border-slate-700/60 flex items-center justify-center text-2xl shadow-inner flex-shrink-0 group-hover:scale-105 transition">
+                ${tool.icon}
+              </div>
+              <div class="flex items-center gap-1.5 flex-wrap justify-end">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono font-medium ${isOnline ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-slate-800 text-slate-400 border border-slate-700'}">
+                  <span class="w-1.5 h-1.5 mr-1 rounded-full ${isOnline ? 'bg-emerald-400 animate-pulse' : 'bg-slate-500'}"></span>
+                  ${isOnline ? 'Online' : 'Offline'}
+                </span>
+                <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full font-mono border border-slate-700">
+                  :${tool.port}
+                </span>
+              </div>
+            </div>
+
+            <!-- Title & Description -->
+            <div class="mb-3">
+              <div class="flex items-center gap-1.5">
+                <h4 class="font-bold text-sm sm:text-base text-white tracking-tight">${tool.name}</h4>
+              </div>
+              <p class="text-[10px] font-semibold text-blue-400 uppercase tracking-wider mt-0.5">${tool.category}</p>
+              <p class="text-xs text-slate-400 mt-1 line-clamp-2 leading-relaxed">${tool.description}</p>
+            </div>
+          </div>
+
+          <!-- Bottom Action Buttons & Dynamic Link -->
+          <div class="space-y-2 pt-2 border-t border-slate-800/80">
+            <!-- Dynamic URL Pill -->
+            <div class="flex items-center justify-between text-[11px] text-slate-500 font-mono bg-slate-950 px-2.5 py-1.5 rounded-lg border border-slate-800/80">
+              <span class="truncate pr-1">${dynamicUrl}</span>
+              <button onclick="copyText('${dynamicUrl}')" class="text-slate-400 hover:text-white transition flex-shrink-0" title="Copy URL">
+                📋
+              </button>
+            </div>
+
+            <!-- Main Launch Button -->
+            <div class="flex items-center gap-2">
+              ${isInternalTransit ? `
+                <button onclick="switchTab('transit')" class="flex-1 flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-semibold text-xs py-2 px-3 rounded-xl shadow-md shadow-blue-600/25 transition">
+                  <span>Open Transit Hub</span>
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                </button>
+              ` : isRedNote ? `
+                <button onclick="switchTab('rednote')" class="flex-1 flex items-center justify-center gap-1 bg-rose-600 hover:bg-rose-500 active:scale-95 text-white font-semibold text-xs py-2 px-2.5 rounded-xl shadow-md transition">
+                  <span>Open in Hub</span>
+                </button>
+                <a href="${dynamicUrl}" target="_blank" class="flex items-center justify-center gap-1 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 font-semibold text-xs py-2 px-2.5 rounded-xl border border-slate-700 transition">
+                  <span>Tab ↗</span>
+                </a>
+              ` : `
+                <a href="${dynamicUrl}" target="_blank" class="flex-1 flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-semibold text-xs py-2 px-3 rounded-xl shadow-md shadow-blue-600/25 transition">
+                  <span>Launch App</span>
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                </a>
+              `}
+            </div>
+          </div>
+        `;
+
+        grid.appendChild(card);
+      });
+    }
+
     // WebSocket Client
     function connectWebSocket() {
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -632,11 +972,15 @@
       ws = new WebSocket(wsUrl);
 
       ws.onopen = () => {
-        document.getElementById('connectionBadge').innerHTML = `
-          <span class="w-1.5 h-1.5 mr-1 rounded-full bg-emerald-400 animate-pulse"></span>
-          Online
-        `;
+        const badgeHtml = '<span class="w-1.5 h-1.5 mr-1 rounded-full bg-emerald-400 animate-pulse"></span>Online';
+        document.getElementById('connectionBadge').innerHTML = badgeHtml;
         document.getElementById('connectionBadge').className = 'inline-flex items-center px-1.5 py-0.2 rounded-full text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+        
+        const deskBadge = document.getElementById('connectionBadgeDesktop');
+        if (deskBadge) {
+          deskBadge.innerHTML = badgeHtml;
+          deskBadge.className = 'inline-flex items-center px-1.5 py-0.2 rounded-full text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+        }
 
         ws.send(JSON.stringify({
           type: 'register',
@@ -663,11 +1007,15 @@
       };
 
       ws.onclose = () => {
-        document.getElementById('connectionBadge').innerHTML = `
-          <span class="w-1.5 h-1.5 mr-1 rounded-full bg-rose-400"></span>
-          Offline
-        `;
+        const badgeHtml = '<span class="w-1.5 h-1.5 mr-1 rounded-full bg-rose-400"></span>Offline';
+        document.getElementById('connectionBadge').innerHTML = badgeHtml;
         document.getElementById('connectionBadge').className = 'inline-flex items-center px-1.5 py-0.2 rounded-full text-[10px] font-medium bg-rose-500/10 text-rose-400 border border-rose-500/20';
+        
+        const deskBadge = document.getElementById('connectionBadgeDesktop');
+        if (deskBadge) {
+          deskBadge.innerHTML = badgeHtml;
+          deskBadge.className = 'inline-flex items-center px-1.5 py-0.2 rounded-full text-[10px] font-medium bg-rose-500/10 text-rose-400 border border-rose-500/20';
+        }
         setTimeout(connectWebSocket, 2500);
       };
 
@@ -727,7 +1075,6 @@
 
       playChime();
 
-      // Trigger native desktop / mobile notification if allowed
       if ('Notification' in window && Notification.permission === 'granted') {
         try {
           const notifTitle = `From ${item.senderName}`;
@@ -847,7 +1194,6 @@
         let contentHtml = '';
 
         if (item.contentType === 'text') {
-          // Tap text to copy immediately
           contentHtml = `
             <div onclick="copyText('${escapeHtml(item.text).replace(/'/g, "\\'")}', this)" class="cursor-pointer group relative text-xs sm:text-sm text-slate-200 whitespace-pre-wrap break-words bg-slate-900/60 hover:bg-slate-900 active:bg-blue-950/30 p-2.5 rounded-lg border border-slate-800/50 transition">
               ${linkify(escapeHtml(item.text))}
@@ -897,7 +1243,6 @@
             </div>
           `;
         } else {
-          // File / Document
           contentHtml = `
             <div class="flex items-center justify-between gap-2.5 bg-slate-900/60 p-2.5 rounded-xl border border-slate-800/60">
               <div class="flex items-center gap-2.5 overflow-hidden">
@@ -1055,7 +1400,6 @@
       updateSelectedFilesUI();
     }
 
-    // Helpers
     function formatFileSize(bytes) {
       if (!bytes || bytes === 0) return '0 B';
       const k = 1024;
@@ -1103,23 +1447,69 @@
       });
     };
 
-    // DOM Setup
-    document.addEventListener('DOMContentLoaded', async () => {
-      document.getElementById('myDeviceName').textContent = myDevice.name;
-      document.getElementById('myDeviceIcon').textContent = getDeviceEmoji(myDevice.type, myDevice.name);
+    // Update Device Name in all UI elements
+    function setDeviceName(newName) {
+      myDevice.name = newName;
+      localStorage.setItem('lan_hub_device_name', newName);
+      
+      const emoji = getDeviceEmoji(myDevice.type, newName);
+      document.getElementById('myDeviceName').textContent = newName;
+      document.getElementById('myDeviceIcon').textContent = emoji;
+      
+      const nameSidebar = document.getElementById('myDeviceNameSidebar');
+      const iconSidebar = document.getElementById('myDeviceIconSidebar');
+      if (nameSidebar) nameSidebar.textContent = newName;
+      if (iconSidebar) iconSidebar.textContent = emoji;
 
-      // Server Info
+      const inputSet = document.getElementById('inputDeviceNameSettings');
+      if (inputSet) inputSet.value = newName;
+
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          type: 'register',
+          deviceId: myDevice.id,
+          name: myDevice.name,
+          deviceType: myDevice.type
+        }));
+      }
+    }
+
+    // App Initialization
+    document.addEventListener('DOMContentLoaded', async () => {
+      setDeviceName(myDevice.name);
+
+      // Bind Sidebar Navigation
+      document.querySelectorAll('#desktopNav .nav-item').forEach(btn => {
+        btn.onclick = () => switchTab(btn.dataset.panel);
+      });
+
+      // Bind Mobile Bottom Navigation
+      document.querySelectorAll('.mob-nav-btn').forEach(btn => {
+        btn.onclick = () => switchTab(btn.dataset.panel);
+      });
+
+      // Hash route listener
+      window.addEventListener('hashchange', () => {
+        const hash = window.location.hash.replace('#', '') || 'home';
+        if (['home', 'transit', 'rednote', 'settings'].includes(hash)) {
+          switchTab(hash);
+        }
+      });
+
+      // Load Server Information
       try {
         const infoRes = await fetch('/api/info');
-        const info = await infoRes.json();
+        serverInfo = await infoRes.json();
         const isCurrentTailscale = window.location.hostname.startsWith('100.') || window.location.hostname === 'homesever';
-        const displayUrl = (isCurrentTailscale && info.tailscaleUrl) ? info.tailscaleUrl : info.serverUrl;
+        const displayUrl = (isCurrentTailscale && serverInfo.tailscaleUrl) ? serverInfo.tailscaleUrl : serverInfo.serverUrl;
         
         document.getElementById('serverIpLabel').textContent = displayUrl;
-        document.getElementById('qrImage').src = (isCurrentTailscale && info.qrTailscale) ? info.qrTailscale : info.qrCode;
+        document.getElementById('sidebarHostTag').textContent = displayUrl;
+        document.getElementById('homeGatewayBadge').textContent = `Host: ${window.location.host}`;
+        document.getElementById('qrImage').src = (isCurrentTailscale && serverInfo.qrTailscale) ? serverInfo.qrTailscale : serverInfo.qrCode;
         document.getElementById('qrServerUrl').textContent = displayUrl;
 
-        if (info.tailscaleUrl) {
+        if (serverInfo.tailscaleUrl) {
           const btnTs = document.getElementById('btnQrTailscale');
           const btnLan = document.getElementById('btnQrLan');
           btnTs.classList.remove('hidden');
@@ -1127,22 +1517,24 @@
           btnLan.onclick = () => {
             btnLan.className = 'px-3 py-1 rounded-lg bg-blue-600 text-white font-medium transition';
             btnTs.className = 'px-3 py-1 rounded-lg text-slate-400 hover:text-white font-medium transition';
-            document.getElementById('qrImage').src = info.qrCode;
-            document.getElementById('qrServerUrl').textContent = info.serverUrl;
+            document.getElementById('qrImage').src = serverInfo.qrCode;
+            document.getElementById('qrServerUrl').textContent = serverInfo.serverUrl;
           };
 
           btnTs.onclick = () => {
             btnTs.className = 'px-3 py-1 rounded-lg bg-blue-600 text-white font-medium transition';
             btnLan.className = 'px-3 py-1 rounded-lg text-slate-400 hover:text-white font-medium transition';
-            document.getElementById('qrImage').src = info.qrTailscale;
-            document.getElementById('qrServerUrl').textContent = info.tailscaleUrl;
+            document.getElementById('qrImage').src = serverInfo.qrTailscale;
+            document.getElementById('qrServerUrl').textContent = serverInfo.tailscaleUrl;
           };
 
           if (isCurrentTailscale) btnTs.click();
         }
       } catch (e) {}
 
-      // History
+      // Load Tools and History
+      await loadServerTools();
+
       try {
         const histRes = await fetch('/api/history');
         historyItems = await histRes.json();
@@ -1151,10 +1543,19 @@
 
       connectWebSocket();
 
-      // Main Send Button
-      document.getElementById('btnSendMain').onclick = sendData;
+      // Tool category filtering
+      document.querySelectorAll('#toolFilters .tool-filter').forEach(btn => {
+        btn.onclick = () => {
+          document.querySelectorAll('#toolFilters .tool-filter').forEach(b => {
+            b.className = 'tool-filter px-2.5 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 transition';
+          });
+          btn.className = 'tool-filter active px-2.5 py-1 rounded-lg text-xs font-semibold bg-blue-600 text-white transition';
+          renderServerTools();
+        };
+      });
 
-      // Text input Enter shortcut (Ctrl+Enter or Cmd+Enter)
+      // Send & Composer events
+      document.getElementById('btnSendMain').onclick = sendData;
       document.getElementById('textInput').addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
           e.preventDefault();
@@ -1162,7 +1563,6 @@
         }
       });
 
-      // Paste button in toolbar
       document.getElementById('btnPasteText').onclick = async () => {
         try {
           const t = await navigator.clipboard.readText();
@@ -1176,7 +1576,6 @@
         }
       };
 
-      // File Inputs
       const fileInput = document.getElementById('fileInput');
       const cameraInput = document.getElementById('cameraInput');
 
@@ -1210,7 +1609,7 @@
         updateSelectedFilesUI();
       };
 
-      // Global Drag and Drop on Composer
+      // Drag & Drop on Composer
       const composer = document.getElementById('composerSection');
       composer.ondragover = (e) => {
         e.preventDefault();
@@ -1255,7 +1654,7 @@
         localStorage.setItem('lan_hub_auto_send_files', e.target.checked);
       };
 
-      // Filter tabs
+      // Feed Filter tabs
       document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.onclick = () => {
           document.querySelectorAll('.filter-btn').forEach(b => {
@@ -1266,25 +1665,20 @@
         };
       });
 
-      // Clear all feed
+      // Clear Feed
       document.getElementById('btnClearAllHistory').onclick = async () => {
         if (confirm('Are you sure you want to clear all feed items and stored files on the server?')) {
           await fetch('/api/history', { method: 'DELETE' });
         }
       };
 
-      // Modals
-      const qrModal = document.getElementById('qrModal');
-      document.getElementById('btnShowQr').onclick = () => qrModal.classList.remove('hidden');
-      document.getElementById('btnCloseQr').onclick = () => qrModal.classList.add('hidden');
-      qrModal.onclick = (e) => { if (e.target === qrModal) qrModal.classList.add('hidden'); };
+      // Target All button
+      document.querySelector('[data-target="all"]').onclick = () => selectTarget('all', 'All Devices');
 
-      const settingsModal = document.getElementById('settingsModal');
-      document.getElementById('btnSettings').onclick = () => settingsModal.classList.remove('hidden');
-      document.getElementById('btnCloseSettings').onclick = () => settingsModal.classList.add('hidden');
-      settingsModal.onclick = (e) => { if (e.target === settingsModal) settingsModal.classList.add('hidden'); };
+      // Top Bar QR Shortcut -> switches to Settings Tab
+      document.getElementById('btnShowQr').onclick = () => switchTab('settings');
 
-      // Settings State
+      // Settings Card Toggles
       const setAutoDl = document.getElementById('settingAutoDownload');
       const setAutoCp = document.getElementById('settingAutoCopy');
       const setSound = document.getElementById('settingSound');
@@ -1316,30 +1710,33 @@
         updateWakeLock();
       };
 
-      // Rename Modal
+      // Settings Device Rename
+      document.getElementById('btnSaveDeviceNameSettings').onclick = () => {
+        const val = document.getElementById('inputDeviceNameSettings').value.trim();
+        if (val) {
+          setDeviceName(val);
+          showToast(`Device renamed to: ${val}`, 'success');
+        }
+      };
+
+      // Rename Quick Modal (from header)
       const renameModal = document.getElementById('renameModal');
       const inputDeviceName = document.getElementById('inputDeviceName');
-      document.getElementById('btnDeviceName').onclick = () => {
+      const openRenameModal = () => {
         inputDeviceName.value = myDevice.name;
         renameModal.classList.remove('hidden');
         inputDeviceName.focus();
       };
+
+      document.getElementById('btnDeviceName').onclick = openRenameModal;
+      const btnSideRename = document.getElementById('btnDeviceNameSidebar');
+      if (btnSideRename) btnSideRename.onclick = openRenameModal;
+
       document.getElementById('btnCancelRename').onclick = () => renameModal.classList.add('hidden');
       document.getElementById('btnSaveRename').onclick = () => {
         const n = inputDeviceName.value.trim();
         if (n) {
-          myDevice.name = n;
-          localStorage.setItem('lan_hub_device_name', n);
-          document.getElementById('myDeviceName').textContent = n;
-          document.getElementById('myDeviceIcon').textContent = getDeviceEmoji(myDevice.type, n);
-          if (ws && ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({
-              type: 'register',
-              deviceId: myDevice.id,
-              name: myDevice.name,
-              deviceType: myDevice.type
-            }));
-          }
+          setDeviceName(n);
           showToast(`Device renamed to: ${n}`, 'success');
         }
         renameModal.classList.add('hidden');
@@ -1363,65 +1760,13 @@
           currentLightboxZoom = 1;
         }
       };
-      // Server Tools Modal
-      const toolsModal = document.getElementById('serverToolsModal');
-      const btnTools = document.getElementById('btnServerTools');
-      const btnCloseTools = document.getElementById('btnCloseServerTools');
-      const toolsList = document.getElementById('serverToolsList');
-
-      async function loadServerTools() {
-        try {
-          const res = await fetch('/api/server-tools');
-          const tools = await res.json();
-          toolsList.innerHTML = '';
-
-          tools.forEach(tool => {
-            const card = document.createElement('div');
-            const isIntegrated = tool.isIntegrated;
-            const borderClass = isIntegrated ? 'border-amber-500/40 bg-amber-950/20' : 'border-slate-800 bg-slate-950/80';
-
-            card.className = `p-3 rounded-xl border ${borderClass} flex items-center justify-between gap-3 transition hover:border-slate-700`;
-            card.innerHTML = `
-              <div class="flex items-center gap-3 min-w-0">
-                <div class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-xl flex-shrink-0">
-                  ${tool.icon}
-                </div>
-                <div class="min-w-0">
-                  <div class="flex items-center gap-2">
-                    <p class="text-xs sm:text-sm font-bold text-white truncate">${tool.name}</p>
-                    <span class="text-[9px] px-1.5 py-0.2 rounded-full font-semibold ${isIntegrated ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-slate-800 text-slate-400'}">${tool.tag}</span>
-                  </div>
-                  <p class="text-[11px] text-slate-400 truncate mt-0.5">${tool.description}</p>
-                </div>
-              </div>
-              <a href="${tool.url}" ${tool.url.startsWith('http') ? 'target="_blank"' : ''} class="flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg ${isIntegrated ? 'bg-amber-500 hover:bg-amber-400 text-slate-950' : 'bg-blue-600 hover:bg-blue-500 text-white'} shadow transition active:scale-95 flex-shrink-0">
-                <span>Open</span>
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-              </a>
-            `;
-            toolsList.appendChild(card);
-          });
-        } catch (e) {}
-      }
-
-      btnTools.onclick = () => {
-        loadServerTools();
-        toolsModal.classList.remove('hidden');
-      };
-      btnCloseTools.onclick = () => toolsModal.classList.add('hidden');
-      toolsModal.onclick = (e) => {
-        if (e.target === toolsModal) toolsModal.classList.add('hidden');
-      };
 
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
           closeLightbox();
-          toolsModal.classList.add('hidden');
+          renameModal.classList.add('hidden');
         }
       });
-
-      // Target All button
-      document.querySelector('[data-target="all"]').onclick = () => selectTarget('all', 'All Devices');
 
       // First Visit / Onboarding Permission Modal Check
       const welcomeModal = document.getElementById('welcomePermissionModal');
@@ -1435,17 +1780,14 @@
       }
 
       btnGrant.onclick = async () => {
-        // Request Notification permission
         if ('Notification' in window && Notification.permission !== 'granted') {
           try {
             await Notification.requestPermission();
           } catch (e) {}
         }
 
-        // Unlock audio context for mobile Safari / Chrome
         playChime();
 
-        // Enable default zero-click capabilities
         settings.autoDownload = true;
         settings.autoCopy = true;
         settings.sound = true;
@@ -1454,7 +1796,6 @@
         localStorage.setItem('lan_hub_sound', 'true');
         localStorage.setItem('lan_hub_setup_completed', 'true');
 
-        // Update settings modal checkboxes
         document.getElementById('settingAutoDownload').checked = true;
         document.getElementById('settingAutoCopy').checked = true;
         document.getElementById('settingSound').checked = true;
@@ -1470,6 +1811,14 @@
 
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/sw.js').catch(() => {});
+      }
+
+      // Check initial URL hash
+      const initialHash = window.location.hash.replace('#', '');
+      if (['transit', 'rednote', 'settings'].includes(initialHash)) {
+        switchTab(initialHash);
+      } else {
+        switchTab('home');
       }
     });
   </script>
