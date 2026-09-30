@@ -1107,9 +1107,12 @@
           showToast(`From ${item.senderName}: "${item.text.slice(0, 30)}..."`, 'info');
         }
       } else if (item.file) {
-        if (settings.autoDownload) {
+        const itemAge = Date.now() - (item.timestamp ? new Date(item.timestamp).getTime() : 0);
+        const isWithin1Day = itemAge <= 24 * 60 * 60 * 1000;
+
+        if (settings.autoDownload && isWithin1Day) {
           triggerAutoDownload(item.file.downloadUrl, item.file.originalName);
-          showToast(`Downloading: ${item.file.originalName}`, 'download');
+          showToast(`Auto-downloading: ${item.file.originalName}`, 'download');
         } else {
           const dlBtn = document.createElement('a');
           dlBtn.href = item.file.downloadUrl;
@@ -1157,20 +1160,221 @@
       document.body.style.overflow = '';
     }
 
-    // Render History Feed
+    // Render History Feed (Only active 24h by default, older collapsed, auto-purge > 7d)
+    let earlierExpanded = false;
+    window.toggleEarlierItems = () => {
+      earlierExpanded = !earlierExpanded;
+      renderHistory();
+    };
+
+    function createFullItemCard(item) {
+      const el = document.createElement('div');
+      el.className = 'bg-slate-950/80 border border-slate-800/80 rounded-xl p-3 hover:border-slate-700 transition flex flex-col gap-2 shadow-sm';
+      el.id = `item-${item.id}`;
+
+      const isMe = item.senderId === myDevice.id;
+      const timeAgo = formatTime(item.timestamp);
+      const targetBadge = item.target === 'all' 
+        ? '<span class="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded">🌐 All</span>'
+        : `<span class="text-[10px] bg-blue-500/10 text-blue-400 border border-blue-500/20 px-1.5 py-0.5 rounded">🎯 ${item.targetName}</span>`;
+
+      let contentHtml = '';
+
+      if (item.contentType === 'text') {
+        contentHtml = `
+          <div onclick="copyText('${escapeHtml(item.text).replace(/'/g, "\\'")}', this)" class="cursor-pointer group relative text-xs sm:text-sm text-slate-200 whitespace-pre-wrap break-words bg-slate-900/60 hover:bg-slate-900 active:bg-blue-950/30 p-2.5 rounded-lg border border-slate-800/50 transition">
+            ${linkify(escapeHtml(item.text))}
+            <span class="absolute top-2 right-2 text-[10px] font-semibold text-slate-400 group-hover:text-blue-400 bg-slate-800/80 px-1.5 py-0.5 rounded opacity-80 group-hover:opacity-100 transition">📋 Tap to copy</span>
+          </div>
+        `;
+      } else if (item.contentType === 'image') {
+        contentHtml = `
+          <div class="space-y-2">
+            <div onclick="openLightbox('${item.file.downloadUrl}', '${escapeHtml(item.file.originalName)}', '${formatFileSize(item.file.size)}')" class="cursor-pointer group relative w-full rounded-xl overflow-hidden bg-slate-900 border border-slate-800 aspect-video max-h-64 flex items-center justify-center">
+              <img src="${item.file.downloadUrl}" alt="${item.file.originalName}" loading="lazy" class="w-full h-full object-cover group-hover:scale-102 transition duration-200">
+              <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
+                <span class="bg-black/70 text-white text-xs px-2.5 py-1 rounded-full font-medium">🔍 Tap to Zoom</span>
+              </div>
+            </div>
+            <div class="flex items-center justify-between text-xs pt-0.5">
+              <div class="min-w-0 pr-2">
+                <p class="font-semibold text-white truncate text-[11px] sm:text-xs">${item.file.originalName}</p>
+                <p class="text-[10px] text-slate-400 font-mono">${formatFileSize(item.file.size)}</p>
+              </div>
+              <div class="flex items-center gap-1.5 flex-shrink-0">
+                <button onclick="openLightbox('${item.file.downloadUrl}', '${escapeHtml(item.file.originalName)}', '${formatFileSize(item.file.size)}')" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 px-2.5 py-1.5 rounded-lg active:scale-95 transition">
+                  🔍 View
+                </button>
+                <a href="${item.file.downloadUrl}" download="${item.file.originalName}" class="flex items-center gap-1 text-xs bg-blue-600 hover:bg-blue-500 text-white font-semibold px-3 py-1.5 rounded-lg shadow transition active:scale-95">
+                  ⬇️ Download
+                </a>
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (item.contentType === 'video') {
+        contentHtml = `
+          <div class="space-y-1.5">
+            <div class="w-full rounded-xl overflow-hidden bg-black border border-slate-800">
+              <video src="${item.file.downloadUrl}" controls playsinline preload="metadata" class="w-full max-h-64 object-contain"></video>
+            </div>
+            <div class="flex items-center justify-between text-xs pt-1">
+              <div class="min-w-0 pr-2">
+                <p class="font-semibold text-white truncate text-[11px] sm:text-xs">${item.file.originalName}</p>
+                <p class="text-[10px] text-slate-400 font-mono">${formatFileSize(item.file.size)}</p>
+              </div>
+              <a href="${item.file.downloadUrl}" download="${item.file.originalName}" class="flex items-center gap-1 text-xs bg-blue-600 hover:bg-blue-500 text-white font-semibold px-3 py-1.5 rounded-lg shadow transition active:scale-95 flex-shrink-0">
+                ⬇️ Download
+              </a>
+            </div>
+          </div>
+        `;
+      } else {
+        contentHtml = `
+          <div class="flex items-center justify-between gap-2.5 bg-slate-900/60 p-2.5 rounded-xl border border-slate-800/60">
+            <div class="flex items-center gap-2.5 overflow-hidden">
+              <div class="w-9 h-9 rounded-lg bg-slate-800 flex items-center justify-center text-lg flex-shrink-0">
+                📁
+              </div>
+              <div class="overflow-hidden">
+                <p class="text-xs sm:text-sm font-semibold text-white truncate">${item.file.originalName}</p>
+                <p class="text-[10px] text-slate-400 font-mono">${formatFileSize(item.file.size)}</p>
+              </div>
+            </div>
+            <a href="${item.file.downloadUrl}" download="${item.file.originalName}" class="flex-shrink-0 flex items-center gap-1 text-xs bg-blue-600 hover:bg-blue-500 text-white font-semibold px-3 py-1.5 rounded-lg shadow transition active:scale-95">
+              ⬇️ Download
+            </a>
+          </div>
+        `;
+      }
+
+      el.innerHTML = `
+        <div class="flex items-center justify-between text-[11px] text-slate-400">
+          <div class="flex items-center gap-1.5 truncate">
+            <span>${getDeviceEmoji(item.senderType, item.senderName)}</span>
+            <span class="font-semibold text-slate-300 truncate">${item.senderName}${isMe ? ' (You)' : ''}</span>
+            <span class="text-slate-600">•</span>
+            ${targetBadge}
+          </div>
+          <div class="flex items-center gap-2 flex-shrink-0">
+            <span class="text-[10px] text-slate-500 font-mono">${timeAgo}</span>
+            <button onclick="deleteItem('${item.id}')" class="text-slate-500 hover:text-rose-400 p-0.5 transition" title="Delete">
+              ✕
+            </button>
+          </div>
+        </div>
+        ${contentHtml}
+      `;
+
+      return el;
+    }
+
+    function createCompactItemRow(item) {
+      const el = document.createElement('div');
+      el.className = 'flex items-center justify-between gap-2 p-2.5 rounded-xl bg-slate-950/70 border border-slate-800/70 hover:border-slate-700 text-xs transition';
+      el.id = `item-${item.id}`;
+
+      const isMe = item.senderId === myDevice.id;
+      const timeAgo = formatTime(item.timestamp);
+      let icon = '📁';
+      let title = '';
+      let actionBtn = '';
+
+      if (item.contentType === 'text') {
+        icon = '💬';
+        title = item.text.replace(/\n/g, ' ').slice(0, 45);
+        actionBtn = `
+          <button onclick="copyText('${escapeHtml(item.text).replace(/'/g, "\\'")}', this)" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-2.5 py-1 rounded-lg text-[11px] font-semibold active:scale-95 transition flex-shrink-0">
+            <span>📋 Copy</span>
+          </button>
+        `;
+      } else if (item.contentType === 'image') {
+        icon = '🖼️';
+        title = item.file.originalName;
+        actionBtn = `
+          <button onclick="openLightbox('${item.file.downloadUrl}', '${escapeHtml(item.file.originalName)}', '${formatFileSize(item.file.size)}')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded-lg text-[11px] font-medium active:scale-95 transition flex-shrink-0">
+            🔍 View
+          </button>
+          <a href="${item.file.downloadUrl}" download="${item.file.originalName}" class="bg-blue-600 hover:bg-blue-500 text-white px-2.5 py-1 rounded-lg text-[11px] font-semibold active:scale-95 transition flex-shrink-0">
+            ⬇️ Get
+          </a>
+        `;
+      } else if (item.contentType === 'video') {
+        icon = '🎥';
+        title = item.file.originalName;
+        actionBtn = `
+          <a href="${item.file.downloadUrl}" download="${item.file.originalName}" class="bg-blue-600 hover:bg-blue-500 text-white px-2.5 py-1 rounded-lg text-[11px] font-semibold active:scale-95 transition flex-shrink-0">
+            ⬇️ Download
+          </a>
+        `;
+      } else {
+        icon = '📄';
+        title = item.file.originalName;
+        actionBtn = `
+          <a href="${item.file.downloadUrl}" download="${item.file.originalName}" class="bg-blue-600 hover:bg-blue-500 text-white px-2.5 py-1 rounded-lg text-[11px] font-semibold active:scale-95 transition flex-shrink-0">
+            ⬇️ Download
+          </a>
+        `;
+      }
+
+      const sizeStr = item.file ? `<span class="text-[10px] text-slate-500 font-mono">(${formatFileSize(item.file.size)})</span>` : '';
+
+      el.innerHTML = `
+        <div class="flex items-center gap-2 min-w-0 flex-1">
+          <span class="text-base flex-shrink-0">${icon}</span>
+          <div class="min-w-0 flex-1">
+            <p class="font-medium text-slate-200 truncate text-[11px] sm:text-xs">${escapeHtml(title)} ${sizeStr}</p>
+            <p class="text-[10px] text-slate-500 truncate">${item.senderName}${isMe ? ' (You)' : ''} • ${timeAgo}</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-1.5 flex-shrink-0">
+          ${actionBtn}
+          <button onclick="deleteItem('${item.id}')" class="text-slate-500 hover:text-rose-400 p-1 text-xs transition" title="Delete">
+            ✕
+          </button>
+        </div>
+      `;
+
+      return el;
+    }
+
     function renderHistory() {
       const list = document.getElementById('historyList');
       const countBadge = document.getElementById('historyCountBadge');
       const activeFilter = document.querySelector('.filter-btn.active')?.dataset.filter || 'all';
 
-      countBadge.textContent = historyItems.length;
+      const now = Date.now();
+      const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+      const SEVEN_DAYS_MS = 7 * ONE_DAY_MS;
 
-      let filtered = historyItems;
-      if (activeFilter === 'text') filtered = historyItems.filter(h => h.contentType === 'text');
-      if (activeFilter === 'media') filtered = historyItems.filter(h => h.contentType === 'image' || h.contentType === 'video');
-      if (activeFilter === 'file') filtered = historyItems.filter(h => h.contentType === 'file' || h.contentType === 'audio');
+      // Filter out anything older than 7 days client-side
+      let validItems = historyItems.filter(item => {
+        const time = item.timestamp ? new Date(item.timestamp).getTime() : 0;
+        return (now - time) <= SEVEN_DAYS_MS;
+      });
 
-      if (filtered.length === 0) {
+      // Apply type filter
+      let filtered = validItems;
+      if (activeFilter === 'text') filtered = validItems.filter(h => h.contentType === 'text');
+      if (activeFilter === 'media') filtered = validItems.filter(h => h.contentType === 'image' || h.contentType === 'video');
+      if (activeFilter === 'file') filtered = validItems.filter(h => h.contentType === 'file' || h.contentType === 'audio');
+
+      // Separate into Last 24 Hours vs Earlier (1-7 Days)
+      const todayItems = [];
+      const earlierItems = [];
+
+      filtered.forEach(item => {
+        const time = item.timestamp ? new Date(item.timestamp).getTime() : 0;
+        if ((now - time) <= ONE_DAY_MS) {
+          todayItems.push(item);
+        } else {
+          earlierItems.push(item);
+        }
+      });
+
+      countBadge.textContent = `${todayItems.length} active`;
+
+      if (todayItems.length === 0 && earlierItems.length === 0) {
         list.innerHTML = `
           <div class="text-center py-10 text-slate-500">
             <p class="text-xs">No items in this filter</p>
@@ -1180,107 +1384,52 @@
       }
 
       list.innerHTML = '';
-      filtered.forEach(item => {
-        const el = document.createElement('div');
-        el.className = 'bg-slate-950/80 border border-slate-800/80 rounded-xl p-3 hover:border-slate-700 transition flex flex-col gap-2 shadow-sm';
-        el.id = `item-${item.id}`;
 
-        const isMe = item.senderId === myDevice.id;
-        const timeAgo = formatTime(item.timestamp);
-        const targetBadge = item.target === 'all' 
-          ? '<span class="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded">🌐 All</span>'
-          : `<span class="text-[10px] bg-blue-500/10 text-blue-400 border border-blue-500/20 px-1.5 py-0.5 rounded">🎯 ${item.targetName}</span>`;
+      // 1. Render Today's Items (Expanded & Prominent)
+      if (todayItems.length === 0) {
+        const emptyToday = document.createElement('div');
+        emptyToday.className = 'text-center py-6 text-slate-500 bg-slate-950/40 rounded-xl border border-dashed border-slate-800/80';
+        emptyToday.innerHTML = `
+          <p class="text-xs font-medium text-slate-400">No items sent or received in the last 24 hours</p>
+          <p class="text-[11px] text-slate-500 mt-0.5">Older files from this week are collapsed below</p>
+        `;
+        list.appendChild(emptyToday);
+      } else {
+        todayItems.forEach(item => {
+          list.appendChild(createFullItemCard(item));
+        });
+      }
 
-        let contentHtml = '';
-
-        if (item.contentType === 'text') {
-          contentHtml = `
-            <div onclick="copyText('${escapeHtml(item.text).replace(/'/g, "\\'")}', this)" class="cursor-pointer group relative text-xs sm:text-sm text-slate-200 whitespace-pre-wrap break-words bg-slate-900/60 hover:bg-slate-900 active:bg-blue-950/30 p-2.5 rounded-lg border border-slate-800/50 transition">
-              ${linkify(escapeHtml(item.text))}
-              <span class="absolute top-2 right-2 text-[10px] font-semibold text-slate-400 group-hover:text-blue-400 bg-slate-800/80 px-1.5 py-0.5 rounded opacity-80 group-hover:opacity-100 transition">📋 Tap to copy</span>
-            </div>
-          `;
-        } else if (item.contentType === 'image') {
-          contentHtml = `
-            <div class="space-y-2">
-              <div onclick="openLightbox('${item.file.downloadUrl}', '${escapeHtml(item.file.originalName)}', '${formatFileSize(item.file.size)}')" class="cursor-pointer group relative w-full rounded-xl overflow-hidden bg-slate-900 border border-slate-800 aspect-video max-h-64 flex items-center justify-center">
-                <img src="${item.file.downloadUrl}" alt="${item.file.originalName}" loading="lazy" class="w-full h-full object-cover group-hover:scale-102 transition duration-200">
-                <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
-                  <span class="bg-black/70 text-white text-xs px-2.5 py-1 rounded-full font-medium">🔍 Tap to Zoom</span>
+      // 2. Render Earlier Items (1 - 7 Days Old) -> Auto-collapsed
+      if (earlierItems.length > 0) {
+        const earlierSection = document.createElement('div');
+        earlierSection.className = 'mt-3 pt-3 border-t border-slate-800/80';
+        earlierSection.innerHTML = `
+          <div onclick="toggleEarlierItems()" class="cursor-pointer flex items-center justify-between p-3 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-slate-700/80 transition select-none group">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <span class="text-base flex-shrink-0">📁</span>
+              <div class="min-w-0">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="text-xs font-bold text-slate-200">Earlier Files (1 - 7 Days Old)</span>
+                  <span class="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.2 rounded-full font-mono border border-slate-700">${earlierItems.length}</span>
                 </div>
-              </div>
-              <div class="flex items-center justify-between text-xs pt-0.5">
-                <div class="min-w-0 pr-2">
-                  <p class="font-semibold text-white truncate text-[11px] sm:text-xs">${item.file.originalName}</p>
-                  <p class="text-[10px] text-slate-400 font-mono">${formatFileSize(item.file.size)}</p>
-                </div>
-                <div class="flex items-center gap-1.5 flex-shrink-0">
-                  <button onclick="openLightbox('${item.file.downloadUrl}', '${escapeHtml(item.file.originalName)}', '${formatFileSize(item.file.size)}')" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 px-2.5 py-1.5 rounded-lg active:scale-95 transition">
-                    🔍 View
-                  </button>
-                  <a href="${item.file.downloadUrl}" download="${item.file.originalName}" class="flex items-center gap-1 text-xs bg-blue-600 hover:bg-blue-500 text-white font-semibold px-3 py-1.5 rounded-lg shadow transition active:scale-95">
-                    ⬇️ Download
-                  </a>
-                </div>
+                <p class="text-[10px] text-slate-500 truncate mt-0.5">Collapsed to keep feed clean • Auto-purged after 7 days</p>
               </div>
             </div>
-          `;
-        } else if (item.contentType === 'video') {
-          contentHtml = `
-            <div class="space-y-1.5">
-              <div class="w-full rounded-xl overflow-hidden bg-black border border-slate-800">
-                <video src="${item.file.downloadUrl}" controls playsinline preload="metadata" class="w-full max-h-64 object-contain"></video>
-              </div>
-              <div class="flex items-center justify-between text-xs pt-1">
-                <div class="min-w-0 pr-2">
-                  <p class="font-semibold text-white truncate text-[11px] sm:text-xs">${item.file.originalName}</p>
-                  <p class="text-[10px] text-slate-400 font-mono">${formatFileSize(item.file.size)}</p>
-                </div>
-                <a href="${item.file.downloadUrl}" download="${item.file.originalName}" class="flex items-center gap-1 text-xs bg-blue-600 hover:bg-blue-500 text-white font-semibold px-3 py-1.5 rounded-lg shadow transition active:scale-95 flex-shrink-0">
-                  ⬇️ Download
-                </a>
-              </div>
-            </div>
-          `;
-        } else {
-          contentHtml = `
-            <div class="flex items-center justify-between gap-2.5 bg-slate-900/60 p-2.5 rounded-xl border border-slate-800/60">
-              <div class="flex items-center gap-2.5 overflow-hidden">
-                <div class="w-9 h-9 rounded-lg bg-slate-800 flex items-center justify-center text-lg flex-shrink-0">
-                  📁
-                </div>
-                <div class="overflow-hidden">
-                  <p class="text-xs sm:text-sm font-semibold text-white truncate">${item.file.originalName}</p>
-                  <p class="text-[10px] text-slate-400 font-mono">${formatFileSize(item.file.size)}</p>
-                </div>
-              </div>
-              <a href="${item.file.downloadUrl}" download="${item.file.originalName}" class="flex-shrink-0 flex items-center gap-1 text-xs bg-blue-600 hover:bg-blue-500 text-white font-semibold px-3 py-1.5 rounded-lg shadow transition active:scale-95">
-                ⬇️ Download
-              </a>
-            </div>
-          `;
-        }
-
-        el.innerHTML = `
-          <div class="flex items-center justify-between text-[11px] text-slate-400">
-            <div class="flex items-center gap-1.5 truncate">
-              <span>${getDeviceEmoji(item.senderType, item.senderName)}</span>
-              <span class="font-semibold text-slate-300 truncate">${item.senderName}${isMe ? ' (You)' : ''}</span>
-              <span class="text-slate-600">•</span>
-              ${targetBadge}
-            </div>
-            <div class="flex items-center gap-2 flex-shrink-0">
-              <span class="text-[10px] text-slate-500 font-mono">${timeAgo}</span>
-              <button onclick="deleteItem('${item.id}')" class="text-slate-500 hover:text-rose-400 p-0.5 transition" title="Delete">
-                ✕
-              </button>
-            </div>
+            <button class="text-xs font-semibold text-blue-400 group-hover:text-blue-300 bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-800 transition flex-shrink-0">
+              ${earlierExpanded ? 'Collapse ▲' : `Show ${earlierItems.length} items ▼`}
+            </button>
           </div>
-          ${contentHtml}
+          <div id="earlierItemsList" class="${earlierExpanded ? '' : 'hidden'} space-y-2 mt-2 transition-all"></div>
         `;
 
-        list.appendChild(el);
-      });
+        const earlierList = earlierSection.querySelector('#earlierItemsList');
+        earlierItems.forEach(item => {
+          earlierList.appendChild(createCompactItemRow(item));
+        });
+
+        list.appendChild(earlierSection);
+      }
     }
 
     function removeItemFromUI(id) {
@@ -1416,7 +1565,11 @@
       if (diffSec < 10) return 'Just now';
       if (diffSec < 60) return `${diffSec}s ago`;
       if (diffSec < 3600) return `${Math.floor(diffSec / 60)}m ago`;
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      if (diffSec < 86400) return `${Math.floor(diffSec / 3600)}h ago`;
+      const diffDays = Math.floor(diffSec / 86400);
+      if (diffDays === 1) return 'Yesterday';
+      if (diffDays < 7) return `${diffDays}d ago`;
+      return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
     }
 
     function escapeHtml(text) {

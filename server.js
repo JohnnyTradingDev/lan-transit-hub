@@ -13,6 +13,7 @@ const PORT = process.env.PORT || 7777;
 const STORAGE_DIR = path.join(__dirname, 'storage');
 const HISTORY_FILE = path.join(STORAGE_DIR, 'history.json');
 const MAX_HISTORY = 200;
+const RETENTION_MS = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
 
 if (!fs.existsSync(STORAGE_DIR)) {
   fs.mkdirSync(STORAGE_DIR, { recursive: true });
@@ -28,6 +29,59 @@ if (fs.existsSync(HISTORY_FILE)) {
     history = [];
   }
 }
+
+function cleanupExpiredHistory() {
+  const now = Date.now();
+  let changed = false;
+
+  // Filter history items older than 7 days
+  const validHistory = [];
+  for (const item of history) {
+    const itemTime = item.timestamp ? new Date(item.timestamp).getTime() : 0;
+    if (now - itemTime > RETENTION_MS) {
+      changed = true;
+      if (item.file && item.file.filename) {
+        const fp = path.join(STORAGE_DIR, item.file.filename);
+        if (fs.existsSync(fp)) {
+          fs.unlink(fp, () => {});
+        }
+      }
+    } else {
+      validHistory.push(item);
+    }
+  }
+
+  if (changed) {
+    history = validHistory;
+    saveHistory();
+    console.log('[Auto-Cleanup] Removed items older than 7 days.');
+  }
+
+  // Also clean up any unreferenced files in storage/ directory older than 7 days
+  fs.readdir(STORAGE_DIR, (err, files) => {
+    if (err || !files) return;
+    const activeFilenames = new Set(
+      history.filter(h => h.file && h.file.filename).map(h => h.file.filename)
+    );
+    activeFilenames.add('history.json');
+    activeFilenames.add('.gitkeep');
+
+    files.forEach(f => {
+      if (!activeFilenames.has(f)) {
+        const fp = path.join(STORAGE_DIR, f);
+        fs.stat(fp, (err, stats) => {
+          if (!err && stats && (now - stats.mtimeMs > RETENTION_MS)) {
+            fs.unlink(fp, () => {});
+          }
+        });
+      }
+    });
+  });
+}
+
+// Run cleanup immediately and then periodically every 30 minutes
+cleanupExpiredHistory();
+setInterval(cleanupExpiredHistory, 30 * 60 * 1000);
 
 function saveHistory() {
   try {
@@ -383,6 +437,7 @@ app.get('/api/devices', (req, res) => {
 });
 
 app.get('/api/history', (req, res) => {
+  cleanupExpiredHistory();
   res.json(history);
 });
 
