@@ -466,10 +466,11 @@
           <!-- Category Filter Pills -->
           <div class="flex items-center justify-between gap-2 pt-1">
             <div id="buffetCategoryFilters" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-              <button data-cat="all" class="buffet-cat-filter active px-3 py-1.5 rounded-xl text-xs font-semibold bg-blue-600 text-white transition whitespace-nowrap">Tất cả (All)</button>
-              <button data-cat="💻 Công nghệ & AI" class="buffet-cat-filter px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 transition whitespace-nowrap">💻 Công nghệ & AI</button>
-              <button data-cat="🤖 Tech & Gadgets" class="buffet-cat-filter px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 transition whitespace-nowrap">🤖 Tech & Gadgets</button>
-              <button data-cat="🌍 Tin Đời Sống" class="buffet-cat-filter px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 transition whitespace-nowrap">🌍 Tin Đời Sống</button>
+              <button data-cat="all" class="buffet-cat-filter active px-3 py-1.5 rounded-xl text-xs font-semibold bg-blue-600 text-white transition whitespace-nowrap">All (Tất cả)</button>
+              <button data-cat="💻 Tech & AI" class="buffet-cat-filter px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 transition whitespace-nowrap">💻 Tech & AI</button>
+              <button data-cat="🌐 Viral & Culture" class="buffet-cat-filter px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 transition whitespace-nowrap">🌐 Viral & Culture</button>
+              <button data-cat="🐾 Life & Stories" class="buffet-cat-filter px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 transition whitespace-nowrap">🐾 Life & Stories</button>
+              <button data-cat="🎮 Gaming & Pop" class="buffet-cat-filter px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 transition whitespace-nowrap">🎮 Gaming & Pop</button>
             </div>
           </div>
 
@@ -1807,7 +1808,7 @@
         const dateStr = item.fetchedAt ? new Date(item.fetchedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
         const safeTitle = escapeHtml(item.title);
         const safeImageUrl = item.imageUrl || '';
-        const initialCaption = item.captions?.vn || item.captions?.en || item.title;
+        const initialCaption = item.captions?.casual || item.captions?.debate || item.captions?.short || item.title;
 
         card.innerHTML = `
           <div class="space-y-3">
@@ -1844,20 +1845,20 @@
             <div class="space-y-1.5 pt-1">
               <div class="flex items-center justify-between text-[11px]">
                 <span class="text-slate-400 font-semibold flex items-center gap-1">
-                  <span>💬 Chọn kiểu Caption:</span>
+                  <span>💬 Kiểu Caption tiếng Anh:</span>
                 </span>
-                <span class="text-[10px] text-slate-500">Chỉnh sửa tuỳ ý bên dưới</span>
+                <span class="text-[10px] text-slate-500">Tự do chỉnh sửa bên dưới</span>
               </div>
 
               <div class="grid grid-cols-3 gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800/80">
-                <button onclick="setCardCaption('${item.id}', 'vn')" id="btn-cap-vn-${item.id}" class="cap-btn active py-1.5 px-1.5 text-center rounded-lg text-[10px] font-bold bg-blue-600 text-white transition truncate">
-                  🇻🇳 Dân dã / Teen
+                <button onclick="setCardCaption('${item.id}', 'casual')" id="btn-cap-casual-${item.id}" class="cap-btn active py-1.5 px-1.5 text-center rounded-lg text-[10px] font-bold bg-blue-600 text-white transition truncate">
+                  🧢 Casual / Slang
                 </button>
-                <button onclick="setCardCaption('${item.id}', 'en')" id="btn-cap-en-${item.id}" class="cap-btn py-1.5 px-1.5 text-center rounded-lg text-[10px] font-medium text-slate-400 hover:text-white transition truncate">
-                  🇺🇸 English Casual
+                <button onclick="setCardCaption('${item.id}', 'debate')" id="btn-cap-debate-${item.id}" class="cap-btn py-1.5 px-1.5 text-center rounded-lg text-[10px] font-medium text-slate-400 hover:text-white transition truncate">
+                  💬 Debate / Hook
                 </button>
                 <button onclick="setCardCaption('${item.id}', 'short')" id="btn-cap-short-${item.id}" class="cap-btn py-1.5 px-1.5 text-center rounded-lg text-[10px] font-medium text-slate-400 hover:text-white transition truncate">
-                  ⚡ Khơi mào tranh luận
+                  ⚡ Short & Punchy
                 </button>
               </div>
 
@@ -1895,7 +1896,7 @@
         textarea.value = item.captions[type];
       }
 
-      ['vn', 'en', 'short'].forEach(t => {
+      ['casual', 'debate', 'short'].forEach(t => {
         const btn = document.getElementById(`btn-cap-${t}-${itemId}`);
         if (btn) {
           if (t === type) {
@@ -1916,7 +1917,7 @@
       const targetName = targetSelect && targetSelect.selectedOptions[0] ? targetSelect.selectedOptions[0].text : 'All Devices';
 
       const textarea = document.getElementById(`caption-input-${itemId}`);
-      const caption = textarea ? textarea.value.trim() : (item.captions?.vn || item.title);
+      const caption = textarea ? textarea.value.trim() : (item.captions?.casual || item.title);
 
       const originalHtml = btn.innerHTML;
       btn.disabled = true;

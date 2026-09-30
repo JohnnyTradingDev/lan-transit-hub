@@ -580,7 +580,7 @@ app.post('/api/buffet/push', async (req, res) => {
   }
 
   // 2. Dispatch caption text (Triggers zero-click clipboard auto-copy on target device)
-  const textToSend = caption || buffetItem.captions.vn || buffetItem.title;
+  const textToSend = caption || (buffetItem.captions ? (buffetItem.captions.casual || buffetItem.captions.debate || buffetItem.captions.short || buffetItem.captions.vn) : buffetItem.title);
   const textItem = {
     id: 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6),
     senderId: 'content-buffet',

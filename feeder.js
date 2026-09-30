@@ -5,50 +5,78 @@ const crypto = require('crypto');
 const STORAGE_DIR = path.join(__dirname, 'storage');
 const BUFFET_FILE = path.join(STORAGE_DIR, 'buffet.json');
 
-const VN_TEMPLATES = [
-  "mới đọc quả tin này ảo ma thật sự mn ơi :)) {title} ai rành giải thích hộ phát",
-  "thề luôn nhìn cái này cuốn vcl, {title} mn nghĩ sao nhờ",
-  "u là trời :))) {title} dạo này lắm cái lạ thật chứ",
-  "sáng ra lướt thấy tin này, {title} đỉnh k mn",
-  "k biết mn thấy sao chứ tui thấy vụ này hơi bị ảo :)) {title}",
-  "hết hồn chim én :)) {title} thật k vậy mn",
-  "cái này mà thành hiện thực thì ngon phết nhờ mn {title}"
+// Authentic Gen Z / Casual English Slang (X & Reddit vibe)
+const CASUAL_TEMPLATES = [
+  "ngl this is actually crazy lol: {title}",
+  "bruh no way {title} 💀",
+  "wait is this actually real... {title} kinda wild ngl",
+  "honestly didn't have this on my 2026 bingo card: {title}",
+  "bro this is insane tbh, {title}",
+  "lowkey didn't expect this at all: {title}",
+  "ain't no way {title} 😭",
+  "can we talk about this for a second? {title}",
+  "this feels like a simulation at this point lol: {title}",
+  "nah because why is nobody talking about this: {title}",
+  "just saw this today, kinda speechless ngl: {title}",
+  "bro what is happening in 2026 💀 {title}"
 ];
 
-const EN_TEMPLATES = [
-  "wait is this actually real lol... {title} thoughts on this?",
-  "bruh no way {title} kinda wild ngl",
-  "honestly didn't expect this to happen... {title}",
-  "bro this is crazy tbh, {title} what do you guys think?",
-  "ngl this looks insane lol {title}",
-  "can we talk about this for a second? {title} thoughts?",
-  "just saw this today, {title} kinda unexpected ngl"
-];
-
-const SHORT_TEMPLATES = [
-  "{title} - Rate this 1 to 10? 👇",
+// Comment & Karma Bait / Discussion Starters (High engagement for Reddit & TikTok)
+const DEBATE_TEMPLATES = [
+  "{title} - thoughts on this? 👇",
   "Real or overhyped? {title} 👀",
-  "{title} • What do you think?",
-  "{title} 🤔 Thoughts?"
+  "{title} • W or L?",
+  "What would you do in this situation? {title}",
+  "Is it just me or does this sound wild? {title} 🤔",
+  "Rate this from 1 to 10: {title} 👇",
+  "Valid or completely unnecessary? {title}",
+  "Hot take on this? {title} 👀",
+  "Would you try this? {title} 🤔"
+];
+
+// Short & Snappy / Relatable (Instagram, YouTube Shorts, X vibe)
+const SHORT_TEMPLATES = [
+  "{title} 💀",
+  "New fear unlocked: {title}",
+  "{title} 👀",
+  "The way I didn't see this coming lmao: {title}",
+  "Wait what... {title}",
+  "In case you missed it: {title}",
+  "This is wild: {title}",
+  "No words. {title} 🤐"
 ];
 
 function pickRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-function generateCaptions(title, isVietnamese = false) {
-  const cleanTitle = title.trim().replace(/\.$/, '');
-  const vnBase = isVietnamese ? cleanTitle : cleanTitle;
-  const enBase = isVietnamese ? cleanTitle : cleanTitle;
+function cleanHtmlEntities(str) {
+  if (!str) return '';
+  return str
+    .replace(/&#8217;|&#8216;/g, "'")
+    .replace(/&#8220;|&#8221;/g, '"')
+    .replace(/&#8230;/g, '...')
+    .replace(/&#8211;|&#8212;/g, '-')
+    .replace(/&amp;/g, '&')
+    .replace(/&#038;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .trim();
+}
+
+function generateCaptions(title) {
+  const cleanTitle = cleanHtmlEntities(title).replace(/\.$/, '');
 
   return {
-    vn: pickRandom(VN_TEMPLATES).replace('{title}', vnBase),
-    en: pickRandom(EN_TEMPLATES).replace('{title}', enBase),
+    casual: pickRandom(CASUAL_TEMPLATES).replace('{title}', cleanTitle),
+    debate: pickRandom(DEBATE_TEMPLATES).replace('{title}', cleanTitle),
     short: pickRandom(SHORT_TEMPLATES).replace('{title}', cleanTitle)
   };
 }
 
-async function fetchRssFeed(url, sourceName, category, isVietnamese = false) {
+async function fetchRssFeed(url, sourceName, category) {
   try {
     const res = await fetch(url, {
       headers: {
@@ -60,23 +88,24 @@ async function fetchRssFeed(url, sourceName, category, isVietnamese = false) {
     const xml = await res.text();
 
     const items = [];
-    // Match Atom <entry> or RSS <item>
     const entries = [...xml.matchAll(/<(?:item|entry)>([\s\S]*?)<\/(?:item|entry)>/g)];
 
     for (const entry of entries.slice(0, 15)) {
       const raw = entry[1];
       const titleMatch = raw.match(/<title[^>]*><!\[CDATA\[(.*?)\]\]><\/title>|<title[^>]*>(.*?)<\/title>/);
-      const title = titleMatch ? (titleMatch[1] || titleMatch[2] || '').trim() : '';
-      if (!title || title.length < 10) continue;
+      let title = titleMatch ? (titleMatch[1] || titleMatch[2] || '').trim() : '';
+      title = cleanHtmlEntities(title);
+      if (!title || title.length < 8) continue;
 
-      // Extract image
-      const imgMatch = raw.match(/<img[^>]+src=\"([^\">]+)\"/i) || 
-                       raw.match(/url=\"([^\">]+)\"/i) ||
-                       raw.match(/<enclosure[^>]+url=\"([^\">]+)\"/i);
-      let img = imgMatch ? imgMatch[1].replace(/&#038;/g, '&') : '';
+      // Extract image: supports media:content, media:thumbnail, enclosure, and img tag
+      const imgMatch = raw.match(/<media:content[^>]+url=\"([^\">]+)\"/i) ||
+                       raw.match(/<media:thumbnail[^>]+url=\"([^\">]+)\"/i) ||
+                       raw.match(/<enclosure[^>]+url=\"([^\">]+)\"/i) ||
+                       raw.match(/<img[^>]+src=\"([^\">]+)\"/i);
+      let img = imgMatch ? imgMatch[1].replace(/&#038;|&amp;/g, '&') : '';
       
-      // Filter out small avatars/icons
-      if (img.includes('avatar') || img.includes('logo_rss')) img = '';
+      // Filter out small avatars or icons
+      if (img.includes('avatar') || img.includes('logo_rss') || img.includes('1x1.')) img = '';
 
       // Extract article link
       const linkMatch = raw.match(/<link[^>]+href=\"([^\">]+)\"/i) ||
@@ -84,18 +113,18 @@ async function fetchRssFeed(url, sourceName, category, isVietnamese = false) {
       const link = linkMatch ? (linkMatch[1] || linkMatch[2] || '') : '';
 
       const id = 'buf-' + crypto.createHash('md5').update(title).digest('hex').slice(0, 10);
-      const captions = generateCaptions(title, isVietnamese);
+      const captions = generateCaptions(title);
 
       items.push({
         id,
         title,
         source: sourceName,
         category,
-        isVietnamese,
+        isVietnamese: false,
         imageUrl: img || null,
         articleUrl: link,
         captions,
-        suggestedPlatforms: isVietnamese ? ['TikTok', 'Threads', 'Facebook'] : ['X', 'Reddit', 'Threads'],
+        suggestedPlatforms: ['X/Twitter', 'Reddit', 'Instagram', 'TikTok'],
         fetchedAt: new Date().toISOString()
       });
     }
@@ -108,30 +137,37 @@ async function fetchRssFeed(url, sourceName, category, isVietnamese = false) {
 }
 
 async function refreshBuffet() {
-  console.log('[Content Buffet] Scraping fresh trending news...');
+  console.log('[Content Buffet] Scraping fresh 100% English trending news...');
   const feeds = [
-    {
-      url: 'https://vnexpress.net/rss/so-hoa.rss',
-      source: 'VnExpress Tech',
-      category: '💻 Công nghệ & AI',
-      isVn: true
-    },
-    {
-      url: 'https://vnexpress.net/rss/the-gioi.rss',
-      source: 'VnExpress Thế Giới',
-      category: '🌍 Tin Đời Sống',
-      isVn: true
-    },
     {
       url: 'https://www.theverge.com/rss/index.xml',
       source: 'The Verge',
-      category: '🤖 Tech & Gadgets',
-      isVn: false
+      category: '💻 Tech & AI'
+    },
+    {
+      url: 'https://www.dexerto.com/feed/',
+      source: 'Dexerto',
+      category: '🌐 Viral & Culture'
+    },
+    {
+      url: 'https://9to5mac.com/feed/',
+      source: '9to5Mac',
+      category: '💻 Tech & AI'
+    },
+    {
+      url: 'https://www.boredpanda.com/feed/',
+      source: 'Bored Panda',
+      category: '🐾 Life & Stories'
+    },
+    {
+      url: 'https://www.gamesradar.com/rss/',
+      source: 'GamesRadar',
+      category: '🎮 Gaming & Pop'
     }
   ];
 
   const results = await Promise.all(
-    feeds.map(f => fetchRssFeed(f.url, f.source, f.category, f.isVn))
+    feeds.map(f => fetchRssFeed(f.url, f.source, f.category))
   );
 
   const allItems = results.flat();
@@ -146,7 +182,7 @@ async function refreshBuffet() {
   const finalItems = Array.from(uniqueMap.values());
   try {
     fs.writeFileSync(BUFFET_FILE, JSON.stringify(finalItems, null, 2), 'utf8');
-    console.log(`[Content Buffet] Updated buffet with ${finalItems.length} items.`);
+    console.log(`[Content Buffet] Updated buffet with ${finalItems.length} English items.`);
   } catch (err) {
     console.error('Error saving buffet.json:', err);
   }
