@@ -95,6 +95,12 @@
             <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
           </button>
 
+          <button data-panel="buffet" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/70 transition">
+            <span class="text-base">🍱</span>
+            <span class="flex-1 text-left">Post Buffet</span>
+            <span class="text-[9px] bg-amber-500/20 text-amber-300 px-1.5 py-0.2 rounded font-mono">1-Tap</span>
+          </button>
+
           <button data-panel="rednote" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/70 transition">
             <span class="text-base">📕</span>
             <span class="flex-1 text-left">RedNote Downloader</span>
@@ -409,7 +415,74 @@
 
 
         <!-- ========================================== -->
-        <!-- PANEL 3: REDNOTE DOWNLOADER (EMBEDDED) -->
+        <!-- PANEL 3: POST BUFFET & 1-TAP FEEDER -->
+        <!-- ========================================== -->
+        <section id="panel-buffet" class="panel-section max-w-5xl mx-auto space-y-4 hidden">
+          
+          <!-- Buffet Banner & Target Control -->
+          <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-amber-950/40 via-slate-900 to-indigo-950/40 border border-slate-800/90 p-4 sm:p-5 shadow-xl">
+            <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                    🍱 Trạm Tiếp Tế Bài Đăng 1-Chạm
+                  </span>
+                  <span id="buffetCountBadge" class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono text-slate-300 bg-slate-800/80 border border-slate-700">
+                    Đang tải...
+                  </span>
+                </div>
+                <h2 class="text-lg sm:text-xl font-bold text-white tracking-tight">Content Buffet & 1-Tap Feeder</h2>
+                <p class="text-xs text-slate-400 mt-0.5">Tin nóng chọn lọc + Caption người thật. Bấm 1 nút bắn thẳng ảnh vào Gallery & chữ vào Clipboard của máy nuôi!</p>
+              </div>
+
+              <div class="flex items-center gap-2 flex-shrink-0">
+                <button id="btnBuffetRefresh" onclick="loadBuffet(true)" class="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 text-xs font-semibold px-3 py-2 rounded-xl border border-slate-700 shadow transition" title="Cào lại toàn bộ nguồn tin mới">
+                  <svg id="buffetRefreshIcon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                  <span>Cào Tin Mới</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sticky / Quick Target Selection Bar -->
+          <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5">
+              <div class="w-9 h-9 rounded-xl bg-blue-600/20 text-blue-400 flex items-center justify-center text-lg flex-shrink-0">
+                🎯
+              </div>
+              <div>
+                <p class="text-xs font-bold text-white uppercase tracking-wider">Thiết Bị Nhận (Target Device)</p>
+                <p class="text-[11px] text-slate-400">Ảnh tự tải vào Gallery • Chữ tự copy vào Clipboard (Zero-click)</p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <select id="buffetTargetSelect" class="w-full sm:w-auto bg-slate-950 border border-slate-700 hover:border-slate-600 text-white rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:border-blue-500 min-w-[220px]">
+                <option value="all">📢 Tất cả thiết bị (Broadcast All)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Category Filter Pills -->
+          <div class="flex items-center justify-between gap-2 pt-1">
+            <div id="buffetCategoryFilters" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+              <button data-cat="all" class="buffet-cat-filter active px-3 py-1.5 rounded-xl text-xs font-semibold bg-blue-600 text-white transition whitespace-nowrap">Tất cả (All)</button>
+              <button data-cat="💻 Công nghệ & AI" class="buffet-cat-filter px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 transition whitespace-nowrap">💻 Công nghệ & AI</button>
+              <button data-cat="🤖 Tech & Gadgets" class="buffet-cat-filter px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 transition whitespace-nowrap">🤖 Tech & Gadgets</button>
+              <button data-cat="🌍 Tin Đời Sống" class="buffet-cat-filter px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 transition whitespace-nowrap">🌍 Tin Đời Sống</button>
+            </div>
+          </div>
+
+          <!-- Buffet Cards Grid -->
+          <div id="buffetGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Dynamic cards rendered here -->
+          </div>
+
+        </section>
+
+
+        <!-- ========================================== -->
+        <!-- PANEL 4: REDNOTE DOWNLOADER (EMBEDDED) -->
         <!-- ========================================== -->
         <section id="panel-rednote" class="panel-section max-w-5xl mx-auto h-[82vh] flex flex-col space-y-3 hidden">
           
@@ -533,12 +606,17 @@
           <span>Home</span>
         </button>
 
-        <button data-panel="transit" class="mob-nav-btn flex flex-col items-center gap-1 text-slate-400 font-medium text-[10px] px-3 py-1 transition">
+        <button data-panel="transit" class="mob-nav-btn flex flex-col items-center gap-1 text-slate-400 font-medium text-[10px] px-2 py-1 transition">
           <span class="text-lg">⚡</span>
           <span>Transit</span>
         </button>
 
-        <button data-panel="rednote" class="mob-nav-btn flex flex-col items-center gap-1 text-slate-400 font-medium text-[10px] px-3 py-1 transition">
+        <button data-panel="buffet" class="mob-nav-btn flex flex-col items-center gap-1 text-slate-400 font-medium text-[10px] px-2 py-1 transition">
+          <span class="text-lg">🍱</span>
+          <span>Buffet</span>
+        </button>
+
+        <button data-panel="rednote" class="mob-nav-btn flex flex-col items-center gap-1 text-slate-400 font-medium text-[10px] px-2 py-1 transition">
           <span class="text-lg">📕</span>
           <span>RedNote</span>
         </button>
@@ -837,6 +915,7 @@
       const titles = {
         home: { title: 'Home Dashboard', icon: '🏠' },
         transit: { title: 'LAN Transit Hub', icon: '⚡' },
+        buffet: { title: 'Content Buffet & 1-Tap Feeder', icon: '🍱' },
         rednote: { title: 'RedNote Downloader', icon: '📕' },
         settings: { title: 'Settings & QR Connect', icon: '⚙️' }
       };
@@ -851,6 +930,7 @@
     // Calculate dynamic tool link using current hostname
     function getDynamicToolUrl(tool) {
       if (tool.id === 'lan-transit') return '#transit';
+      if (tool.id === 'post-buffet') return '#buffet';
       if (tool.id === 'rednote') return '/rednote';
       const host = window.location.hostname;
       const protocol = window.location.protocol;
@@ -894,6 +974,7 @@
         const isOnline = tool.status === 'online';
         const dynamicUrl = getDynamicToolUrl(tool);
         const isInternalTransit = tool.id === 'lan-transit';
+        const isBuffet = tool.id === 'post-buffet';
         const isRedNote = tool.id === 'rednote';
 
         const card = document.createElement('div');
@@ -942,6 +1023,11 @@
               ${isInternalTransit ? `
                 <button onclick="switchTab('transit')" class="flex-1 flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-semibold text-xs py-2 px-3 rounded-xl shadow-md shadow-blue-600/25 transition">
                   <span>Open Transit Hub</span>
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                </button>
+              ` : isBuffet ? `
+                <button onclick="switchTab('buffet')" class="flex-1 flex items-center justify-center gap-1.5 bg-gradient-to-r from-amber-600 to-indigo-600 hover:opacity-90 active:scale-95 text-white font-semibold text-xs py-2 px-3 rounded-xl shadow-md shadow-amber-600/25 transition">
+                  <span>Open Content Buffet 🍱</span>
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                 </button>
               ` : isRedNote ? `
@@ -1049,6 +1135,8 @@
         btn.onclick = () => selectTarget(d.id, d.name);
         container.appendChild(btn);
       });
+
+      updateBuffetTargets();
     }
 
     function selectTarget(targetId, targetName) {
@@ -1627,6 +1715,269 @@
       }
     }
 
+    // ==========================================
+    // POST BUFFET & 1-TAP FEEDER LOGIC
+    // ==========================================
+    let buffetItems = [];
+    let activeBuffetCategory = 'all';
+
+    function updateBuffetTargets() {
+      const select = document.getElementById('buffetTargetSelect');
+      if (!select) return;
+      const currentVal = select.value || 'all';
+      select.innerHTML = '<option value="all">📢 Tất cả thiết bị (Broadcast All)</option>';
+
+      onlineDevices.forEach(d => {
+        const isMe = d.id === myDevice.id;
+        const opt = document.createElement('option');
+        opt.value = d.id;
+        opt.textContent = `${getDeviceEmoji(d.type, d.name)} ${d.name}${isMe ? ' (You)' : ''} ${d.isOnline ? '🟢' : '⚪'}`;
+        select.appendChild(opt);
+      });
+
+      if ([...select.options].some(o => o.value === currentVal)) {
+        select.value = currentVal;
+      }
+    }
+
+    async function loadBuffet(forceRefresh = false) {
+      const refreshIcon = document.getElementById('buffetRefreshIcon');
+      if (refreshIcon && forceRefresh) refreshIcon.classList.add('animate-spin');
+
+      try {
+        const url = forceRefresh ? '/api/buffet/refresh' : '/api/buffet';
+        const res = await fetch(url, forceRefresh ? { method: 'POST' } : undefined);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        buffetItems = await res.json();
+        renderBuffet();
+
+        const badge = document.getElementById('buffetCountBadge');
+        if (badge) badge.textContent = `${buffetItems.length} bài sẵn sàng`;
+
+        if (forceRefresh) {
+          showToast('Đã cào tin mới thành công! 🍱', 'success');
+        }
+      } catch (err) {
+        console.error('Failed to load buffet items:', err);
+        showToast('Không tải được tin: ' + err.message, 'error');
+      } finally {
+        if (refreshIcon) refreshIcon.classList.remove('animate-spin');
+      }
+    }
+
+    function renderBuffet() {
+      const grid = document.getElementById('buffetGrid');
+      if (!grid) return;
+
+      let items = buffetItems;
+      if (activeBuffetCategory !== 'all') {
+        items = items.filter(i => i.category === activeBuffetCategory);
+      }
+
+      if (items.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full py-16 text-center text-slate-500 bg-slate-900/50 rounded-2xl border border-slate-800/80">
+            <span class="text-4xl">📭</span>
+            <p class="text-sm font-semibold mt-3 text-slate-300">Không có bài viết nào trong danh mục này</p>
+            <p class="text-xs text-slate-500 mt-1">Bấm nút bên dưới để cào dữ liệu mới nhất</p>
+            <button onclick="loadBuffet(true)" class="mt-4 inline-flex items-center gap-1.5 text-xs bg-blue-600 hover:bg-blue-500 text-white font-semibold px-4 py-2 rounded-xl transition shadow">
+              <span>🔄 Cào Lại Tin Mới</span>
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = '';
+      items.forEach(item => {
+        const card = document.createElement('div');
+        card.id = `buffet-card-${item.id}`;
+        card.className = 'bg-slate-900/90 border border-slate-800 hover:border-slate-700/80 rounded-2xl p-4 shadow-xl flex flex-col justify-between space-y-3.5 transition';
+
+        const platformsHtml = (item.suggestedPlatforms || []).map(p => {
+          let color = 'bg-slate-800 text-slate-300 border-slate-700';
+          if (p === 'X/Twitter') color = 'bg-sky-500/10 text-sky-400 border-sky-500/20';
+          if (p === 'Reddit') color = 'bg-orange-500/10 text-orange-400 border-orange-500/20';
+          if (p === 'TikTok') color = 'bg-pink-500/10 text-pink-400 border-pink-500/20';
+          if (p === 'Threads') color = 'bg-purple-500/10 text-purple-400 border-purple-500/20';
+          if (p === 'Facebook') color = 'bg-blue-500/10 text-blue-400 border-blue-500/20';
+          return `<span class="px-2 py-0.5 rounded-md text-[10px] font-semibold border ${color}">${p}</span>`;
+        }).join(' ');
+
+        const dateStr = item.fetchedAt ? new Date(item.fetchedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+        const safeTitle = escapeHtml(item.title);
+        const safeImageUrl = item.imageUrl || '';
+        const initialCaption = item.captions?.vn || item.captions?.en || item.title;
+
+        card.innerHTML = `
+          <div class="space-y-3">
+            <!-- Header Badges -->
+            <div class="flex items-center justify-between gap-2 flex-wrap">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 font-mono">${item.source}</span>
+                <span class="text-[11px] text-slate-500 font-mono">${dateStr}</span>
+              </div>
+              <div class="flex items-center gap-1 flex-wrap">
+                ${platformsHtml}
+              </div>
+            </div>
+
+            <!-- Image & Title Layout -->
+            <div class="flex gap-3 items-start">
+              ${safeImageUrl ? `
+                <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-xl overflow-hidden bg-slate-950 flex-shrink-0 border border-slate-800 relative cursor-pointer group" onclick="openLightbox('${safeImageUrl}', '${safeTitle.replace(/'/g, "\\'")}', 'Buffet HD Image')">
+                  <img src="${safeImageUrl}" alt="${safeTitle}" class="w-full h-full object-cover group-hover:scale-105 transition duration-200" onerror="this.parentElement.style.display='none'">
+                  <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition"></div>
+                  <span class="absolute bottom-1 right-1 bg-black/75 text-[9px] text-white px-1.5 py-0.5 rounded font-mono">Zoom</span>
+                </div>
+              ` : ''}
+              <div class="min-w-0 flex-1">
+                <a href="${item.articleUrl}" target="_blank" class="font-bold text-xs sm:text-sm text-white hover:text-blue-400 line-clamp-2 leading-snug transition flex items-start gap-1">
+                  <span>${safeTitle}</span>
+                  <svg class="w-3.5 h-3.5 text-slate-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                </a>
+                <p class="text-[11px] text-slate-400 line-clamp-2 mt-1">${item.category}</p>
+              </div>
+            </div>
+
+            <!-- Caption Selector Tabs -->
+            <div class="space-y-1.5 pt-1">
+              <div class="flex items-center justify-between text-[11px]">
+                <span class="text-slate-400 font-semibold flex items-center gap-1">
+                  <span>💬 Chọn kiểu Caption:</span>
+                </span>
+                <span class="text-[10px] text-slate-500">Chỉnh sửa tuỳ ý bên dưới</span>
+              </div>
+
+              <div class="grid grid-cols-3 gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800/80">
+                <button onclick="setCardCaption('${item.id}', 'vn')" id="btn-cap-vn-${item.id}" class="cap-btn active py-1.5 px-1.5 text-center rounded-lg text-[10px] font-bold bg-blue-600 text-white transition truncate">
+                  🇻🇳 Dân dã / Teen
+                </button>
+                <button onclick="setCardCaption('${item.id}', 'en')" id="btn-cap-en-${item.id}" class="cap-btn py-1.5 px-1.5 text-center rounded-lg text-[10px] font-medium text-slate-400 hover:text-white transition truncate">
+                  🇺🇸 English Casual
+                </button>
+                <button onclick="setCardCaption('${item.id}', 'short')" id="btn-cap-short-${item.id}" class="cap-btn py-1.5 px-1.5 text-center rounded-lg text-[10px] font-medium text-slate-400 hover:text-white transition truncate">
+                  ⚡ Khơi mào tranh luận
+                </button>
+              </div>
+
+              <!-- Editable Textarea -->
+              <div>
+                <textarea id="caption-input-${item.id}" rows="3" class="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 rounded-xl p-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none resize-none leading-relaxed transition" placeholder="Nội dung bài đăng...">${initialCaption}</textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Bar -->
+          <div class="flex items-center gap-2 pt-2 border-t border-slate-800/80">
+            <!-- Magic 1-Tap Push Button -->
+            <button onclick="pushBuffetItem('${item.id}', this)" class="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-98 text-white font-bold text-xs py-2.5 px-3 rounded-xl shadow-lg shadow-blue-600/30 transition">
+              <span>🚀 Bắn Sang Máy Này ⚡</span>
+            </button>
+
+            <!-- Direct Copy Text Button -->
+            <button onclick="copyBuffetCaption('${item.id}', this)" class="p-2.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-300 hover:text-white rounded-xl text-xs transition border border-slate-700/80" title="Copy caption">
+              📋
+            </button>
+          </div>
+        `;
+
+        grid.appendChild(card);
+      });
+    }
+
+    function setCardCaption(itemId, type) {
+      const item = buffetItems.find(i => i.id === itemId);
+      if (!item) return;
+
+      const textarea = document.getElementById(`caption-input-${itemId}`);
+      if (textarea && item.captions && item.captions[type]) {
+        textarea.value = item.captions[type];
+      }
+
+      ['vn', 'en', 'short'].forEach(t => {
+        const btn = document.getElementById(`btn-cap-${t}-${itemId}`);
+        if (btn) {
+          if (t === type) {
+            btn.className = 'cap-btn active py-1.5 px-1.5 text-center rounded-lg text-[10px] font-bold bg-blue-600 text-white transition truncate';
+          } else {
+            btn.className = 'cap-btn py-1.5 px-1.5 text-center rounded-lg text-[10px] font-medium text-slate-400 hover:text-white transition truncate';
+          }
+        }
+      });
+    }
+
+    async function pushBuffetItem(itemId, btn) {
+      const item = buffetItems.find(i => i.id === itemId);
+      if (!item) return;
+
+      const targetSelect = document.getElementById('buffetTargetSelect');
+      const targetId = targetSelect ? targetSelect.value : 'all';
+      const targetName = targetSelect && targetSelect.selectedOptions[0] ? targetSelect.selectedOptions[0].text : 'All Devices';
+
+      const textarea = document.getElementById(`caption-input-${itemId}`);
+      const caption = textarea ? textarea.value.trim() : (item.captions?.vn || item.title);
+
+      const originalHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = `
+        <svg class="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+        <span>Đang bắn...</span>
+      `;
+
+      try {
+        const res = await fetch('/api/buffet/push', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            itemId,
+            caption,
+            targetId,
+            targetName
+          })
+        });
+
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.error || 'Push failed');
+
+        btn.className = 'flex-1 flex items-center justify-center gap-2 bg-emerald-600 text-white font-bold text-xs py-2.5 px-3 rounded-xl shadow-lg transition';
+        btn.innerHTML = `<span>✅ Đã Bắn Xong!</span>`;
+
+        playChime();
+        showToast(`⚡ Đã bắn ảnh & caption sang ${targetName}!`, 'success');
+
+        setTimeout(() => {
+          btn.className = 'flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-98 text-white font-bold text-xs py-2.5 px-3 rounded-xl shadow-lg shadow-blue-600/30 transition';
+          btn.innerHTML = originalHtml;
+          btn.disabled = false;
+        }, 2200);
+      } catch (err) {
+        console.error('Error pushing buffet item:', err);
+        btn.className = 'flex-1 flex items-center justify-center gap-2 bg-rose-600 text-white font-bold text-xs py-2.5 px-3 rounded-xl shadow-lg transition';
+        btn.innerHTML = `<span>❌ Lỗi: ${err.message}</span>`;
+        showToast(`Lỗi bắn bài: ${err.message}`, 'error');
+
+        setTimeout(() => {
+          btn.className = 'flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-98 text-white font-bold text-xs py-2.5 px-3 rounded-xl shadow-lg shadow-blue-600/30 transition';
+          btn.innerHTML = originalHtml;
+          btn.disabled = false;
+        }, 3000);
+      }
+    }
+
+    function copyBuffetCaption(itemId, btn) {
+      const textarea = document.getElementById(`caption-input-${itemId}`);
+      if (!textarea) return;
+      navigator.clipboard.writeText(textarea.value).then(() => {
+        const orig = btn.innerHTML;
+        btn.innerHTML = '✅';
+        showToast('Đã copy caption vào bộ nhớ tạm!', 'success');
+        setTimeout(() => btn.innerHTML = orig, 1500);
+      }).catch(() => {
+        showToast('Không copy được, hãy copy thủ công', 'error');
+      });
+    }
+
     // App Initialization
     document.addEventListener('DOMContentLoaded', async () => {
       setDeviceName(myDevice.name);
@@ -1644,7 +1995,7 @@
       // Hash route listener
       window.addEventListener('hashchange', () => {
         const hash = window.location.hash.replace('#', '') || 'home';
-        if (['home', 'transit', 'rednote', 'settings'].includes(hash)) {
+        if (['home', 'transit', 'buffet', 'rednote', 'settings'].includes(hash)) {
           switchTab(hash);
         }
       });
@@ -1966,9 +2317,24 @@
         navigator.serviceWorker.register('/sw.js').catch(() => {});
       }
 
+      // Bind Buffet Category Filters
+      document.querySelectorAll('.buffet-cat-filter').forEach(btn => {
+        btn.onclick = () => {
+          document.querySelectorAll('.buffet-cat-filter').forEach(b => {
+            b.className = 'buffet-cat-filter px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 transition whitespace-nowrap';
+          });
+          btn.className = 'buffet-cat-filter active px-3 py-1.5 rounded-xl text-xs font-semibold bg-blue-600 text-white transition whitespace-nowrap';
+          activeBuffetCategory = btn.dataset.cat;
+          renderBuffet();
+        };
+      });
+
+      // Load Content Buffet
+      loadBuffet();
+
       // Check initial URL hash
       const initialHash = window.location.hash.replace('#', '');
-      if (['transit', 'rednote', 'settings'].includes(initialHash)) {
+      if (['transit', 'buffet', 'rednote', 'settings'].includes(initialHash)) {
         switchTab(initialHash);
       } else {
         switchTab('home');

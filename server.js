@@ -8,6 +8,7 @@ const os = require('os');
 const qrcode = require('qrcode');
 const cors = require('cors');
 const { createProxyMiddleware } = require('http-proxy-middleware');
+const feeder = require('./feeder');
 
 const PORT = process.env.PORT || 7777;
 const STORAGE_DIR = path.join(__dirname, 'storage');
@@ -338,6 +339,17 @@ app.get('/api/server-tools', async (req, res) => {
       tag: 'Integrated Hub'
     },
     {
+      id: 'post-buffet',
+      name: 'Content Buffet & 1-Tap Feeder',
+      category: 'Media Tools',
+      icon: '🍱',
+      port: 7777,
+      path: '#buffet',
+      description: 'Hot news + natural human captions for phone farming with 1-tap push',
+      isIntegrated: true,
+      tag: '1-Tap Push'
+    },
+    {
       id: 'rednote',
       name: 'RedNote Downloader',
       category: 'Media Tools',
@@ -475,6 +487,116 @@ app.delete('/api/history', (req, res) => {
     if (ws.readyState === WebSocket.OPEN) ws.send(msg);
   }
   res.json({ success: true });
+});
+
+// Helper to download remote image to local storage for instant zero-click transfer
+async function downloadRemoteImage(url) {
+  try {
+    const res = await fetch(url, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' },
+      signal: AbortSignal.timeout(12000)
+    });
+    if (!res.ok) return null;
+    const buffer = Buffer.from(await res.arrayBuffer());
+    const ext = url.includes('.png') ? '.png' : '.jpg';
+    const filename = `buf-${Date.now()}-${Math.round(Math.random() * 1e6)}${ext}`;
+    const filePath = path.join(STORAGE_DIR, filename);
+    fs.writeFileSync(filePath, buffer);
+    return {
+      filename,
+      originalName: `viral_${Date.now()}${ext}`,
+      size: buffer.length,
+      mimeType: ext === '.png' ? 'image/png' : 'image/jpeg'
+    };
+  } catch (e) {
+    console.error('downloadRemoteImage error:', e.message);
+    return null;
+  }
+}
+
+// Auto-refresh buffet trends every 30 minutes
+setInterval(async () => {
+  try {
+    await feeder.refreshBuffet();
+  } catch (e) {}
+}, 30 * 60 * 1000);
+
+// Buffet Endpoints
+app.get('/api/buffet', async (req, res) => {
+  let items = feeder.getBuffetItems();
+  if (!items || items.length === 0) {
+    items = await feeder.refreshBuffet();
+  }
+  res.json(items);
+});
+
+app.post('/api/buffet/refresh', async (req, res) => {
+  try {
+    const items = await feeder.refreshBuffet();
+    res.json(items);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+app.post('/api/buffet/push', async (req, res) => {
+  const { itemId, caption, targetId, targetName } = req.body;
+  const items = feeder.getBuffetItems();
+  const buffetItem = items.find(i => i.id === itemId);
+
+  if (!buffetItem) {
+    return res.status(404).json({ error: 'Buffet item not found' });
+  }
+
+  const target = targetId || 'all';
+  const targetLabel = targetName || 'All Devices';
+  const createdItems = [];
+
+  // 1. Download image and dispatch as file item (Triggers auto-download on target device)
+  if (buffetItem.imageUrl) {
+    const downloaded = await downloadRemoteImage(buffetItem.imageUrl);
+    if (downloaded) {
+      const fileItem = {
+        id: 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6),
+        senderId: 'content-buffet',
+        senderName: '🍱 Buffet Feeder',
+        senderType: 'server',
+        target,
+        targetName: targetLabel,
+        contentType: 'image',
+        text: null,
+        file: {
+          filename: downloaded.filename,
+          originalName: downloaded.originalName,
+          size: downloaded.size,
+          mimeType: downloaded.mimeType,
+          downloadUrl: `/api/download/${downloaded.filename}`
+        },
+        timestamp: new Date().toISOString()
+      };
+      dispatchItem(fileItem);
+      createdItems.push(fileItem);
+    }
+  }
+
+  // 2. Dispatch caption text (Triggers zero-click clipboard auto-copy on target device)
+  const textToSend = caption || buffetItem.captions.vn || buffetItem.title;
+  const textItem = {
+    id: 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6),
+    senderId: 'content-buffet',
+    senderName: '🍱 Buffet Feeder',
+    senderType: 'server',
+    target,
+    targetName: targetLabel,
+    contentType: 'text',
+    text: textToSend,
+    file: null,
+    timestamp: new Date().toISOString()
+  };
+  dispatchItem(textItem);
+  createdItems.push(textItem);
+
+  res.json({ success: true, items: createdItems });
 });
 
 app.get('/api/download/:filename', (req, res) => {
