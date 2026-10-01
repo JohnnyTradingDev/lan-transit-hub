@@ -451,18 +451,20 @@
                 <span>📱</span>
                 <span>Chọn Máy Đăng Bài (Device Persona)</span>
               </span>
-              <span class="text-[11px] text-slate-400">Mỗi thiết bị có Style & Trường phái riêng</span>
+              <span class="text-[11px] text-slate-400">5 Thiết bị • Style & Trường phái riêng</span>
             </div>
 
-            <!-- Device Persona Cards Grid -->
-            <div id="devicePersonaRow" class="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-2.5">
-              <!-- Dynamically populated from device_personas.json -->
+            <!-- Device Persona Cards Row (Always in a single neat horizontal row, scrolls smoothly on small screens) -->
+            <div class="overflow-x-auto no-scrollbar -mx-1 px-1 pb-1">
+              <div id="devicePersonaRow" class="grid grid-cols-5 gap-2 min-w-[580px] sm:min-w-0">
+                <!-- Dynamically populated from device_personas.json -->
+              </div>
             </div>
           </div>
 
-          <!-- LEVEL 2: ACTIVE DEVICE PERSONA BANNER & NỀN TẢNG BÊN TRONG -->
-          <div id="activeDeviceBanner" class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 sm:p-4 shadow-xl space-y-3">
-            <!-- Active Device Profile Info -->
+          <!-- LEVEL 2: ACTIVE DEVICE BANNER & DÒNG LỌC -->
+          <div id="activeDeviceBanner" class="bg-slate-900/95 border border-slate-800 rounded-2xl p-3.5 sm:p-4 shadow-xl space-y-3">
+            <!-- Active Device Profile Info & Target Selector -->
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div class="flex items-start gap-3">
                 <div id="activeDeviceIcon" class="w-12 h-12 rounded-2xl bg-blue-600/20 text-blue-400 border border-blue-500/30 flex items-center justify-center text-2xl flex-shrink-0 shadow-inner">
@@ -471,10 +473,10 @@
                 <div class="min-w-0">
                   <div class="flex items-center gap-2 flex-wrap">
                     <h3 id="activeDeviceName" class="text-base font-bold text-white tracking-tight">Vivo</h3>
-                    <span id="activeDeviceVibe" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 font-mono">Gen Z Viral & Meme Addict</span>
+                    <span id="activeDeviceVibe" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 font-mono">Gen Z Viral</span>
                     <span id="activeDeviceSchoolBadge" class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30">🌐 Viral & Culture</span>
                   </div>
-                  <p id="activeDeviceDesc" class="text-xs text-slate-400 mt-1 line-clamp-1 sm:line-clamp-none">Chronically online, loves internet drama, viral moments, slang & reaction memes.</p>
+                  <p id="activeDeviceDesc" class="text-xs text-slate-400 mt-1 line-clamp-1">Chronically online, loves internet drama, viral moments, slang & reaction memes.</p>
                 </div>
               </div>
 
@@ -493,26 +495,32 @@
               </div>
             </div>
 
-            <!-- Nền tảng bên trong thiết bị (Sub-Tabs) + Niche / Trash Filters -->
-            <div class="pt-2.5 border-t border-slate-800/80 flex flex-col md:flex-row md:items-center justify-between gap-2.5">
-              <!-- Platform Switcher inside current device -->
-              <div class="flex items-center gap-2 flex-wrap">
-                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1 flex-shrink-0">
-                  <span>Nền tảng đăng:</span>
-                </span>
-                <div id="devicePlatformTabs" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-                  <!-- e.g. [Tất cả] [𝕏 Twitter / X] [🎵 TikTok] [🤖 Reddit] -->
-                </div>
+            <!-- ROW 1: NỀN TẢNG BÊN TRONG THIẾT BỊ (Được tách riêng biệt, căn lề thẳng) -->
+            <div class="pt-2.5 border-t border-slate-800/80 flex items-center gap-2">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1 flex-shrink-0 min-w-[110px]">
+                <span>🎯 Nền tảng:</span>
+              </span>
+              <div id="devicePlatformTabs" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 flex-1">
+                <!-- e.g. [✨ Tất cả] [𝕏 Twitter / X] [🎵 TikTok] [🤖 Reddit] -->
+              </div>
+            </div>
+
+            <!-- ROW 2: BỘ LỌC ĐỘ HOT & PHẠM VI (Được tách riêng biệt, không bị chèn ép lệch dòng) -->
+            <div class="pt-2 border-t border-slate-800/60 flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap">
+              <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+                <button data-filter="hot" class="buffet-view-filter active px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20 transition whitespace-nowrap flex items-center gap-1">
+                  <span>🔥 Tuyển chọn cực Hot (<span id="scopeHotCount">5</span> bài)</span>
+                </button>
+                <button data-filter="niche" class="buffet-view-filter px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white bg-slate-950 border border-slate-800 transition whitespace-nowrap flex items-center gap-1">
+                  <span id="scopeNicheLabel">🎯 Chuẩn Gu Máy Này</span>
+                </button>
+                <button data-filter="all" class="buffet-view-filter px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white bg-slate-950 border border-slate-800 transition whitespace-nowrap">
+                  <span>🌐 Tất cả tin</span>
+                </button>
               </div>
 
-              <!-- Topic Categories Filter & Trash Pill -->
-              <div id="buffetCategoryFilters" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 flex-shrink-0">
-                <button data-cat="all" class="buffet-cat-filter active px-2.5 py-1 rounded-lg text-xs font-semibold bg-blue-600 text-white transition whitespace-nowrap">Tất cả chủ đề</button>
-                <button data-cat="💻 Tech & AI" class="buffet-cat-filter px-2.5 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-slate-950 border border-slate-800 transition whitespace-nowrap">💻 Tech</button>
-                <button data-cat="🌐 Viral & Culture" class="buffet-cat-filter px-2.5 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-slate-950 border border-slate-800 transition whitespace-nowrap">🌐 Viral</button>
-                <button data-cat="🐾 Life & Stories" class="buffet-cat-filter px-2.5 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-slate-950 border border-slate-800 transition whitespace-nowrap">🐾 Life</button>
-                <button data-cat="🎮 Gaming & Pop" class="buffet-cat-filter px-2.5 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-slate-950 border border-slate-800 transition whitespace-nowrap">🎮 Game</button>
-                <button data-cat="__dismissed" class="buffet-cat-filter px-2.5 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-rose-300 bg-slate-950 border border-slate-800 transition whitespace-nowrap flex items-center gap-1">
+              <div class="flex-shrink-0">
+                <button data-filter="dismissed" class="buffet-view-filter px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-rose-300 bg-slate-950 border border-slate-800 transition whitespace-nowrap flex items-center gap-1">
                   <span>🗑️ Đã Ẩn</span>
                   <span id="buffetDismissedCountBadge" class="text-[9px] bg-slate-800 text-slate-400 px-1.5 py-0.2 rounded-full font-mono">0</span>
                 </button>
@@ -1767,7 +1775,7 @@
     // ==========================================
     let buffetItems = [];
     let buffetDismissedItems = [];
-    let activeBuffetCategory = 'all';
+    let activeBuffetFilter = 'hot'; // 'hot' (top 4-5) | 'niche' | 'all' | 'dismissed'
 
     // Default Fallback Personas
     let devicePersonas = [
@@ -2011,7 +2019,7 @@
           ? 'bg-blue-600/15 border-blue-500 shadow-lg shadow-blue-500/10 ring-2 ring-blue-500/70' 
           : 'bg-slate-900/80 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700';
 
-        card.className = `p-2.5 sm:p-3 rounded-2xl border text-left transition flex flex-col justify-between gap-1.5 relative overflow-hidden active:scale-98 ${borderStyle}`;
+        card.className = `min-w-[130px] sm:min-w-0 p-2.5 sm:p-3 rounded-2xl border text-left transition flex flex-col justify-between gap-1.5 relative overflow-hidden active:scale-98 ${borderStyle}`;
         card.innerHTML = `
           <div class="flex items-center justify-between w-full">
             <span class="text-xl sm:text-2xl">${p.icon}</span>
@@ -2150,12 +2158,38 @@
       }
     }
 
+    function selectBuffetFilter(filterType) {
+      activeBuffetFilter = filterType;
+      document.querySelectorAll('.buffet-view-filter').forEach(btn => {
+        const isThis = btn.dataset.filter === filterType;
+        if (isThis) {
+          if (filterType === 'hot') {
+            btn.className = 'buffet-view-filter active px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20 transition whitespace-nowrap flex items-center gap-1';
+          } else {
+            btn.className = 'buffet-view-filter active px-3 py-1.5 rounded-xl text-xs font-bold bg-blue-600 text-white shadow-md transition whitespace-nowrap flex items-center gap-1';
+          }
+        } else {
+          btn.className = 'buffet-view-filter px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white bg-slate-950 border border-slate-800 transition whitespace-nowrap flex items-center gap-1';
+        }
+      });
+      renderBuffet();
+    }
+
     function renderBuffet() {
       const grid = document.getElementById('buffetGrid');
       if (!grid) return;
 
+      const activePersona = getActivePersona() || { name: 'Thiết bị', icon: '📱', primaryCategory: '🌐 Viral & Culture' };
+
+      // Update scope label texts
+      const nicheLabel = document.getElementById('scopeNicheLabel');
+      const nicheItemsCount = buffetItems.filter(i => i.category === activePersona.primaryCategory).length;
+      if (nicheLabel) {
+        nicheLabel.textContent = `🎯 Chuẩn Gu ${activePersona.name} (${nicheItemsCount})`;
+      }
+
       // VIEW MODE 1: DISMISSED / HIDDEN ITEMS TRASH TAB
-      if (activeBuffetCategory === '__dismissed') {
+      if (activeBuffetFilter === 'dismissed') {
         if (buffetDismissedItems.length === 0) {
           grid.innerHTML = `
             <div class="col-span-full py-16 text-center text-slate-500 bg-slate-900/50 rounded-2xl border border-slate-800/80">
@@ -2207,9 +2241,28 @@
       }
 
       // VIEW MODE 2: ACTIVE BUFFET ITEMS
-      let items = buffetItems;
-      if (activeBuffetCategory !== 'all') {
-        items = items.filter(i => i.category === activeBuffetCategory);
+      let items = [...buffetItems];
+
+      if (activeBuffetFilter === 'hot') {
+        // Top 4 to 5 hottest posts for this active persona!
+        // Prioritize persona's primary category, supplemented by global top hot posts
+        const nicheList = items.filter(i => i.category === activePersona.primaryCategory);
+        nicheList.sort((a, b) => (b.hotScore || 75) - (a.hotScore || 75));
+        
+        const others = items.filter(i => i.category !== activePersona.primaryCategory);
+        others.sort((a, b) => (b.hotScore || 75) - (a.hotScore || 75));
+
+        // Combine: take niche first, then others, cap to 5 items strictly
+        const combined = [...nicheList, ...others];
+        items = combined.slice(0, 5);
+      } else if (activeBuffetFilter === 'niche') {
+        items = items.filter(i => i.category === activePersona.primaryCategory);
+      }
+
+      // Update scopeHotCount badge
+      const hotCountBadge = document.getElementById('scopeHotCount');
+      if (hotCountBadge) {
+        hotCountBadge.textContent = Math.min(items.length, 5);
       }
 
       if (items.length === 0) {
@@ -2226,7 +2279,6 @@
         return;
       }
 
-      const activePersona = getActivePersona() || { name: 'Thiết bị', icon: '📱' };
       const platObj = (activePersona.platforms || []).find(pl => pl.id === activePlatformId);
       const platShortName = platObj ? platObj.name.replace(/^[^\w\s]+/, '').trim() : 'Tất cả';
 
@@ -2235,6 +2287,8 @@
         const card = document.createElement('div');
         card.id = `buffet-card-${item.id}`;
         card.className = 'bg-slate-900/90 border border-slate-800 hover:border-slate-700/80 rounded-2xl p-4 shadow-xl flex flex-col justify-between space-y-3.5 transition duration-200';
+
+        const hotBadgeHtml = `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 font-mono">🔥 ${item.hotScore || 85}% Hot</span>`;
 
         const platformsHtml = (item.suggestedPlatforms || []).map(p => {
           let color = 'bg-slate-800 text-slate-300 border-slate-700';
@@ -2265,7 +2319,8 @@
             <!-- Header Badges + Top Dismiss Button -->
             <div class="flex items-center justify-between gap-2 flex-wrap">
               <div class="flex items-center gap-1.5 flex-wrap">
-                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 font-mono">${item.source}</span>
+                ${hotBadgeHtml}
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-800 text-slate-300 border border-slate-700 font-mono">${item.source}</span>
                 <span class="text-[11px] text-slate-500 font-mono">${dateStr}</span>
               </div>
               <div class="flex items-center gap-1 flex-wrap">
@@ -2842,15 +2897,10 @@
         navigator.serviceWorker.register('/sw.js').catch(() => {});
       }
 
-      // Bind Buffet Category Filters
-      document.querySelectorAll('.buffet-cat-filter').forEach(btn => {
+      // Bind Buffet View / Hot Scope Filters
+      document.querySelectorAll('.buffet-view-filter').forEach(btn => {
         btn.onclick = () => {
-          document.querySelectorAll('.buffet-cat-filter').forEach(b => {
-            b.className = 'buffet-cat-filter px-2.5 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-slate-950 border border-slate-800 transition whitespace-nowrap';
-          });
-          btn.className = 'buffet-cat-filter active px-2.5 py-1 rounded-lg text-xs font-semibold bg-blue-600 text-white transition whitespace-nowrap';
-          activeBuffetCategory = btn.dataset.cat;
-          renderBuffet();
+          selectBuffetFilter(btn.dataset.filter);
         };
       });
 

@@ -67,6 +67,27 @@ function cleanHtmlEntities(str) {
     .trim();
 }
 
+const VIRAL_KEYWORDS = [
+  'break', 'breaks', 'record', 'leak', 'leaks', 'announced', 'announces', 'reveals', 'revealed',
+  'insane', 'wild', 'secret', 'ban', 'banned', 'update', 'shock', 'shocking', 'first look',
+  'gta', 'steam', 'nvidia', 'apple', 'iphone', 'ai', 'robot', 'viral', 'drama', 'game of the year',
+  'trailer', 'launch', 'worst', 'best', 'million', 'billion', 'chatgpt', 'gemini', 'deepseek',
+  'tiktok', 'warning', 'finally', 'free', 'crazy', 'shut down', 'cancel', 'huge', 'unreal', 'new',
+  'confirms', 'drops', 'epic', 'ruins', 'genius', 'masterpiece', 'flaw', 'fails', 'vs', 'fight'
+];
+
+function calculateHotScore(title) {
+  let score = 78;
+  const lower = (title || '').toLowerCase();
+  VIRAL_KEYWORDS.forEach(kw => {
+    if (lower.includes(kw)) score += 4;
+  });
+  if (/\d+/.test(title)) score += 3;
+  if (title.length >= 35 && title.length <= 95) score += 3;
+  if (/[?!]/.test(title)) score += 2;
+  return Math.min(99, Math.max(76, score));
+}
+
 function generateCaptions(title) {
   const cleanTitle = cleanHtmlEntities(title).replace(/\.$/, '');
 
@@ -190,8 +211,8 @@ async function fetchRssFeed(url, sourceName, category) {
                        raw.match(/<img[^>]+src=\"([^\">]+)\"/i);
       let img = imgMatch ? imgMatch[1].replace(/&#038;|&amp;/g, '&') : '';
       
-      // Filter out small avatars or icons
-      if (img.includes('avatar') || img.includes('logo_rss') || img.includes('1x1.')) img = '';
+      // Require valid image for social media posting
+      if (!img) continue;
 
       // Extract article link
       const linkMatch = raw.match(/<link[^>]+href=\"([^\">]+)\"/i) ||
@@ -200,6 +221,7 @@ async function fetchRssFeed(url, sourceName, category) {
 
       const id = 'buf-' + crypto.createHash('md5').update(title).digest('hex').slice(0, 10);
       const captions = generateCaptions(title);
+      const hotScore = calculateHotScore(title);
 
       items.push({
         id,
@@ -207,15 +229,18 @@ async function fetchRssFeed(url, sourceName, category) {
         source: sourceName,
         category,
         isVietnamese: false,
-        imageUrl: img || null,
+        imageUrl: img,
         articleUrl: link,
         captions,
+        hotScore,
         suggestedPlatforms: ['X/Twitter', 'Reddit', 'Instagram', 'TikTok'],
         fetchedAt: new Date().toISOString()
       });
     }
 
-    return items;
+    // Sort by hotScore descending and return only top 4 hottest posts per source
+    items.sort((a, b) => b.hotScore - a.hotScore);
+    return items.slice(0, 4);
   } catch (e) {
     console.error(`Error fetching feed ${sourceName}:`, e.message);
     return [];
@@ -223,7 +248,7 @@ async function fetchRssFeed(url, sourceName, category) {
 }
 
 async function refreshBuffet() {
-  console.log('[Content Buffet] Scraping fresh 100% English trending news...');
+  console.log('[Content Buffet] Scraping fresh 100% English trending news (Hot Curated)...');
   const feeds = [
     {
       url: 'https://www.theverge.com/rss/index.xml',
@@ -265,12 +290,15 @@ async function refreshBuffet() {
   });
 
   const dismissedMap = getDismissedMap();
-  // Filter out any dismissed or posted IDs
-  const finalItems = Array.from(uniqueMap.values()).filter(item => !dismissedMap[item.id]);
+  // Filter out any dismissed or posted IDs, sort by highest hotScore
+  const finalItems = Array.from(uniqueMap.values())
+    .filter(item => !dismissedMap[item.id])
+    .sort((a, b) => (b.hotScore || 75) - (a.hotScore || 75))
+    .slice(0, 20); // Cap total buffet to top 20 items max
 
   try {
     fs.writeFileSync(BUFFET_FILE, JSON.stringify(finalItems, null, 2), 'utf8');
-    console.log(`[Content Buffet] Updated buffet with ${finalItems.length} English items (${Object.keys(dismissedMap).length} dismissed/hidden).`);
+    console.log(`[Content Buffet] Updated curated buffet with ${finalItems.length} top hot English items (${Object.keys(dismissedMap).length} dismissed/hidden).`);
   } catch (err) {
     console.error('Error saving buffet.json:', err);
   }
