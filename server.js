@@ -615,8 +615,8 @@ app.post('/api/buffet/push', async (req, res) => {
     return res.status(404).json({ error: 'Buffet item not found' });
   }
 
-  const target = targetId || 'all';
-  const targetLabel = targetName || 'All Devices';
+  const target = targetId || (bridgeState.online ? 'scrcpy-bridge' : 'all');
+  const targetLabel = targetName || (bridgeState.online ? (bridgeState.deviceModel ? `Cáp ${bridgeState.deviceModel}` : 'Cáp Scrcpy') : 'All Devices');
   const createdItems = [];
   let downloadedFile = null;
 
