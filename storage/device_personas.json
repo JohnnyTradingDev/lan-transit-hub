@@ -11,8 +11,8 @@
     "matchKeywords": ["vivo"],
     "primaryCategory": "🌐 Viral & Culture",
     "platforms": [
-      { "id": "all", "name": "✨ Tất cả nền tảng", "badge": "Auto", "hashtags": false },
-      { "id": "x", "name": "𝕏 Twitter / X", "badge": "Slang & Chaos", "hashtags": false },
+      { "id": "all", "name": "✨ Tất cả", "badge": "Auto", "hashtags": false },
+      { "id": "x", "name": "𝕏 X", "badge": "Slang & Chaos", "hashtags": false },
       { "id": "tiktok", "name": "🎵 TikTok", "badge": "Hook + Tags", "hashtags": true, "tags": ["#fyp", "#viral", "#trending", "#storytime"] },
       { "id": "reddit", "name": "🤖 Reddit", "badge": "Relatable r/all", "hashtags": false }
     ],
@@ -66,8 +66,8 @@
     "matchKeywords": ["iphone", "apple", "ios"],
     "primaryCategory": "💻 Tech & AI",
     "platforms": [
-      { "id": "all", "name": "✨ Tất cả nền tảng", "badge": "Auto", "hashtags": false },
-      { "id": "x", "name": "𝕏 Twitter / X", "badge": "Tech News", "hashtags": false },
+      { "id": "all", "name": "✨ Tất cả", "badge": "Auto", "hashtags": false },
+      { "id": "x", "name": "𝕏 X", "badge": "Tech News", "hashtags": false },
       { "id": "threads", "name": "🧵 Threads", "badge": "Deep Discussion", "hashtags": false },
       { "id": "reddit", "name": "🤖 Reddit", "badge": "r/technology", "hashtags": false }
     ],
@@ -116,10 +116,10 @@
     "matchKeywords": ["samsung", "galaxy", "j7"],
     "primaryCategory": "💰 Finance & Crypto",
     "platforms": [
-      { "id": "all", "name": "✨ Tất cả nền tảng", "badge": "Auto", "hashtags": false },
-      { "id": "x", "name": "𝕏 Twitter / X", "badge": "Crypto Alpha", "hashtags": false },
+      { "id": "all", "name": "✨ Tất cả", "badge": "Auto", "hashtags": false },
+      { "id": "x", "name": "𝕏 X", "badge": "Crypto Alpha", "hashtags": false },
       { "id": "reddit", "name": "🤖 Reddit", "badge": "r/CryptoCurrency", "hashtags": false },
-      { "id": "youtube", "name": "▶️ YouTube Shorts", "badge": "Market Hook", "hashtags": true, "tags": ["#crypto", "#bitcoin", "#trading", "#finance", "#money"] }
+      { "id": "youtube", "name": "▶️ YouTube", "badge": "Market Hook", "hashtags": true, "tags": ["#crypto", "#bitcoin", "#trading", "#finance", "#money"] }
     ],
     "templates": {
       "x": [
@@ -168,10 +168,10 @@
     "matchKeywords": ["huawei", "honor"],
     "primaryCategory": "💃 Glamour & Beauty",
     "platforms": [
-      { "id": "all", "name": "✨ Tất cả nền tảng", "badge": "Auto", "hashtags": false },
+      { "id": "all", "name": "✨ Tất cả", "badge": "Auto", "hashtags": false },
       { "id": "instagram", "name": "📸 Instagram", "badge": "Glamour / OOTD", "hashtags": true, "tags": ["#beauty", "#glamour", "#ootd", "#style", "#model", "#explorepage"] },
       { "id": "tiktok", "name": "🎵 TikTok", "badge": "Visual Hook", "hashtags": true, "tags": ["#fyp", "#beauty", "#gorgeous", "#outfitinspo", "#slay"] },
-      { "id": "x", "name": "𝕏 Twitter / X", "badge": "Photo Drop", "hashtags": false }
+      { "id": "x", "name": "𝕏 X", "badge": "Photo Drop", "hashtags": false }
     ],
     "templates": {
       "instagram": [
@@ -217,8 +217,8 @@
     "matchKeywords": ["laptop", "pc", "desktop", "chrome", "windows", "linux", "homesever"],
     "primaryCategory": "🎮 Gaming & Pop",
     "platforms": [
-      { "id": "all", "name": "✨ Tất cả nền tảng", "badge": "Auto", "hashtags": false },
-      { "id": "x", "name": "𝕏 Twitter / X", "badge": "Gamer Hype", "hashtags": false },
+      { "id": "all", "name": "✨ Tất cả", "badge": "Auto", "hashtags": false },
+      { "id": "x", "name": "𝕏 X", "badge": "Gamer Hype", "hashtags": false },
       { "id": "reddit", "name": "🤖 Reddit", "badge": "r/gaming", "hashtags": false },
       { "id": "tiktok", "name": "🎵 TikTok", "badge": "Gaming Clips", "hashtags": true, "tags": ["#gaming", "#gamer", "#steam", "#videogames", "#pcbuild"] }
     ],

@@ -469,14 +469,14 @@
             </div>
           </div>
 
-          <!-- LEVEL 1: CHỌN THIẾT BỊ NUÔI (5 DEVICES WITH PERSONAS) -->
+          <!-- LEVEL 1: CHỌN MÁY NUÔI (5 PERSONAS) -->
           <div class="space-y-2">
             <div class="flex items-center justify-between px-1">
               <span class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
                 <span>📱</span>
-                <span>Chọn Máy Đăng Bài (Device Persona)</span>
+                <span>Máy Nuôi (Persona)</span>
               </span>
-              <span class="text-[11px] text-slate-400">5 Thiết bị • Style & Trường phái riêng</span>
+              <span class="text-[11px] text-slate-400">5 Style riêng</span>
             </div>
 
             <!-- Device Persona Cards Row (Always in a single neat horizontal row, scrolls smoothly on small screens) -->
@@ -509,7 +509,7 @@
               <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap justify-between sm:justify-end border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-800">
                 <label class="flex items-center gap-1.5 cursor-pointer text-[11px] text-slate-300 hover:text-white select-none bg-slate-950 px-2.5 py-1.5 rounded-xl border border-slate-800 whitespace-nowrap">
                   <input type="checkbox" id="buffetAutoDismiss" checked class="w-4 h-4 accent-blue-600 rounded">
-                  <span>⚡ Tự ẩn bài khi Bắn</span>
+                  <span>⚡ Tự ẩn khi Bắn</span>
                 </label>
 
                 <div class="relative">
@@ -520,33 +520,33 @@
               </div>
             </div>
 
-            <!-- ROW 1: NỀN TẢNG BÊN TRONG THIẾT BỊ (Được tách riêng biệt, căn lề thẳng) -->
+            <!-- ROW 1: KÊNH ĐĂNG (Gọn gàng) -->
             <div class="pt-2.5 border-t border-slate-800/80 flex items-center gap-2">
-              <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1 flex-shrink-0 min-w-[110px]">
-                <span>🎯 Nền tảng:</span>
+              <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1 flex-shrink-0 min-w-[70px]">
+                <span>🎯 Kênh:</span>
               </span>
               <div id="devicePlatformTabs" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 flex-1">
-                <!-- e.g. [✨ Tất cả] [𝕏 Twitter / X] [🎵 TikTok] [🤖 Reddit] -->
+                <!-- e.g. [✨ Tất cả] [𝕏 X] [🎵 TikTok] [🤖 Reddit] -->
               </div>
             </div>
 
-            <!-- ROW 2: BỘ LỌC ĐỘ HOT & PHẠM VI (Được tách riêng biệt, không bị chèn ép lệch dòng) -->
+            <!-- ROW 2: BỘ LỌC ĐỘ HOT & PHẠM VI (Gọn gàng) -->
             <div class="pt-2 border-t border-slate-800/60 flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap">
               <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
                 <button data-filter="hot" class="buffet-view-filter active px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20 transition whitespace-nowrap flex items-center gap-1">
-                  <span>🔥 Tuyển chọn cực Hot (<span id="scopeHotCount">5</span> bài)</span>
+                  <span>🔥 Top Hot (<span id="scopeHotCount">5</span>)</span>
                 </button>
                 <button data-filter="niche" class="buffet-view-filter px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white bg-slate-950 border border-slate-800 transition whitespace-nowrap flex items-center gap-1">
-                  <span id="scopeNicheLabel">🎯 Chuẩn Gu Máy Này</span>
+                  <span id="scopeNicheLabel">🎯 Chuẩn Gu</span>
                 </button>
                 <button data-filter="all" class="buffet-view-filter px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white bg-slate-950 border border-slate-800 transition whitespace-nowrap">
-                  <span>🌐 Tất cả tin</span>
+                  <span>🌐 Tất cả</span>
                 </button>
               </div>
 
               <div class="flex-shrink-0">
                 <button data-filter="dismissed" class="buffet-view-filter px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-rose-300 bg-slate-950 border border-slate-800 transition whitespace-nowrap flex items-center gap-1">
-                  <span>🗑️ Đã Ẩn</span>
+                  <span>🗑️ Đã ẩn</span>
                   <span id="buffetDismissedCountBadge" class="text-[9px] bg-slate-800 text-slate-400 px-1.5 py-0.2 rounded-full font-mono">0</span>
                 </button>
               </div>
@@ -2319,7 +2319,7 @@
       const nicheLabel = document.getElementById('scopeNicheLabel');
       const nicheItemsCount = buffetItems.filter(i => i.category === activePersona.primaryCategory).length;
       if (nicheLabel) {
-        nicheLabel.textContent = `🎯 Chuẩn Gu ${activePersona.name} (${nicheItemsCount})`;
+        nicheLabel.textContent = `🎯 Gu ${activePersona.name} (${nicheItemsCount})`;
       }
 
       // VIEW MODE 1: DISMISSED / HIDDEN ITEMS TRASH TAB
