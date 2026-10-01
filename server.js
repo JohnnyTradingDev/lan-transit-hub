@@ -619,6 +619,29 @@ app.get('/api/buffet/dismissed', (req, res) => {
   res.json(feeder.getDismissedItems());
 });
 
+// Device personas endpoints
+const PERSONAS_FILE = path.join(STORAGE_DIR, 'device_personas.json');
+
+app.get('/api/buffet/personas', (req, res) => {
+  if (fs.existsSync(PERSONAS_FILE)) {
+    try {
+      const data = JSON.parse(fs.readFileSync(PERSONAS_FILE, 'utf8'));
+      return res.json(data);
+    } catch (e) {}
+  }
+  res.json([]);
+});
+
+app.post('/api/buffet/personas', (req, res) => {
+  try {
+    const list = req.body;
+    fs.writeFileSync(PERSONAS_FILE, JSON.stringify(list, null, 2), 'utf8');
+    res.json({ success: true, count: list.length });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 app.get('/api/download/:filename', (req, res) => {
   const filename = path.basename(req.params.filename);
   const filePath = path.join(STORAGE_DIR, filename);

@@ -1,0 +1,258 @@
+[
+  {
+    "id": "vivo",
+    "name": "Vivo",
+    "icon": "📱",
+    "personaName": "Gen Z Viral & Meme Addict",
+    "school": "🌐 Viral & Culture",
+    "schoolIcon": "🔥",
+    "vibeTag": "Slang • Memes • Chaos",
+    "description": "Chronically online, loves internet drama, viral moments, slang & reaction memes.",
+    "matchKeywords": ["vivo"],
+    "primaryCategory": "🌐 Viral & Culture",
+    "platforms": [
+      { "id": "all", "name": "✨ Tất cả nền tảng", "badge": "Auto", "hashtags": false },
+      { "id": "x", "name": "𝕏 Twitter / X", "badge": "Slang & Chaos", "hashtags": false },
+      { "id": "tiktok", "name": "🎵 TikTok", "badge": "Hook + Tags", "hashtags": true, "tags": ["#fyp", "#viral", "#trending", "#storytime"] },
+      { "id": "reddit", "name": "🤖 Reddit", "badge": "Relatable r/all", "hashtags": false }
+    ],
+    "templates": {
+      "x": [
+        "ngl this is actually crazy lol: {title} 💀",
+        "bruh no way {title} 😭",
+        "wait is this actually real... {title} kinda wild ngl",
+        "honestly didn't have this on my 2026 bingo card: {title}",
+        "bro what is happening in 2026 💀 {title}",
+        "ain't no way {title} 😭",
+        "lowkey didn't expect this at all: {title} 💀"
+      ],
+      "tiktok": [
+        "wait is this actually real?? {title} 💀 {tags}",
+        "nah because why is nobody talking about this: {title} {tags}",
+        "New fear unlocked: {title} 😭 {tags}",
+        "bro this situation is actually insane: {title} {tags}"
+      ],
+      "reddit": [
+        "ain't no way: {title}",
+        "this feels like a simulation at this point lol: {title}",
+        "{title} - thoughts on this? 👀",
+        "bro what are they even doing here: {title}"
+      ],
+      "debate": [
+        "Wait are you guys rockin with this or nah? {title} 👇",
+        "Real or overhyped? {title} 👀",
+        "{title} • W or L?"
+      ],
+      "short": [
+        "{title} 💀",
+        "ain't no way: {title}",
+        "Bruh. {title} 😭"
+      ],
+      "default": [
+        "ngl this is actually crazy lol: {title} 💀",
+        "bruh no way {title} 😭"
+      ]
+    }
+  },
+  {
+    "id": "iphone",
+    "name": "iPhone",
+    "icon": "🍏",
+    "personaName": "Tech Geek & Apple / AI Specialist",
+    "school": "💻 Tech & AI",
+    "schoolIcon": "🤖",
+    "vibeTag": "AI • Gadgets • Silicon Valley",
+    "description": "Tech analyst, follows AI breakthroughs, Apple ecosystem, hardware & future gadgets.",
+    "matchKeywords": ["iphone", "apple", "ios"],
+    "primaryCategory": "💻 Tech & AI",
+    "platforms": [
+      { "id": "all", "name": "✨ Tất cả nền tảng", "badge": "Auto", "hashtags": false },
+      { "id": "x", "name": "𝕏 Twitter / X", "badge": "Tech News", "hashtags": false },
+      { "id": "threads", "name": "🧵 Threads", "badge": "Deep Discussion", "hashtags": false },
+      { "id": "reddit", "name": "🤖 Reddit", "badge": "r/technology", "hashtags": false }
+    ],
+    "templates": {
+      "x": [
+        "Honestly a pretty significant development in the space: {title}. Thoughts?",
+        "Big move for the tech industry: {title}. Curious how this plays out.",
+        "In case you missed it: {title}. Thoughts on this direction?",
+        "AI is moving faster than expected: {title}"
+      ],
+      "threads": [
+        "Curious how everyone feels about this: {title}. Huge leap forward if true.",
+        "Honestly did not expect this so soon: {title}. What's your take?",
+        "Thoughts on this tech update? {title}. W or L?"
+      ],
+      "reddit": [
+        "{title} - What are the real-world implications of this?",
+        "Is AI moving too fast or is this actually the right move? {title} 🤔",
+        "{title} - Is it just me or is this actually a good direction?"
+      ],
+      "debate": [
+        "Is this genuinely revolutionary or just good marketing? {title} 🤔",
+        "Would you actually use this daily? {title} 👇",
+        "{title} • Rate this development 1 to 10"
+      ],
+      "short": [
+        "Big move: {title} ⚡",
+        "In case you missed it: {title}",
+        "The future is wild: {title}"
+      ],
+      "default": [
+        "Honestly a pretty significant development in the space: {title}. Thoughts?",
+        "{title} - Big move for the industry"
+      ]
+    }
+  },
+  {
+    "id": "samsung",
+    "name": "Samsung",
+    "icon": "📱",
+    "personaName": "Karma Farmer & Deep Discussionist",
+    "school": "🐾 Life & Stories",
+    "schoolIcon": "💬",
+    "vibeTag": "Debate • Human Drama • Questions",
+    "description": "Curious mind, human drama, moral dilemmas, questions that force 1,000 comments.",
+    "matchKeywords": ["samsung", "galaxy", "j7"],
+    "primaryCategory": "🐾 Life & Stories",
+    "platforms": [
+      { "id": "all", "name": "✨ Tất cả nền tảng", "badge": "Auto", "hashtags": false },
+      { "id": "reddit", "name": "🤖 Reddit", "badge": "Comment Bait", "hashtags": false },
+      { "id": "x", "name": "𝕏 Twitter / X", "badge": "Poll / Debate", "hashtags": false },
+      { "id": "youtube", "name": "▶️ YouTube Shorts", "badge": "Story Hook", "hashtags": true, "tags": ["#shorts", "#story", "#facts", "#mindblown"] }
+    ],
+    "templates": {
+      "reddit": [
+        "{title} • What would you honestly do in this situation? 👇",
+        "Is it just me or does this sound completely wild? {title} 🤔",
+        "Valid or completely unnecessary? {title} 👇",
+        "Rate this from 1 to 10: {title} 👇",
+        "{title} • Unpopular opinion: thoughts?"
+      ],
+      "x": [
+        "Real or completely overhyped? {title} • W or L? 👀",
+        "What would you do in this situation? {title} 👇",
+        "Hot take on this? {title} 👀",
+        "Honestly speechless reading this: {title}"
+      ],
+      "youtube": [
+        "You won't believe what just happened: {title} 🤔 {tags}",
+        "This situation is getting out of hand: {title} {tags}",
+        "Wait till you hear the full story: {title} 👀 {tags}"
+      ],
+      "debate": [
+        "Would you forgive someone in this situation? {title} 👇",
+        "100% justified or totally out of line? {title} 🤔",
+        "What is your immediate reaction to this? {title}"
+      ],
+      "short": [
+        "This is wild: {title} 👀",
+        "Speechless. {title}",
+        "Can't make this up: {title}"
+      ],
+      "default": [
+        "{title} • What would you honestly do in this situation? 👇",
+        "Real or overhyped? {title} 👀"
+      ]
+    }
+  },
+  {
+    "id": "huawei",
+    "name": "Huawei",
+    "icon": "📱",
+    "personaName": "Aesthetic Visuals & Lifestyle Creator",
+    "school": "🎨 Life & Visuals",
+    "schoolIcon": "✨",
+    "vibeTag": "Aesthetic • Cozy • Comics",
+    "description": "Lover of aesthetics, comics, cozy lifestyle, satisfying visuals & RedNote vibes.",
+    "matchKeywords": ["huawei", "honor"],
+    "primaryCategory": "🐾 Life & Stories",
+    "platforms": [
+      { "id": "all", "name": "✨ Tất cả nền tảng", "badge": "Auto", "hashtags": false },
+      { "id": "instagram", "name": "📸 Instagram", "badge": "Aesthetic Vibes", "hashtags": true, "tags": ["#aesthetic", "#lifestyle", "#mood", "#explorepage", "#vibes"] },
+      { "id": "tiktok", "name": "🎵 TikTok", "badge": "Visual Hook", "hashtags": true, "tags": ["#fyp", "#satisfying", "#cozy", "#aesthetic"] },
+      { "id": "youtube", "name": "▶️ YouTube Shorts", "badge": "Quick Shorts", "hashtags": true, "tags": ["#shorts", "#lifestyle", "#satisfying"] }
+    ],
+    "templates": {
+      "instagram": [
+        "{title} ✨ Aesthetic level 100.\n.\n{tags}",
+        "This just made my entire day: {title} 🤍\n.\n{tags}",
+        "Cozy energy for your feed: {title} ✨\n.\n{tags}",
+        "Honestly so satisfying to see: {title} 🌿\n.\n{tags}"
+      ],
+      "tiktok": [
+        "New comfort content unlocked 😭: {title} {tags}",
+        "This is pure therapy for the eyes: {title} ✨ {tags}",
+        "Why is this so relatable though: {title} {tags}"
+      ],
+      "youtube": [
+        "Wait till you see this... {title} 👀 {tags}",
+        "Most satisfying moment today: {title} ✨ {tags}"
+      ],
+      "debate": [
+        "Rate this aesthetic from 1 to 10: {title} ✨",
+        "Would you live here / try this? {title} 🤍"
+      ],
+      "short": [
+        "{title} ✨",
+        "Pure comfort: {title} 🤍",
+        "Aesthetic perfection: {title}"
+      ],
+      "default": [
+        "{title} ✨ Aesthetic level 100.",
+        "This just made my entire day: {title} 🤍"
+      ]
+    }
+  },
+  {
+    "id": "laptop",
+    "name": "Laptop",
+    "icon": "💻",
+    "personaName": "Gamer & Nerd Culture Specialist",
+    "school": "🎮 Gaming & Pop",
+    "schoolIcon": "🎮",
+    "vibeTag": "Steam • PC Master • Lore",
+    "description": "PC Master Race, Steam sales, gaming industry insider, movie easter eggs.",
+    "matchKeywords": ["laptop", "pc", "desktop", "chrome", "windows", "linux", "homesever"],
+    "primaryCategory": "🎮 Gaming & Pop",
+    "platforms": [
+      { "id": "all", "name": "✨ Tất cả nền tảng", "badge": "Auto", "hashtags": false },
+      { "id": "x", "name": "𝕏 Twitter / X", "badge": "Gamer Hype", "hashtags": false },
+      { "id": "reddit", "name": "🤖 Reddit", "badge": "r/gaming", "hashtags": false },
+      { "id": "tiktok", "name": "🎵 TikTok", "badge": "Gaming Clips", "hashtags": true, "tags": ["#gaming", "#gamer", "#steam", "#videogames", "#pcbuild"] }
+    ],
+    "templates": {
+      "x": [
+        "Gaming industry is cooking right now lol: {title}",
+        "{title} - 10/10 Game of the Year or total skip? 👇",
+        "Steam record broken again: {title} 🎮",
+        "Bro the lore behind this is crazy: {title}"
+      ],
+      "reddit": [
+        "{title} • Hot take: does anyone actually want this?",
+        "{title} - Is this a W or an L for gamers? Discuss.",
+        "Honestly did not expect this from the developers: {title}",
+        "{title} - Rate this from 1 to 10 👇"
+      ],
+      "tiktok": [
+        "Nah this game update is insane: {title} 🎮 {tags}",
+        "Gamers won today: {title} 🔥 {tags}",
+        "Wait is this game actually coming out? {title} {tags}"
+      ],
+      "debate": [
+        "{title} • 10/10 Masterpiece or massive flop? 👇",
+        "Are developers going too far with this? {title} 🤔",
+        "W or L update for gamers? {title}"
+      ],
+      "short": [
+        "{title} 🎮",
+        "Gamer moment: {title}",
+        "Steam record: {title} 🔥"
+      ],
+      "default": [
+        "Gaming industry is cooking right now lol: {title}",
+        "{title} • 10/10 Game of the Year or total skip? 👇"
+      ]
+    }
+  }
+]

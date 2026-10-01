@@ -1,6 +1,7 @@
 node_modules/
 storage/*
 !storage/.gitkeep
+!storage/device_personas.json
 .DS_Store
 *.log
 .env

@@ -419,20 +419,20 @@
         <!-- ========================================== -->
         <section id="panel-buffet" class="panel-section max-w-5xl mx-auto space-y-4 hidden">
           
-          <!-- Buffet Banner & Target Control -->
+          <!-- Buffet Banner -->
           <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-amber-950/40 via-slate-900 to-indigo-950/40 border border-slate-800/90 p-4 sm:p-5 shadow-xl">
             <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <div class="flex items-center gap-2 mb-1">
                   <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                    🍱 Trạm Tiếp Tế Bài Đăng 1-Chạm
+                    🍱 Trạm Tiếp Tế Bài Đăng Đa Thiết Bị
                   </span>
                   <span id="buffetCountBadge" class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono text-slate-300 bg-slate-800/80 border border-slate-700">
                     Đang tải...
                   </span>
                 </div>
-                <h2 class="text-lg sm:text-xl font-bold text-white tracking-tight">Content Buffet & 1-Tap Feeder</h2>
-                <p class="text-xs text-slate-400 mt-0.5">Tin nóng chọn lọc + Caption người thật. Bấm 1 nút bắn thẳng ảnh vào Gallery & chữ vào Clipboard của máy nuôi!</p>
+                <h2 class="text-lg sm:text-xl font-bold text-white tracking-tight">Device-Centric Content Buffet</h2>
+                <p class="text-xs text-slate-400 mt-0.5">Chọn máy nuôi ➡️ Chọn nền tảng ➡️ Caption tự sinh theo Style người thật & Hashtag chuẩn ➡️ 1-Chạm bắn bài!</p>
               </div>
 
               <div class="flex items-center gap-2 flex-shrink-0">
@@ -444,42 +444,79 @@
             </div>
           </div>
 
-          <!-- Sticky / Quick Target Selection Bar -->
-          <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div class="flex items-center gap-2.5">
-              <div class="w-9 h-9 rounded-xl bg-blue-600/20 text-blue-400 flex items-center justify-center text-lg flex-shrink-0">
-                🎯
-              </div>
-              <div>
-                <p class="text-xs font-bold text-white uppercase tracking-wider">Thiết Bị Nhận (Target Device)</p>
-                <p class="text-[11px] text-slate-400">Ảnh tự tải vào Gallery • Chữ tự copy vào Clipboard (Zero-click)</p>
-              </div>
+          <!-- LEVEL 1: CHỌN THIẾT BỊ NUÔI (5 DEVICES WITH PERSONAS) -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between px-1">
+              <span class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                <span>📱</span>
+                <span>Chọn Máy Đăng Bài (Device Persona)</span>
+              </span>
+              <span class="text-[11px] text-slate-400">Mỗi thiết bị có Style & Trường phái riêng</span>
             </div>
 
-            <div class="flex items-center gap-3 flex-wrap">
-              <label class="flex items-center gap-1.5 cursor-pointer text-[11px] text-slate-300 hover:text-white select-none bg-slate-950 px-2.5 py-1.5 rounded-xl border border-slate-800">
-                <input type="checkbox" id="buffetAutoDismiss" checked class="w-4 h-4 accent-blue-600 rounded">
-                <span>⚡ Tự ẩn bài khi Bắn</span>
-              </label>
-
-              <select id="buffetTargetSelect" class="w-full sm:w-auto bg-slate-950 border border-slate-700 hover:border-slate-600 text-white rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:border-blue-500 min-w-[200px]">
-                <option value="all">📢 Tất cả thiết bị (Broadcast All)</option>
-              </select>
+            <!-- Device Persona Cards Grid -->
+            <div id="devicePersonaRow" class="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-2.5">
+              <!-- Dynamically populated from device_personas.json -->
             </div>
           </div>
 
-          <!-- Category Filter Pills -->
-          <div class="flex items-center justify-between gap-2 pt-1">
-            <div id="buffetCategoryFilters" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-              <button data-cat="all" class="buffet-cat-filter active px-3 py-1.5 rounded-xl text-xs font-semibold bg-blue-600 text-white transition whitespace-nowrap">All (Tất cả)</button>
-              <button data-cat="💻 Tech & AI" class="buffet-cat-filter px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 transition whitespace-nowrap">💻 Tech & AI</button>
-              <button data-cat="🌐 Viral & Culture" class="buffet-cat-filter px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 transition whitespace-nowrap">🌐 Viral & Culture</button>
-              <button data-cat="🐾 Life & Stories" class="buffet-cat-filter px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 transition whitespace-nowrap">🐾 Life & Stories</button>
-              <button data-cat="🎮 Gaming & Pop" class="buffet-cat-filter px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 transition whitespace-nowrap">🎮 Gaming & Pop</button>
-              <button data-cat="__dismissed" class="buffet-cat-filter px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-rose-300 bg-slate-900 border border-slate-800 transition whitespace-nowrap flex items-center gap-1">
-                <span>🗑️ Đã Ẩn / Đã Đăng</span>
-                <span id="buffetDismissedCountBadge" class="text-[9px] bg-slate-800 text-slate-400 px-1.5 py-0.2 rounded-full font-mono">0</span>
-              </button>
+          <!-- LEVEL 2: ACTIVE DEVICE PERSONA BANNER & NỀN TẢNG BÊN TRONG -->
+          <div id="activeDeviceBanner" class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 sm:p-4 shadow-xl space-y-3">
+            <!-- Active Device Profile Info -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div class="flex items-start gap-3">
+                <div id="activeDeviceIcon" class="w-12 h-12 rounded-2xl bg-blue-600/20 text-blue-400 border border-blue-500/30 flex items-center justify-center text-2xl flex-shrink-0 shadow-inner">
+                  📱
+                </div>
+                <div class="min-w-0">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <h3 id="activeDeviceName" class="text-base font-bold text-white tracking-tight">Vivo</h3>
+                    <span id="activeDeviceVibe" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 font-mono">Gen Z Viral & Meme Addict</span>
+                    <span id="activeDeviceSchoolBadge" class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30">🌐 Viral & Culture</span>
+                  </div>
+                  <p id="activeDeviceDesc" class="text-xs text-slate-400 mt-1 line-clamp-1 sm:line-clamp-none">Chronically online, loves internet drama, viral moments, slang & reaction memes.</p>
+                </div>
+              </div>
+
+              <!-- Target Pairing Dropdown & Auto-Dismiss Checkbox -->
+              <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap justify-between sm:justify-end border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-800">
+                <label class="flex items-center gap-1.5 cursor-pointer text-[11px] text-slate-300 hover:text-white select-none bg-slate-950 px-2.5 py-1.5 rounded-xl border border-slate-800 whitespace-nowrap">
+                  <input type="checkbox" id="buffetAutoDismiss" checked class="w-4 h-4 accent-blue-600 rounded">
+                  <span>⚡ Tự ẩn bài khi Bắn</span>
+                </label>
+
+                <div class="relative">
+                  <select id="buffetTargetSelect" class="bg-slate-950 border border-slate-700 hover:border-slate-600 text-white rounded-xl px-2.5 py-1.5 text-xs font-semibold focus:outline-none focus:border-blue-500 min-w-[170px]" title="Máy thực tế sẽ nhận ảnh và clipboard">
+                    <option value="all">📢 Tất cả thiết bị</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Nền tảng bên trong thiết bị (Sub-Tabs) + Niche / Trash Filters -->
+            <div class="pt-2.5 border-t border-slate-800/80 flex flex-col md:flex-row md:items-center justify-between gap-2.5">
+              <!-- Platform Switcher inside current device -->
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1 flex-shrink-0">
+                  <span>Nền tảng đăng:</span>
+                </span>
+                <div id="devicePlatformTabs" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+                  <!-- e.g. [Tất cả] [𝕏 Twitter / X] [🎵 TikTok] [🤖 Reddit] -->
+                </div>
+              </div>
+
+              <!-- Topic Categories Filter & Trash Pill -->
+              <div id="buffetCategoryFilters" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 flex-shrink-0">
+                <button data-cat="all" class="buffet-cat-filter active px-2.5 py-1 rounded-lg text-xs font-semibold bg-blue-600 text-white transition whitespace-nowrap">Tất cả chủ đề</button>
+                <button data-cat="💻 Tech & AI" class="buffet-cat-filter px-2.5 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-slate-950 border border-slate-800 transition whitespace-nowrap">💻 Tech</button>
+                <button data-cat="🌐 Viral & Culture" class="buffet-cat-filter px-2.5 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-slate-950 border border-slate-800 transition whitespace-nowrap">🌐 Viral</button>
+                <button data-cat="🐾 Life & Stories" class="buffet-cat-filter px-2.5 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-slate-950 border border-slate-800 transition whitespace-nowrap">🐾 Life</button>
+                <button data-cat="🎮 Gaming & Pop" class="buffet-cat-filter px-2.5 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-slate-950 border border-slate-800 transition whitespace-nowrap">🎮 Game</button>
+                <button data-cat="__dismissed" class="buffet-cat-filter px-2.5 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-rose-300 bg-slate-950 border border-slate-800 transition whitespace-nowrap flex items-center gap-1">
+                  <span>🗑️ Đã Ẩn</span>
+                  <span id="buffetDismissedCountBadge" class="text-[9px] bg-slate-800 text-slate-400 px-1.5 py-0.2 rounded-full font-mono">0</span>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -1726,11 +1763,194 @@
     }
 
     // ==========================================
-    // POST BUFFET & 1-TAP FEEDER LOGIC
+    // POST BUFFET & 1-TAP FEEDER LOGIC (DEVICE PERSONAS)
     // ==========================================
     let buffetItems = [];
     let buffetDismissedItems = [];
     let activeBuffetCategory = 'all';
+
+    // Default Fallback Personas
+    let devicePersonas = [
+      {
+        id: "vivo",
+        name: "Vivo",
+        icon: "📱",
+        personaName: "Gen Z Viral & Meme Addict",
+        school: "🌐 Viral & Culture",
+        schoolIcon: "🔥",
+        vibeTag: "Slang • Memes • Chaos",
+        description: "Chronically online, loves internet drama, viral moments, slang & reaction memes.",
+        matchKeywords: ["vivo"],
+        primaryCategory: "🌐 Viral & Culture",
+        platforms: [
+          { id: "all", name: "✨ Tất cả nền tảng", badge: "Auto", hashtags: false },
+          { id: "x", name: "𝕏 Twitter / X", badge: "Slang & Chaos", hashtags: false },
+          { id: "tiktok", name: "🎵 TikTok", badge: "Hook + Tags", hashtags: true, tags: ["#fyp", "#viral", "#trending", "#storytime"] },
+          { id: "reddit", name: "🤖 Reddit", badge: "Relatable r/all", hashtags: false }
+        ],
+        templates: {
+          x: ["ngl this is actually crazy lol: {title} 💀", "bruh no way {title} 😭", "wait is this actually real... {title} kinda wild ngl", "honestly didn't have this on my 2026 bingo card: {title}"],
+          tiktok: ["wait is this actually real?? {title} 💀 {tags}", "nah because why is nobody talking about this: {title} {tags}", "New fear unlocked: {title} 😭 {tags}"],
+          reddit: ["ain't no way: {title}", "this feels like a simulation at this point lol: {title}", "{title} - thoughts on this? 👀"],
+          debate: ["Wait are you guys rockin with this or nah? {title} 👇", "Real or overhyped? {title} 👀", "{title} • W or L?"],
+          short: ["{title} 💀", "ain't no way: {title}", "Bruh. {title} 😭"],
+          default: ["ngl this is actually crazy lol: {title} 💀", "bruh no way {title} 😭"]
+        }
+      },
+      {
+        id: "iphone",
+        name: "iPhone",
+        icon: "🍏",
+        personaName: "Tech Geek & Apple / AI Specialist",
+        school: "💻 Tech & AI",
+        schoolIcon: "🤖",
+        vibeTag: "AI • Gadgets • Silicon Valley",
+        description: "Tech analyst, follows AI breakthroughs, Apple ecosystem, hardware & future gadgets.",
+        matchKeywords: ["iphone", "apple", "ios"],
+        primaryCategory: "💻 Tech & AI",
+        platforms: [
+          { id: "all", name: "✨ Tất cả nền tảng", badge: "Auto", hashtags: false },
+          { id: "x", name: "𝕏 Twitter / X", badge: "Tech News", hashtags: false },
+          { id: "threads", name: "🧵 Threads", badge: "Deep Discussion", hashtags: false },
+          { id: "reddit", name: "🤖 Reddit", badge: "r/technology", hashtags: false }
+        ],
+        templates: {
+          x: ["Honestly a pretty significant development in the space: {title}. Thoughts?", "Big move for the tech industry: {title}. Curious how this plays out.", "AI is moving faster than expected: {title}"],
+          threads: ["Curious how everyone feels about this: {title}. Huge leap forward if true.", "Thoughts on this tech update? {title}. W or L?"],
+          reddit: ["{title} - What are the real-world implications of this?", "Is AI moving too fast or is this actually the right move? {title} 🤔"],
+          debate: ["Is this genuinely revolutionary or just good marketing? {title} 🤔", "Would you actually use this daily? {title} 👇"],
+          short: ["Big move: {title} ⚡", "The future is wild: {title}"],
+          default: ["Honestly a pretty significant development in the space: {title}. Thoughts?"]
+        }
+      },
+      {
+        id: "samsung",
+        name: "Samsung",
+        icon: "📱",
+        personaName: "Karma Farmer & Deep Discussionist",
+        school: "🐾 Life & Stories",
+        schoolIcon: "💬",
+        vibeTag: "Debate • Human Drama • Questions",
+        description: "Curious mind, human drama, moral dilemmas, questions that force 1,000 comments.",
+        matchKeywords: ["samsung", "galaxy", "j7"],
+        primaryCategory: "🐾 Life & Stories",
+        platforms: [
+          { id: "all", name: "✨ Tất cả nền tảng", badge: "Auto", hashtags: false },
+          { id: "reddit", name: "🤖 Reddit", badge: "Comment Bait", hashtags: false },
+          { id: "x", name: "𝕏 Twitter / X", badge: "Poll / Debate", hashtags: false },
+          { id: "youtube", name: "▶️ YouTube Shorts", badge: "Story Hook", hashtags: true, tags: ["#shorts", "#story", "#facts", "#mindblown"] }
+        ],
+        templates: {
+          reddit: ["{title} • What would you honestly do in this situation? 👇", "Is it just me or does this sound completely wild? {title} 🤔", "Rate this from 1 to 10: {title} 👇"],
+          x: ["Real or completely overhyped? {title} • W or L? 👀", "What would you do in this situation? {title} 👇", "Hot take on this? {title} 👀"],
+          youtube: ["You won't believe what just happened: {title} 🤔 {tags}", "Wait till you hear the full story: {title} 👀 {tags}"],
+          debate: ["Would you forgive someone in this situation? {title} 👇", "100% justified or totally out of line? {title} 🤔"],
+          short: ["This is wild: {title} 👀", "Can't make this up: {title}"],
+          default: ["{title} • What would you honestly do in this situation? 👇"]
+        }
+      },
+      {
+        id: "huawei",
+        name: "Huawei",
+        icon: "📱",
+        personaName: "Aesthetic Visuals & Lifestyle Creator",
+        school: "🎨 Life & Visuals",
+        schoolIcon: "✨",
+        vibeTag: "Aesthetic • Cozy • Comics",
+        description: "Lover of aesthetics, comics, cozy lifestyle, satisfying visuals & RedNote vibes.",
+        matchKeywords: ["huawei", "honor"],
+        primaryCategory: "🐾 Life & Stories",
+        platforms: [
+          { id: "all", name: "✨ Tất cả nền tảng", badge: "Auto", hashtags: false },
+          { id: "instagram", name: "📸 Instagram", badge: "Aesthetic Vibes", hashtags: true, tags: ["#aesthetic", "#lifestyle", "#mood", "#explorepage", "#vibes"] },
+          { id: "tiktok", name: "🎵 TikTok", badge: "Visual Hook", hashtags: true, tags: ["#fyp", "#satisfying", "#cozy", "#aesthetic"] },
+          { id: "youtube", name: "▶️ YouTube Shorts", badge: "Quick Shorts", hashtags: true, tags: ["#shorts", "#lifestyle", "#satisfying"] }
+        ],
+        templates: {
+          instagram: ["{title} ✨ Aesthetic level 100.\n.\n{tags}", "This just made my entire day: {title} 🤍\n.\n{tags}", "Cozy energy for your feed: {title} ✨\n.\n{tags}"],
+          tiktok: ["New comfort content unlocked 😭: {title} {tags}", "This is pure therapy for the eyes: {title} ✨ {tags}"],
+          youtube: ["Wait till you see this... {title} 👀 {tags}", "Most satisfying moment today: {title} ✨ {tags}"],
+          debate: ["Rate this aesthetic from 1 to 10: {title} ✨", "Would you live here / try this? {title} 🤍"],
+          short: ["{title} ✨", "Pure comfort: {title} 🤍"],
+          default: ["{title} ✨ Aesthetic level 100."]
+        }
+      },
+      {
+        id: "laptop",
+        name: "Laptop",
+        icon: "💻",
+        personaName: "Gamer & Nerd Culture Specialist",
+        school: "🎮 Gaming & Pop",
+        schoolIcon: "🎮",
+        vibeTag: "Steam • PC Master • Lore",
+        description: "PC Master Race, Steam sales, gaming industry insider, movie easter eggs.",
+        matchKeywords: ["laptop", "pc", "desktop", "chrome", "windows", "linux", "homesever"],
+        primaryCategory: "🎮 Gaming & Pop",
+        platforms: [
+          { id: "all", name: "✨ Tất cả nền tảng", badge: "Auto", hashtags: false },
+          { id: "x", name: "𝕏 Twitter / X", badge: "Gamer Hype", hashtags: false },
+          { id: "reddit", name: "🤖 Reddit", badge: "r/gaming", hashtags: false },
+          { id: "tiktok", name: "🎵 TikTok", badge: "Gaming Clips", hashtags: true, tags: ["#gaming", "#gamer", "#steam", "#videogames", "#pcbuild"] }
+        ],
+        templates: {
+          x: ["Gaming industry is cooking right now lol: {title}", "{title} - 10/10 Game of the Year or total skip? 👇", "Steam record broken again: {title} 🎮"],
+          reddit: ["{title} • Hot take: does anyone actually want this?", "{title} - Is this a W or an L for gamers? Discuss."],
+          tiktok: ["Nah this game update is insane: {title} 🎮 {tags}", "Gamers won today: {title} 🔥 {tags}"],
+          debate: ["{title} • 10/10 Masterpiece or massive flop? 👇", "Are developers going too far with this? {title} 🤔"],
+          short: ["{title} 🎮", "Steam record: {title} 🔥"],
+          default: ["Gaming industry is cooking right now lol: {title}"]
+        }
+      }
+    ];
+
+    let activePersonaId = localStorage.getItem('lan_buffet_persona') || 'vivo';
+    let activePlatformId = 'all';
+    let cardVibeMap = {}; // itemId -> 'persona' | 'debate' | 'short'
+
+    function getActivePersona() {
+      return devicePersonas.find(p => p.id === activePersonaId) || devicePersonas[0];
+    }
+
+    function generatePersonaCaption(item, persona, platformId = 'all', vibe = 'persona') {
+      if (!persona || !persona.templates) {
+        if (vibe === 'debate') return item.captions?.debate || item.title;
+        if (vibe === 'short') return item.captions?.short || item.title;
+        return item.captions?.casual || item.title;
+      }
+
+      const hash = (item.id || '').split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+
+      // 1. User requested Debate / Hook
+      if (vibe === 'debate' && persona.templates.debate && persona.templates.debate.length > 0) {
+        const list = persona.templates.debate;
+        return list[hash % list.length].replace('{title}', item.title);
+      }
+
+      // 2. User requested Short & Punchy
+      if (vibe === 'short' && persona.templates.short && persona.templates.short.length > 0) {
+        const list = persona.templates.short;
+        return list[hash % list.length].replace('{title}', item.title);
+      }
+
+      // 3. Platform / Persona Style
+      let templates = [];
+      let platInfo = null;
+      if (platformId !== 'all') {
+        templates = persona.templates[platformId] || [];
+        platInfo = (persona.platforms || []).find(pl => pl.id === platformId);
+      }
+      if (!templates || templates.length === 0) {
+        templates = persona.templates.default || persona.templates.x || [];
+      }
+
+      if (templates.length > 0) {
+        const tmpl = templates[hash % templates.length];
+        const tagsStr = (platInfo && platInfo.tags) ? platInfo.tags.join(' ') : '';
+        return tmpl.replace('{title}', item.title).replace('{tags}', tagsStr).trim();
+      }
+
+      return item.captions?.casual || item.title;
+    }
 
     function updateBuffetTargets() {
       const select = document.getElementById('buffetTargetSelect');
@@ -1748,7 +1968,20 @@
 
       if ([...select.options].some(o => o.value === currentVal)) {
         select.value = currentVal;
+      } else {
+        // Auto-match device if not explicitly set
+        const p = getActivePersona();
+        if (p) {
+          const matched = onlineDevices.find(d => {
+            const nameLow = (d.name || '').toLowerCase();
+            const typeLow = (d.type || '').toLowerCase();
+            return (p.matchKeywords || []).some(k => nameLow.includes(k.toLowerCase()) || typeLow.includes(k.toLowerCase()));
+          });
+          if (matched) select.value = matched.id;
+        }
       }
+
+      renderDevicePersonas();
     }
 
     function updateBuffetCountBadges() {
@@ -1759,21 +1992,152 @@
       if (dismissedBadge) dismissedBadge.textContent = buffetDismissedItems.length;
     }
 
+    function renderDevicePersonas() {
+      const container = document.getElementById('devicePersonaRow');
+      if (!container || !devicePersonas.length) return;
+
+      container.innerHTML = '';
+      devicePersonas.forEach(p => {
+        const isActive = p.id === activePersonaId;
+        const isOnline = onlineDevices.some(d => {
+          const nameLow = (d.name || '').toLowerCase();
+          const typeLow = (d.type || '').toLowerCase();
+          return (p.matchKeywords || []).some(k => nameLow.includes(k.toLowerCase()) || typeLow.includes(k.toLowerCase()));
+        });
+
+        const card = document.createElement('button');
+        card.onclick = () => selectDevicePersona(p.id);
+        const borderStyle = isActive 
+          ? 'bg-blue-600/15 border-blue-500 shadow-lg shadow-blue-500/10 ring-2 ring-blue-500/70' 
+          : 'bg-slate-900/80 hover:bg-slate-800/80 border-slate-800 hover:border-slate-700';
+
+        card.className = `p-2.5 sm:p-3 rounded-2xl border text-left transition flex flex-col justify-between gap-1.5 relative overflow-hidden active:scale-98 ${borderStyle}`;
+        card.innerHTML = `
+          <div class="flex items-center justify-between w-full">
+            <span class="text-xl sm:text-2xl">${p.icon}</span>
+            <span class="flex items-center gap-1 text-[10px] font-mono ${isOnline ? 'text-emerald-400 font-semibold' : 'text-slate-500'}">
+              <span class="w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-emerald-400 animate-pulse' : 'bg-slate-600'}"></span>
+              <span>${isOnline ? 'Online' : 'Offline'}</span>
+            </span>
+          </div>
+          <div>
+            <div class="font-bold text-xs sm:text-sm text-white truncate flex items-center gap-1">
+              <span>${p.name}</span>
+              ${isActive ? '<span class="text-blue-400 text-xs font-bold">●</span>' : ''}
+            </div>
+            <div class="text-[10px] text-amber-300 font-medium truncate mt-0.5">${p.vibeTag || p.personaName}</div>
+          </div>
+          <div class="pt-1 border-t border-slate-800/60 flex items-center justify-between text-[9px] text-slate-400">
+            <span class="truncate">${p.school}</span>
+            ${isActive ? '<span class="text-blue-400 font-bold">Đang chọn</span>' : ''}
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function selectDevicePersona(personaId, triggerRender = true) {
+      activePersonaId = personaId;
+      localStorage.setItem('lan_buffet_persona', personaId);
+      const p = getActivePersona();
+      if (!p) return;
+
+      activePlatformId = 'all';
+
+      // Update banner profile card
+      const iconEl = document.getElementById('activeDeviceIcon');
+      if (iconEl) iconEl.textContent = p.icon;
+
+      const nameEl = document.getElementById('activeDeviceName');
+      if (nameEl) nameEl.textContent = p.name;
+
+      const vibeEl = document.getElementById('activeDeviceVibe');
+      if (vibeEl) vibeEl.textContent = p.personaName || p.vibeTag;
+
+      const schoolEl = document.getElementById('activeDeviceSchoolBadge');
+      if (schoolEl) schoolEl.textContent = `${p.schoolIcon || '🎯'} ${p.school}`;
+
+      const descEl = document.getElementById('activeDeviceDesc');
+      if (descEl) descEl.textContent = p.description;
+
+      // Auto-pair physical device target
+      const select = document.getElementById('buffetTargetSelect');
+      if (select) {
+        const matched = onlineDevices.find(d => {
+          const nameLow = (d.name || '').toLowerCase();
+          const typeLow = (d.type || '').toLowerCase();
+          return (p.matchKeywords || []).some(k => nameLow.includes(k.toLowerCase()) || typeLow.includes(k.toLowerCase()));
+        });
+        if (matched) {
+          select.value = matched.id;
+        }
+      }
+
+      cardVibeMap = {};
+
+      renderDevicePersonas();
+      renderDevicePlatformTabs();
+      if (triggerRender) {
+        renderBuffet();
+      }
+    }
+
+    function renderDevicePlatformTabs() {
+      const container = document.getElementById('devicePlatformTabs');
+      if (!container) return;
+      const p = getActivePersona();
+      if (!p || !p.platforms) return;
+
+      container.innerHTML = '';
+      p.platforms.forEach(plat => {
+        const isActive = plat.id === activePlatformId;
+        const btn = document.createElement('button');
+        btn.onclick = () => selectDevicePlatform(plat.id);
+        const activeClass = isActive 
+          ? 'bg-blue-600 text-white font-bold shadow-sm' 
+          : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800';
+
+        btn.className = `px-2.5 py-1 rounded-lg text-xs transition whitespace-nowrap flex items-center gap-1.5 active:scale-95 ${activeClass}`;
+        btn.innerHTML = `
+          <span>${plat.name}</span>
+          ${plat.badge ? `<span class="text-[9px] px-1.5 py-0.2 rounded font-mono ${isActive ? 'bg-blue-700/80 text-blue-100' : 'bg-slate-800 text-slate-400'}">${plat.badge}</span>` : ''}
+        `;
+        container.appendChild(btn);
+      });
+    }
+
+    function selectDevicePlatform(platformId) {
+      activePlatformId = platformId;
+      const p = getActivePersona();
+      const plat = (p?.platforms || []).find(pl => pl.id === platformId);
+      cardVibeMap = {};
+      renderDevicePlatformTabs();
+      renderBuffet();
+      if (plat) {
+        showToast(`Style: ${plat.name} cho ${p?.name || ''}!`, 'info');
+      }
+    }
+
     async function loadBuffet(forceRefresh = false) {
       const refreshIcon = document.getElementById('buffetRefreshIcon');
       if (refreshIcon && forceRefresh) refreshIcon.classList.add('animate-spin');
 
       try {
         const url = forceRefresh ? '/api/buffet/refresh' : '/api/buffet';
-        const [resItems, resDismissed] = await Promise.all([
+        const [resItems, resDismissed, resPersonas] = await Promise.all([
           fetch(url, forceRefresh ? { method: 'POST' } : undefined).then(r => r.json()),
-          fetch('/api/buffet/dismissed').then(r => r.json()).catch(() => [])
+          fetch('/api/buffet/dismissed').then(r => r.json()).catch(() => []),
+          fetch('/api/buffet/personas').then(r => r.json()).catch(() => [])
         ]);
 
         buffetItems = resItems || [];
         buffetDismissedItems = resDismissed || [];
+        if (Array.isArray(resPersonas) && resPersonas.length > 0) {
+          devicePersonas = resPersonas;
+        }
+
         updateBuffetCountBadges();
-        renderBuffet();
+        selectDevicePersona(activePersonaId, true);
 
         if (forceRefresh) {
           showToast('Đã cào tin mới thành công! 🍱', 'success');
@@ -1862,6 +2226,10 @@
         return;
       }
 
+      const activePersona = getActivePersona() || { name: 'Thiết bị', icon: '📱' };
+      const platObj = (activePersona.platforms || []).find(pl => pl.id === activePlatformId);
+      const platShortName = platObj ? platObj.name.replace(/^[^\w\s]+/, '').trim() : 'Tất cả';
+
       grid.innerHTML = '';
       items.forEach(item => {
         const card = document.createElement('div');
@@ -1881,7 +2249,16 @@
         const dateStr = item.fetchedAt ? new Date(item.fetchedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
         const safeTitle = escapeHtml(item.title);
         const safeImageUrl = item.imageUrl || '';
-        const initialCaption = item.captions?.casual || item.captions?.debate || item.captions?.short || item.title;
+
+        const currentVibe = cardVibeMap[item.id] || 'persona';
+        const initialCaption = generatePersonaCaption(item, activePersona, activePlatformId, currentVibe);
+
+        const personaBtnLabel = platObj && platObj.id !== 'all' ? `🧢 ${platShortName}` : `🧢 Style ${activePersona.name}`;
+        const isPersonaVibe = currentVibe === 'persona';
+        const isDebateVibe = currentVibe === 'debate';
+        const isShortVibe = currentVibe === 'short';
+
+        const pushBtnText = `🚀 Bắn Sang ${activePersona.name} (${platShortName}) ⚡`;
 
         card.innerHTML = `
           <div class="space-y-3">
@@ -1922,26 +2299,26 @@
             <div class="space-y-1.5 pt-1">
               <div class="flex items-center justify-between text-[11px]">
                 <span class="text-slate-400 font-semibold flex items-center gap-1">
-                  <span>💬 Kiểu Caption tiếng Anh:</span>
+                  <span>💬 Caption theo ${activePersona.name} (${platShortName}):</span>
                 </span>
-                <span class="text-[10px] text-slate-500">Tự do chỉnh sửa bên dưới</span>
+                <span class="text-[10px] text-slate-500">Tự do chỉnh sửa</span>
               </div>
 
               <div class="grid grid-cols-3 gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800/80">
-                <button onclick="setCardCaption('${item.id}', 'casual')" id="btn-cap-casual-${item.id}" class="cap-btn active py-1.5 px-1.5 text-center rounded-lg text-[10px] font-bold bg-blue-600 text-white transition truncate">
-                  🧢 Casual / Slang
+                <button onclick="setCardCaption('${item.id}', 'persona')" id="btn-cap-persona-${item.id}" class="cap-btn py-1.5 px-1.5 text-center rounded-lg text-[10px] ${isPersonaVibe ? 'active font-bold bg-blue-600 text-white' : 'font-medium text-slate-400 hover:text-white'} transition truncate">
+                  ${personaBtnLabel}
                 </button>
-                <button onclick="setCardCaption('${item.id}', 'debate')" id="btn-cap-debate-${item.id}" class="cap-btn py-1.5 px-1.5 text-center rounded-lg text-[10px] font-medium text-slate-400 hover:text-white transition truncate">
+                <button onclick="setCardCaption('${item.id}', 'debate')" id="btn-cap-debate-${item.id}" class="cap-btn py-1.5 px-1.5 text-center rounded-lg text-[10px] ${isDebateVibe ? 'active font-bold bg-blue-600 text-white' : 'font-medium text-slate-400 hover:text-white'} transition truncate">
                   💬 Debate / Hook
                 </button>
-                <button onclick="setCardCaption('${item.id}', 'short')" id="btn-cap-short-${item.id}" class="cap-btn py-1.5 px-1.5 text-center rounded-lg text-[10px] font-medium text-slate-400 hover:text-white transition truncate">
-                  ⚡ Short & Punchy
+                <button onclick="setCardCaption('${item.id}', 'short')" id="btn-cap-short-${item.id}" class="cap-btn py-1.5 px-1.5 text-center rounded-lg text-[10px] ${isShortVibe ? 'active font-bold bg-blue-600 text-white' : 'font-medium text-slate-400 hover:text-white'} transition truncate">
+                  ⚡ Ngắn gọn
                 </button>
               </div>
 
               <!-- Editable Textarea -->
               <div>
-                <textarea id="caption-input-${item.id}" rows="3" class="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 rounded-xl p-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none resize-none leading-relaxed transition" placeholder="Nội dung bài đăng...">${initialCaption}</textarea>
+                <textarea id="caption-input-${item.id}" rows="3" class="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 rounded-xl p-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none resize-none leading-relaxed transition" placeholder="Nội dung bài đăng...">${escapeHtml(initialCaption)}</textarea>
               </div>
             </div>
           </div>
@@ -1949,8 +2326,8 @@
           <!-- Action Bar -->
           <div class="flex items-center gap-2 pt-2 border-t border-slate-800/80">
             <!-- Magic 1-Tap Push Button -->
-            <button onclick="pushBuffetItem('${item.id}', this)" class="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-98 text-white font-bold text-xs py-2.5 px-3 rounded-xl shadow-lg shadow-blue-600/30 transition">
-              <span>🚀 Bắn Sang Máy Này ⚡</span>
+            <button onclick="pushBuffetItem('${item.id}', this)" class="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-98 text-white font-bold text-xs py-2.5 px-3 rounded-xl shadow-lg shadow-blue-600/30 transition truncate">
+              <span>${pushBtnText}</span>
             </button>
 
             <!-- Direct Copy Text Button -->
@@ -2027,12 +2404,16 @@
       const item = buffetItems.find(i => i.id === itemId);
       if (!item) return;
 
+      cardVibeMap[itemId] = type;
+      const activePersona = getActivePersona();
+      const caption = generatePersonaCaption(item, activePersona, activePlatformId, type);
+
       const textarea = document.getElementById(`caption-input-${itemId}`);
-      if (textarea && item.captions && item.captions[type]) {
-        textarea.value = item.captions[type];
+      if (textarea) {
+        textarea.value = caption;
       }
 
-      ['casual', 'debate', 'short'].forEach(t => {
+      ['persona', 'debate', 'short'].forEach(t => {
         const btn = document.getElementById(`btn-cap-${t}-${itemId}`);
         if (btn) {
           if (t === type) {
@@ -2090,7 +2471,7 @@
         } else {
           btn.innerHTML = `<span>✅ Đã Bắn Xong!</span>`;
           setTimeout(() => {
-            btn.className = 'flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-98 text-white font-bold text-xs py-2.5 px-3 rounded-xl shadow-lg shadow-blue-600/30 transition';
+            btn.className = 'flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-98 text-white font-bold text-xs py-2.5 px-3 rounded-xl shadow-lg shadow-blue-600/30 transition truncate';
             btn.innerHTML = originalHtml;
             btn.disabled = false;
           }, 2200);
@@ -2102,7 +2483,7 @@
         showToast(`Lỗi bắn bài: ${err.message}`, 'error');
 
         setTimeout(() => {
-          btn.className = 'flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-98 text-white font-bold text-xs py-2.5 px-3 rounded-xl shadow-lg shadow-blue-600/30 transition';
+          btn.className = 'flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-98 text-white font-bold text-xs py-2.5 px-3 rounded-xl shadow-lg shadow-blue-600/30 transition truncate';
           btn.innerHTML = originalHtml;
           btn.disabled = false;
         }, 3000);
@@ -2465,9 +2846,9 @@
       document.querySelectorAll('.buffet-cat-filter').forEach(btn => {
         btn.onclick = () => {
           document.querySelectorAll('.buffet-cat-filter').forEach(b => {
-            b.className = 'buffet-cat-filter px-3 py-1.5 rounded-xl text-xs font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 transition whitespace-nowrap';
+            b.className = 'buffet-cat-filter px-2.5 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-slate-950 border border-slate-800 transition whitespace-nowrap';
           });
-          btn.className = 'buffet-cat-filter active px-3 py-1.5 rounded-xl text-xs font-semibold bg-blue-600 text-white transition whitespace-nowrap';
+          btn.className = 'buffet-cat-filter active px-2.5 py-1 rounded-lg text-xs font-semibold bg-blue-600 text-white transition whitespace-nowrap';
           activeBuffetCategory = btn.dataset.cat;
           renderBuffet();
         };
