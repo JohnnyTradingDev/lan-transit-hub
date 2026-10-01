@@ -553,8 +553,8 @@
             </div>
           </div>
 
-          <!-- Buffet Single-Column Feed (Đơn nhiệm, tập trung, dễ nhìn) -->
-          <div id="buffetGrid" class="max-w-2xl mx-auto space-y-4">
+          <!-- Buffet Feed (Chuẩn layout Desktop rộng rãi, đơn nhiệm, tập trung) -->
+          <div id="buffetGrid" class="w-full space-y-4">
             <!-- Dynamic cards rendered here -->
           </div>
 
@@ -2339,7 +2339,7 @@
         buffetDismissedItems.forEach(item => {
           const card = document.createElement('div');
           card.id = `buffet-card-${item.id}`;
-          card.className = 'bg-slate-900/60 border border-slate-800/80 rounded-2xl p-4 shadow flex flex-col justify-between space-y-3 opacity-80 hover:opacity-100 transition';
+          card.className = 'bg-slate-900/60 border border-slate-800/80 rounded-2xl p-3.5 sm:p-4 shadow flex flex-col sm:flex-row sm:items-center justify-between gap-3 opacity-80 hover:opacity-100 transition';
 
           const reasonLabel = item.dismissReason === 'posted' ? '✅ Đã Bắn/Đăng' : '🗑️ Đã Ẩn';
           const reasonClass = item.dismissReason === 'posted' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border-rose-500/20';
@@ -2347,25 +2347,22 @@
           const timeAgo = item.dismissedAt ? new Date(item.dismissedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
 
           card.innerHTML = `
-            <div>
-              <div class="flex items-center justify-between gap-2 mb-2">
-                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold border ${reasonClass}">${reasonLabel}</span>
-                <span class="text-[11px] text-slate-500 font-mono">${timeAgo}</span>
-              </div>
-              <div class="flex gap-3 items-center">
-                ${item.imageUrl ? `
-                  <img src="${item.imageUrl}" class="w-16 h-16 rounded-xl object-cover bg-slate-950 border border-slate-800 flex-shrink-0" onerror="this.style.display='none'">
-                ` : ''}
-                <div class="min-w-0 flex-1">
-                  <h4 class="font-bold text-xs sm:text-sm text-slate-300 line-clamp-2">${safeTitle}</h4>
-                  <p class="text-[10px] text-slate-500 mt-0.5">${item.source || ''}</p>
+            <div class="flex items-center gap-3.5 min-w-0 flex-1">
+              ${item.imageUrl ? `
+                <img src="${item.imageUrl}" class="w-14 h-14 rounded-xl object-cover bg-slate-950 border border-slate-800 flex-shrink-0" onerror="this.style.display='none'">
+              ` : ''}
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="px-2 py-0.5 rounded-md text-[10px] font-bold border ${reasonClass}">${reasonLabel}</span>
+                  <span class="text-[11px] text-slate-500 font-mono">${timeAgo}</span>
+                  <span class="text-[11px] text-slate-500 font-medium">• ${item.source || ''}</span>
                 </div>
+                <h4 class="font-bold text-xs sm:text-sm text-slate-300 line-clamp-1">${safeTitle}</h4>
               </div>
             </div>
-            <div class="pt-2 border-t border-slate-800/60 flex items-center justify-between gap-2">
-              <span class="text-[11px] text-slate-500">Bài đang được ẩn khỏi feed</span>
-              <button onclick="restoreBuffetItem('${item.id}', this)" class="inline-flex items-center gap-1 bg-slate-800 hover:bg-slate-700 active:scale-95 text-xs text-white font-medium px-3 py-1.5 rounded-xl border border-slate-700 transition">
-                <span>🔄 Khôi phục bài này</span>
+            <div class="flex items-center gap-2 flex-shrink-0 self-end sm:self-center">
+              <button onclick="restoreBuffetItem('${item.id}', this)" class="inline-flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-xs text-white font-medium px-3.5 py-1.5 rounded-xl border border-slate-700 transition">
+                <span>🔄 Khôi phục</span>
               </button>
             </div>
           `;
@@ -2420,7 +2417,7 @@
       items.forEach(item => {
         const card = document.createElement('div');
         card.id = `buffet-card-${item.id}`;
-        card.className = 'bg-slate-900/95 border border-slate-800 hover:border-slate-700/80 rounded-2xl p-4 sm:p-5 shadow-xl space-y-3.5 transition duration-200';
+        card.className = 'bg-slate-900/95 border border-slate-800 hover:border-slate-700/80 rounded-2xl p-4 sm:p-5 shadow-xl transition duration-200 flex flex-col md:flex-row gap-5 items-stretch';
 
         const hotBadgeHtml = `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 font-mono">🔥 ${item.hotScore || 85}% Hot</span>`;
         const dateStr = item.fetchedAt ? new Date(item.fetchedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
@@ -2437,61 +2434,73 @@
         }
 
         card.innerHTML = `
-          <!-- Top Row: Badges & Dismiss -->
-          <div class="flex items-center justify-between gap-2">
-            <div class="flex items-center gap-2 flex-wrap">
-              ${hotBadgeHtml}
-              <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-800 text-slate-300 border border-slate-700 font-mono">${item.source}</span>
-              <span class="text-[11px] text-slate-500 font-mono">${dateStr}</span>
-            </div>
-            <button onclick="dismissBuffetItem('${item.id}', this, 'deleted')" class="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 active:scale-90 rounded-lg transition" title="Ẩn bài này">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-            </button>
-          </div>
-
-          <!-- Content: Image + Title + Category -->
-          <div class="flex flex-col sm:flex-row gap-3.5 items-start">
-            ${safeImageUrl ? `
-              <div class="w-full sm:w-36 h-44 sm:h-32 rounded-xl overflow-hidden bg-slate-950 flex-shrink-0 border border-slate-800 relative cursor-pointer group" onclick="openLightbox('${safeImageUrl}', '${safeTitle.replace(/'/g, "\\'")}', 'Buffet HD Image')">
-                <img src="${safeImageUrl}" alt="${safeTitle}" class="w-full h-full object-cover group-hover:scale-105 transition duration-200" onerror="this.parentElement.style.display='none'">
-                <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition"></div>
-                <span class="absolute bottom-1.5 right-1.5 bg-black/75 text-[10px] text-white px-2 py-0.5 rounded-md font-mono">🔍 Phóng to</span>
-              </div>
-            ` : ''}
-            <div class="min-w-0 flex-1 space-y-1">
-              <a href="${item.articleUrl}" target="_blank" class="font-bold text-sm sm:text-base text-white hover:text-blue-400 line-clamp-2 leading-snug transition flex items-start gap-1.5">
-                <span>${safeTitle}</span>
-                <svg class="w-3.5 h-3.5 text-slate-500 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-              </a>
-              <div class="flex items-center gap-2">
-                <span class="text-xs text-slate-400 font-medium">${item.category}</span>
-                <span class="text-slate-600">•</span>
-                <span class="text-xs text-blue-400 font-medium">Style ${activePersona.name} (${platShortName})</span>
+          ${safeImageUrl ? `
+            <!-- Desktop Left Column: Large Media Preview -->
+            <div class="buffet-media-col w-full md:w-72 lg:w-80 flex-shrink-0 flex flex-col">
+              <div class="relative w-full h-52 md:h-full min-h-[190px] rounded-xl overflow-hidden bg-slate-950 border border-slate-800 cursor-pointer group shadow-inner" onclick="openLightbox('${safeImageUrl}', '${safeTitle.replace(/'/g, "\\'")}', 'Buffet HD Image')">
+                <img src="${safeImageUrl}" alt="${safeTitle}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.closest('.buffet-media-col').style.display='none'">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30 group-hover:from-black/50 transition"></div>
+                <div class="absolute top-2.5 left-2.5 flex items-center gap-1.5 flex-wrap">
+                  ${hotBadgeHtml}
+                  <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-900/80 backdrop-blur-sm text-slate-300 border border-slate-700/80 font-mono">${item.source}</span>
+                </div>
+                <span class="absolute bottom-2.5 right-2.5 bg-black/80 backdrop-blur-sm text-[10px] text-white px-2 py-1 rounded-md font-mono flex items-center gap-1 shadow">
+                  <span>🔍 Phóng to</span>
+                </span>
               </div>
             </div>
-          </div>
+          ` : ''}
 
-          <!-- Caption Section: Clean, single-task focused -->
-          <div class="space-y-1.5 pt-1">
-            <div class="flex items-center justify-between text-[11px]">
-              <span class="text-slate-300 font-semibold flex items-center gap-1.5">
-                <span>💬 Caption sẽ đăng:</span>
-              </span>
-              <button onclick="cycleCardVibe('${item.id}')" class="text-slate-400 hover:text-blue-300 text-[11px] font-medium transition flex items-center gap-1 bg-slate-950 px-2 py-1 rounded-lg border border-slate-800" title="Bấm để đổi nhanh kiểu caption">
-                <span>🎲 Đổi giọng: <strong id="vibe-label-${item.id}" class="text-blue-400">${vibeLabel}</strong></span>
+          <!-- Desktop Right Column: Content, Caption & Actions -->
+          <div class="flex-1 min-w-0 flex flex-col justify-between space-y-3">
+            <!-- Header Row: Category, Style, Time & Dismiss -->
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2 flex-wrap">
+                ${!safeImageUrl ? `
+                  ${hotBadgeHtml}
+                  <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-800 text-slate-300 border border-slate-700 font-mono">${item.source}</span>
+                ` : ''}
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">${item.category}</span>
+                <span class="text-slate-600 hidden sm:inline">•</span>
+                <span class="text-xs text-slate-400">Style <strong class="text-slate-200">${activePersona.name}</strong> (${platShortName})</span>
+                <span class="text-[11px] text-slate-500 font-mono ml-auto sm:ml-0">${dateStr}</span>
+              </div>
+              <button onclick="dismissBuffetItem('${item.id}', this, 'deleted')" class="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 active:scale-90 rounded-lg transition" title="Ẩn bài này">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
               </button>
             </div>
-            <textarea id="caption-input-${item.id}" rows="3" class="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 rounded-xl p-3 text-xs sm:text-sm text-slate-200 placeholder-slate-500 focus:outline-none resize-none leading-relaxed transition" placeholder="Nội dung bài đăng...">${escapeHtml(initialCaption)}</textarea>
-          </div>
 
-          <!-- Action Footer: 1 Big Push Button + Quick Copy -->
-          <div class="flex items-center gap-2 pt-2 border-t border-slate-800/80">
-            <button onclick="pushBuffetItem('${item.id}', this)" class="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-98 text-white font-bold text-xs sm:text-sm py-2.5 px-4 rounded-xl shadow-lg shadow-blue-600/30 transition truncate">
-              <span>${pushBtnText}</span>
-            </button>
-            <button onclick="copyBuffetCaption('${item.id}', this)" class="p-2.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-300 hover:text-white rounded-xl text-xs transition border border-slate-700/80" title="Copy riêng Caption">
-              📋
-            </button>
+            <!-- Title -->
+            <div>
+              <a href="${item.articleUrl}" target="_blank" class="font-bold text-base sm:text-lg text-white hover:text-blue-400 line-clamp-2 leading-snug transition inline-flex items-start gap-1.5 group/title">
+                <span>${safeTitle}</span>
+                <svg class="w-4 h-4 text-slate-500 group-hover/title:text-blue-400 flex-shrink-0 mt-1 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              </a>
+            </div>
+
+            <!-- Caption Section: Full-width, comfortable -->
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between text-[11px]">
+                <span class="text-slate-300 font-semibold flex items-center gap-1.5">
+                  <span>💬 Caption sẽ đăng:</span>
+                </span>
+                <button onclick="cycleCardVibe('${item.id}')" class="text-slate-400 hover:text-blue-300 text-[11px] font-medium transition flex items-center gap-1 bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800" title="Bấm để đổi nhanh kiểu caption">
+                  <span>🎲 Đổi giọng: <strong id="vibe-label-${item.id}" class="text-blue-400">${vibeLabel}</strong></span>
+                </button>
+              </div>
+              <textarea id="caption-input-${item.id}" rows="3" class="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 rounded-xl p-3 text-xs sm:text-sm text-slate-200 placeholder-slate-500 focus:outline-none resize-none leading-relaxed transition font-sans" placeholder="Nội dung bài đăng...">${escapeHtml(initialCaption)}</textarea>
+            </div>
+
+            <!-- Action Footer: 1 Big Push Button + Quick Copy -->
+            <div class="flex items-center gap-2 pt-2 border-t border-slate-800/80">
+              <button onclick="pushBuffetItem('${item.id}', this)" class="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-600 hover:from-blue-500 hover:to-indigo-500 active:scale-98 text-white font-bold text-xs sm:text-sm py-2.5 px-4 rounded-xl shadow-lg shadow-blue-600/30 transition truncate">
+                <span>${pushBtnText}</span>
+              </button>
+              <button onclick="copyBuffetCaption('${item.id}', this)" class="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-300 hover:text-white rounded-xl text-xs font-semibold transition border border-slate-700/80 flex items-center gap-1.5 flex-shrink-0" title="Copy riêng Caption">
+                <span>📋</span>
+                <span class="hidden sm:inline">Copy Text</span>
+              </button>
+            </div>
           </div>
         `;
 

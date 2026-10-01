@@ -33,6 +33,13 @@ import tempfile
 import re
 import threading
 
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 DEFAULT_SERVER = "http://100.75.112.62:7777"
 SERVER_URL = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_SERVER
 SERVER_URL = SERVER_URL.rstrip('/')
@@ -58,6 +65,7 @@ def find_adb():
         os.path.join(script_dir, "adb"),
         os.path.join(os.getcwd(), "adb.exe"),
         os.path.join(os.getcwd(), "adb"),
+        os.path.expandvars(r"%USERPROFILE%\Documents\scrcpy\adb.exe"),
         os.path.expandvars(r"%LOCALAPPDATA%\Android\Sdk\platform-tools\adb.exe"),
     ]
     for c in candidates:
