@@ -182,6 +182,28 @@ const clients = new Map();
 // Known registered devices cache: deviceId => { id, name, type, ip, isOnline, lastSeen }
 const knownDevices = new Map();
 
+// Scrcpy Laptop Bridge State & Clients
+const bridgeClients = new Set();
+let bridgeState = {
+  online: false,
+  deviceModel: null,
+  deviceSerial: null,
+  laptopName: null,
+  lastSeen: null
+};
+
+function broadcastBridgeStatus() {
+  const statusMsg = JSON.stringify({
+    type: 'bridge_status',
+    bridge: bridgeState
+  });
+  for (const [ws] of clients) {
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.send(statusMsg);
+    }
+  }
+}
+
 function getLanIps() {
   const interfaces = os.networkInterfaces();
   const ips = [];
@@ -221,6 +243,19 @@ function broadcastDeviceList() {
     isOnline: activeDeviceIds.has(d.id)
   }));
 
+  // Inject Scrcpy USB Cable Bridge if online
+  if (bridgeState.online) {
+    const phoneLabel = bridgeState.deviceModel ? `Cáp: ${bridgeState.deviceModel}` : 'Cáp Scrcpy (Chờ cắm phone)';
+    allDevices.unshift({
+      id: 'scrcpy-bridge',
+      name: `💻 ${phoneLabel}`,
+      type: 'laptop',
+      ip: 'USB Cable',
+      isOnline: true,
+      lastSeen: bridgeState.lastSeen
+    });
+  }
+
   const msg = JSON.stringify({ type: 'devices_update', devices: allDevices });
   for (const [ws] of clients) {
     if (ws.readyState === WebSocket.OPEN) {
@@ -254,6 +289,8 @@ wss.on('connection', (ws, req) => {
           lastSeen: new Date().toISOString()
         });
         broadcastDeviceList();
+        // Send initial bridge status to newly registered client
+        ws.send(JSON.stringify({ type: 'bridge_status', bridge: bridgeState }));
       } else if (data.type === 'ping') {
         ws.send(JSON.stringify({ type: 'pong' }));
       }
@@ -287,6 +324,25 @@ function dispatchItem(item) {
       ws.send(msg);
     } else if (item.target === info.deviceId || item.senderId === info.deviceId) {
       ws.send(msg);
+    }
+  }
+
+  // Also dispatch to Scrcpy Bridge SSE clients if target is 'all' or 'scrcpy-bridge'
+  if (bridgeClients.size > 0 && (item.target === 'all' || item.target === 'scrcpy-bridge')) {
+    const bridgePayload = {
+      type: (item.contentType === 'image' || item.file) ? 'scrcpy_push' : 'scrcpy_text',
+      itemId: item.id,
+      title: item.file ? (item.file.originalName || item.file.filename) : (item.text || 'Transit Message'),
+      caption: item.text || '',
+      downloadUrl: item.file ? item.file.downloadUrl : null,
+      filename: item.file ? item.file.filename : null,
+      timestamp: item.timestamp
+    };
+    const sseData = `data: ${JSON.stringify(bridgePayload)}\n\n`;
+    for (const clientRes of bridgeClients) {
+      try {
+        clientRes.write(sseData);
+      } catch (e) {}
     }
   }
 }
@@ -445,6 +501,17 @@ app.get('/api/devices', (req, res) => {
     ...d,
     isOnline: activeDeviceIds.has(d.id)
   }));
+  if (bridgeState.online) {
+    const phoneLabel = bridgeState.deviceModel ? `Cáp: ${bridgeState.deviceModel}` : 'Cáp Scrcpy (Chờ cắm phone)';
+    list.unshift({
+      id: 'scrcpy-bridge',
+      name: `💻 ${phoneLabel}`,
+      type: 'laptop',
+      ip: 'USB Cable',
+      isOnline: true,
+      lastSeen: bridgeState.lastSeen
+    });
+  }
   res.json(list);
 });
 
@@ -551,11 +618,13 @@ app.post('/api/buffet/push', async (req, res) => {
   const target = targetId || 'all';
   const targetLabel = targetName || 'All Devices';
   const createdItems = [];
+  let downloadedFile = null;
 
   // 1. Download image and dispatch as file item (Triggers auto-download on target device)
   if (buffetItem.imageUrl) {
     const downloaded = await downloadRemoteImage(buffetItem.imageUrl);
     if (downloaded) {
+      downloadedFile = downloaded;
       const fileItem = {
         id: 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6),
         senderId: 'content-buffet',
@@ -596,7 +665,84 @@ app.post('/api/buffet/push', async (req, res) => {
   dispatchItem(textItem);
   createdItems.push(textItem);
 
-  res.json({ success: true, items: createdItems });
+  // 3. Dispatch to Laptop Scrcpy Bridge (if active)
+  if (bridgeClients.size > 0 && (target === 'all' || target === 'scrcpy-bridge')) {
+    const bridgePayload = {
+      type: 'scrcpy_push',
+      itemId,
+      title: buffetItem.title,
+      caption: textToSend,
+      downloadUrl: (downloadedFile && downloadedFile.filename) ? `/api/download/${downloadedFile.filename}` : null,
+      filename: (downloadedFile && downloadedFile.filename) ? downloadedFile.filename : null,
+      timestamp: new Date().toISOString()
+    };
+    const sseData = `data: ${JSON.stringify(bridgePayload)}\n\n`;
+    for (const clientRes of bridgeClients) {
+      try {
+        clientRes.write(sseData);
+      } catch (e) {}
+    }
+  }
+
+  res.json({
+    success: true,
+    items: createdItems,
+    bridgeOnline: bridgeState.online,
+    bridgeDevice: bridgeState.deviceModel || null
+  });
+});
+
+// ==========================================
+// SCRCPY LAPTOP BRIDGE SSE & HEARTBEAT
+// ==========================================
+app.get('/api/bridge/events', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.flushHeaders();
+
+  bridgeClients.add(res);
+  bridgeState.online = true;
+  bridgeState.lastSeen = new Date().toISOString();
+  broadcastBridgeStatus();
+  broadcastDeviceList();
+
+  res.write(`data: ${JSON.stringify({ type: 'connected', message: 'Scrcpy Bridge Connected' })}\n\n`);
+
+  const keepAlive = setInterval(() => {
+    try {
+      res.write(': keepalive\n\n');
+    } catch (e) {}
+  }, 20000);
+
+  req.on('close', () => {
+    clearInterval(keepAlive);
+    bridgeClients.delete(res);
+    if (bridgeClients.size === 0) {
+      bridgeState.online = false;
+    }
+    broadcastBridgeStatus();
+    broadcastDeviceList();
+  });
+});
+
+app.post('/api/bridge/heartbeat', (req, res) => {
+  bridgeState = {
+    online: true,
+    deviceModel: req.body.deviceModel || null,
+    deviceSerial: req.body.deviceSerial || null,
+    laptopName: req.body.laptopName || 'Laptop',
+    scrcpyRunning: !!req.body.scrcpyRunning,
+    lastSeen: new Date().toISOString()
+  };
+  broadcastBridgeStatus();
+  broadcastDeviceList();
+  res.json({ success: true, bridge: bridgeState });
+});
+
+app.get('/api/bridge/status', (req, res) => {
+  res.json({ success: true, bridge: bridgeState });
 });
 
 // Dismiss/Delete a buffet item

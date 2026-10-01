@@ -444,6 +444,31 @@
             </div>
           </div>
 
+          <!-- SCRCPY CABLE BRIDGE STATUS BAR (LIVE FOR LAPTOP USB CABLE WORKFLOW) -->
+          <div id="scrcpyBridgeBar" class="rounded-2xl border p-3 sm:px-4 sm:py-3 transition duration-300 bg-slate-900/90 border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg">
+            <div class="flex items-center gap-3 min-w-0">
+              <span id="bridgeLed" class="w-3.5 h-3.5 rounded-full bg-slate-600 flex-shrink-0 transition"></span>
+              <div class="min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="text-xs font-bold text-white tracking-wide flex items-center gap-1.5">
+                    <span>⚡ Cáp Scrcpy:</span>
+                  </span>
+                  <span id="bridgeStatusBadge" class="text-xs font-semibold text-slate-400">Đang kiểm tra kết nối...</span>
+                </div>
+                <p id="bridgeSubtext" class="text-[11px] text-slate-400 truncate mt-0.5">Chạy script trên laptop để tự bắn ảnh & caption vào điện thoại khi cắm cáp.</p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 flex-shrink-0 self-end sm:self-auto">
+              <a href="/scrcpy_bridge.py" download="scrcpy_bridge.py" class="inline-flex items-center gap-1.5 text-xs font-semibold bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 px-3 py-1.5 rounded-xl border border-slate-700 transition" title="Tải script Python chạy trên laptop">
+                <span>🐍 Tải script .py</span>
+              </a>
+              <a href="/scrcpy_bridge.bat" download="scrcpy_bridge.bat" class="inline-flex items-center gap-1.5 text-xs font-semibold bg-blue-600/20 hover:bg-blue-600/30 active:scale-95 text-blue-300 px-3 py-1.5 rounded-xl border border-blue-500/30 transition" title="Tải file chạy nhanh cho Windows .bat">
+                <span>🪟 Tải .bat (Win)</span>
+              </a>
+            </div>
+          </div>
+
           <!-- LEVEL 1: CHỌN THIẾT BỊ NUÔI (5 DEVICES WITH PERSONAS) -->
           <div class="space-y-2">
             <div class="flex items-center justify-between px-1">
@@ -1136,6 +1161,8 @@
           const data = JSON.parse(event.data);
           if (data.type === 'devices_update') {
             renderDevices(data.devices);
+          } else if (data.type === 'bridge_status') {
+            updateBridgeStatusUI(data.bridge);
           } else if (data.type === 'item_received') {
             handleIncomingItem(data.item);
           } else if (data.type === 'item_deleted') {
@@ -2005,6 +2032,62 @@
       return item.captions?.casual || item.title;
     }
 
+    // Scrcpy Cable Bridge Client State
+    let currentBridgeState = { online: false, deviceModel: null };
+
+    async function checkBridgeStatus() {
+      try {
+        const res = await fetch('/api/bridge/status');
+        const data = await res.json();
+        if (data && data.bridge) {
+          updateBridgeStatusUI(data.bridge);
+        }
+      } catch (e) {}
+    }
+
+    function updateBridgeStatusUI(bridge) {
+      if (!bridge) return;
+      currentBridgeState = bridge;
+
+      const bar = document.getElementById('scrcpyBridgeBar');
+      const led = document.getElementById('bridgeLed');
+      const badge = document.getElementById('bridgeStatusBadge');
+      const sub = document.getElementById('bridgeSubtext');
+      if (!bar || !led || !badge || !sub) return;
+
+      if (bridge.online && bridge.deviceModel) {
+        bar.className = 'rounded-2xl border p-3 sm:px-4 sm:py-3 transition duration-300 bg-emerald-950/20 border-emerald-500/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg';
+        led.className = 'w-3.5 h-3.5 rounded-full bg-emerald-400 animate-pulse flex-shrink-0 shadow-lg shadow-emerald-500/50';
+        badge.innerHTML = `<span class="text-emerald-400 font-bold">🟢 Đang nối cáp: ${escapeHtml(bridge.deviceModel)}</span> <span class="text-[11px] text-emerald-300/80 font-mono">(Sẵn sàng 1-Click)</span>`;
+        sub.textContent = `Tự động nạp ảnh vào Album & nạp Caption vào Clipboard của ${bridge.deviceModel}!`;
+
+        // Auto-select persona if matches brand
+        const devLow = bridge.deviceModel.toLowerCase();
+        if (devLow.includes('vivo') && activePersonaId !== 'vivo') {
+          selectPersona('vivo', true);
+        } else if (devLow.includes('samsung') && activePersonaId !== 'samsung') {
+          selectPersona('samsung', true);
+        } else if (devLow.includes('huawei') && activePersonaId !== 'huawei') {
+          selectPersona('huawei', true);
+        }
+      } else if (bridge.online) {
+        bar.className = 'rounded-2xl border p-3 sm:px-4 sm:py-3 transition duration-300 bg-amber-950/20 border-amber-500/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg';
+        led.className = 'w-3.5 h-3.5 rounded-full bg-amber-400 animate-pulse flex-shrink-0';
+        badge.innerHTML = `<span class="text-amber-400 font-bold">🟡 Script Laptop đã bật</span> <span class="text-[11px] text-slate-400 font-mono">(Đang chờ cắm cáp USB...)</span>`;
+        sub.textContent = 'Cắm cáp USB nối điện thoại với laptop để nhận diện máy và nạp bài.';
+      } else {
+        bar.className = 'rounded-2xl border p-3 sm:px-4 sm:py-3 transition duration-300 bg-slate-900/90 border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg';
+        led.className = 'w-3.5 h-3.5 rounded-full bg-slate-600 flex-shrink-0';
+        badge.innerHTML = `<span class="text-slate-400 font-medium">⚪ Chưa bật trên laptop</span>`;
+        sub.textContent = 'Chạy script trên laptop (cạnh cửa sổ Scrcpy) để tự động bắn ảnh & caption vào điện thoại khi cắm cáp.';
+      }
+
+      // Re-render buffet so buttons update label with current device
+      if (typeof buffetItems !== 'undefined' && buffetItems.length > 0) {
+        renderBuffet();
+      }
+    }
+
     function updateBuffetTargets() {
       const select = document.getElementById('buffetTargetSelect');
       if (!select) return;
@@ -2357,7 +2440,10 @@
         const isDebateVibe = currentVibe === 'debate';
         const isShortVibe = currentVibe === 'short';
 
-        const pushBtnText = `🚀 Bắn Sang ${activePersona.name} (${platShortName}) ⚡`;
+        let pushBtnText = `🚀 Bắn Sang ${activePersona.name} (${platShortName}) ⚡`;
+        if (currentBridgeState && currentBridgeState.online && currentBridgeState.deviceModel) {
+          pushBtnText = `🚀 Bắn Vào Cáp ${currentBridgeState.deviceModel} ⚡`;
+        }
 
         card.innerHTML = `
           <div class="space-y-3">
@@ -2560,7 +2646,11 @@
 
         btn.className = 'flex-1 flex items-center justify-center gap-2 bg-emerald-600 text-white font-bold text-xs py-2.5 px-3 rounded-xl shadow-lg transition';
         playChime();
-        showToast(`⚡ Đã bắn ảnh & caption sang ${targetName}!`, 'success');
+        if (result.bridgeOnline && result.bridgeDevice) {
+          showToast(`⚡ Đã nạp vào cáp ${result.bridgeDevice}! Ảnh ở Album, Caption ở Clipboard!`, 'success');
+        } else {
+          showToast(`⚡ Đã bắn ảnh & caption sang ${targetName}!`, 'success');
+        }
 
         const autoDismiss = document.getElementById('buffetAutoDismiss')?.checked ?? true;
         if (autoDismiss) {
@@ -2961,8 +3051,9 @@
         };
       }
 
-      // Load Content Buffet
+      // Load Content Buffet & Scrcpy Cable Bridge Status
       loadBuffet();
+      checkBridgeStatus();
 
       // Check initial URL hash
       const initialHash = window.location.hash.replace('#', '');
