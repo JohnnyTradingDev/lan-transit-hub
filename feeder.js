@@ -68,12 +68,20 @@ function cleanHtmlEntities(str) {
 }
 
 const VIRAL_KEYWORDS = [
+  // Viral & Breaking
   'break', 'breaks', 'record', 'leak', 'leaks', 'announced', 'announces', 'reveals', 'revealed',
   'insane', 'wild', 'secret', 'ban', 'banned', 'update', 'shock', 'shocking', 'first look',
-  'gta', 'steam', 'nvidia', 'apple', 'iphone', 'ai', 'robot', 'viral', 'drama', 'game of the year',
   'trailer', 'launch', 'worst', 'best', 'million', 'billion', 'chatgpt', 'gemini', 'deepseek',
   'tiktok', 'warning', 'finally', 'free', 'crazy', 'shut down', 'cancel', 'huge', 'unreal', 'new',
-  'confirms', 'drops', 'epic', 'ruins', 'genius', 'masterpiece', 'flaw', 'fails', 'vs', 'fight'
+  'confirms', 'drops', 'epic', 'ruins', 'genius', 'masterpiece', 'flaw', 'fails', 'vs', 'fight',
+  // Finance & Crypto
+  'bitcoin', 'btc', 'crypto', 'ethereum', 'eth', 'solana', 'sol', 'doge', 'bull', 'bear', 'ath',
+  'rally', 'surge', 'market', 'stock', 'fed', 'sec', 'etf', 'whale', 'wallet', 'token', 'wealth',
+  'trader', 'rich', 'dollar', 'billionaire', 'pump', 'crash',
+  // Beauty, Glamour & SFW Sexy
+  'stunning', 'gorgeous', 'jaw-dropping', 'beauty', 'look', 'looks', 'dress', 'fit', 'slays',
+  'bikini', 'swimsuit', 'model', 'glamour', 'cosplay', 'red carpet', 'chic', 'glow', 'queen',
+  'hot', 'flawless', 'obsessed', 'fashion', 'viral look'
 ];
 
 function calculateHotScore(title) {
@@ -238,9 +246,9 @@ async function fetchRssFeed(url, sourceName, category) {
       });
     }
 
-    // Sort by hotScore descending and return only top 4 hottest posts per source
+    // Sort by hotScore descending and return only top 3-4 hottest posts per source
     items.sort((a, b) => b.hotScore - a.hotScore);
-    return items.slice(0, 4);
+    return items.slice(0, 3);
   } catch (e) {
     console.error(`Error fetching feed ${sourceName}:`, e.message);
     return [];
@@ -250,30 +258,56 @@ async function fetchRssFeed(url, sourceName, category) {
 async function refreshBuffet() {
   console.log('[Content Buffet] Scraping fresh 100% English trending news (Hot Curated)...');
   const feeds = [
+    // 1. Tech & AI
     {
       url: 'https://www.theverge.com/rss/index.xml',
       source: 'The Verge',
       category: '💻 Tech & AI'
     },
     {
-      url: 'https://www.dexerto.com/feed/',
-      source: 'Dexerto',
-      category: '🌐 Viral & Culture'
-    },
-    {
       url: 'https://9to5mac.com/feed/',
       source: '9to5Mac',
       category: '💻 Tech & AI'
     },
+    // 2. Viral & Culture
+    {
+      url: 'https://www.dexerto.com/feed/',
+      source: 'Dexerto',
+      category: '🌐 Viral & Culture'
+    },
+    // 3. Gaming & Pop
+    {
+      url: 'https://www.gamesradar.com/rss/',
+      source: 'GamesRadar',
+      category: '🎮 Gaming & Pop'
+    },
+    // 4. Life & Stories
     {
       url: 'https://www.boredpanda.com/feed/',
       source: 'Bored Panda',
       category: '🐾 Life & Stories'
     },
+    // 5. Finance & Crypto (MỚI)
     {
-      url: 'https://www.gamesradar.com/rss/',
-      source: 'GamesRadar',
-      category: '🎮 Gaming & Pop'
+      url: 'https://cointelegraph.com/rss',
+      source: 'Cointelegraph',
+      category: '💰 Finance & Crypto'
+    },
+    {
+      url: 'https://decrypt.co/feed',
+      source: 'Decrypt',
+      category: '💰 Finance & Crypto'
+    },
+    // 6. Glamour & Beauty / Gái xinh, SFW Sexy, Fashion (MỚI)
+    {
+      url: 'https://pagesix.com/style/feed/',
+      source: 'Page Six Style',
+      category: '💃 Glamour & Beauty'
+    },
+    {
+      url: 'https://www.usmagazine.com/stylish/feed/',
+      source: 'Us Weekly Style',
+      category: '💃 Glamour & Beauty'
     }
   ];
 
@@ -294,7 +328,7 @@ async function refreshBuffet() {
   const finalItems = Array.from(uniqueMap.values())
     .filter(item => !dismissedMap[item.id])
     .sort((a, b) => (b.hotScore || 75) - (a.hotScore || 75))
-    .slice(0, 20); // Cap total buffet to top 20 items max
+    .slice(0, 24); // Cap total buffet to top 24 curated items max
 
   try {
     fs.writeFileSync(BUFFET_FILE, JSON.stringify(finalItems, null, 2), 'utf8');

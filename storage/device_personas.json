@@ -108,51 +108,51 @@
     "id": "samsung",
     "name": "Samsung",
     "icon": "📱",
-    "personaName": "Karma Farmer & Deep Discussionist",
-    "school": "🐾 Life & Stories",
-    "schoolIcon": "💬",
-    "vibeTag": "Debate • Human Drama • Questions",
-    "description": "Curious mind, human drama, moral dilemmas, questions that force 1,000 comments.",
+    "personaName": "Crypto Hustler & Market Alpha",
+    "school": "💰 Finance & Crypto",
+    "schoolIcon": "💎",
+    "vibeTag": "Bitcoin • Alpha • Bull Run",
+    "description": "Market watcher, Bitcoin rallies, crypto alpha, stock shifts & wealth moves.",
     "matchKeywords": ["samsung", "galaxy", "j7"],
-    "primaryCategory": "🐾 Life & Stories",
+    "primaryCategory": "💰 Finance & Crypto",
     "platforms": [
       { "id": "all", "name": "✨ Tất cả nền tảng", "badge": "Auto", "hashtags": false },
-      { "id": "reddit", "name": "🤖 Reddit", "badge": "Comment Bait", "hashtags": false },
-      { "id": "x", "name": "𝕏 Twitter / X", "badge": "Poll / Debate", "hashtags": false },
-      { "id": "youtube", "name": "▶️ YouTube Shorts", "badge": "Story Hook", "hashtags": true, "tags": ["#shorts", "#story", "#facts", "#mindblown"] }
+      { "id": "x", "name": "𝕏 Twitter / X", "badge": "Crypto Alpha", "hashtags": false },
+      { "id": "reddit", "name": "🤖 Reddit", "badge": "r/CryptoCurrency", "hashtags": false },
+      { "id": "youtube", "name": "▶️ YouTube Shorts", "badge": "Market Hook", "hashtags": true, "tags": ["#crypto", "#bitcoin", "#trading", "#finance", "#money"] }
     ],
     "templates": {
-      "reddit": [
-        "{title} • What would you honestly do in this situation? 👇",
-        "Is it just me or does this sound completely wild? {title} 🤔",
-        "Valid or completely unnecessary? {title} 👇",
-        "Rate this from 1 to 10: {title} 👇",
-        "{title} • Unpopular opinion: thoughts?"
-      ],
       "x": [
-        "Real or completely overhyped? {title} • W or L? 👀",
-        "What would you do in this situation? {title} 👇",
-        "Hot take on this? {title} 👀",
-        "Honestly speechless reading this: {title}"
+        "Bitcoin is doing something crazy right now: {title} 🚀",
+        "{title} • Bullish or Bearish? 👇",
+        "Are we entering a massive bull run? {title} 📈",
+        "In case you're not paying attention to the market right now: {title} 👀",
+        "Generational wealth or trap? {title} 🤔"
+      ],
+      "reddit": [
+        "{title} - What's your genuine take on this market move? 👇",
+        "Hot take: {title} • W or L for holders? 🤔",
+        "Is this the top or just getting started? {title} 🚀",
+        "{title} • Rate this development 1 to 10 👇"
       ],
       "youtube": [
-        "You won't believe what just happened: {title} 🤔 {tags}",
-        "This situation is getting out of hand: {title} {tags}",
-        "Wait till you hear the full story: {title} 👀 {tags}"
+        "Massive crypto update just dropped: {title} 🚀 {tags}",
+        "You need to know this about the market today: {title} {tags}",
+        "Is Bitcoin about to explode? {title} 👀 {tags}"
       ],
       "debate": [
-        "Would you forgive someone in this situation? {title} 👇",
-        "100% justified or totally out of line? {title} 🤔",
-        "What is your immediate reaction to this? {title}"
+        "Bullish or Bearish? {title} 👇",
+        "Would you buy or sell right now? {title} 🤔",
+        "Generational wealth or exit liquidity? {title}"
       ],
       "short": [
-        "This is wild: {title} 👀",
-        "Speechless. {title}",
-        "Can't make this up: {title}"
+        "Massive move: {title} 🚀",
+        "Bull run signal: {title} 📈",
+        "Market watch: {title} 💎"
       ],
       "default": [
-        "{title} • What would you honestly do in this situation? 👇",
-        "Real or overhyped? {title} 👀"
+        "Bitcoin & Crypto update: {title} 🚀",
+        "{title} • Bullish or Bearish? 👇"
       ]
     }
   },
@@ -160,47 +160,48 @@
     "id": "huawei",
     "name": "Huawei",
     "icon": "📱",
-    "personaName": "Aesthetic Visuals & Lifestyle Creator",
-    "school": "🎨 Life & Visuals",
+    "personaName": "Beauty, Glamour & SFW Aesthetic",
+    "school": "💃 Glamour & Beauty",
     "schoolIcon": "✨",
-    "vibeTag": "Aesthetic • Cozy • Comics",
-    "description": "Lover of aesthetics, comics, cozy lifestyle, satisfying visuals & RedNote vibes.",
+    "vibeTag": "Glamour • SFW Sexy • Chic",
+    "description": "Stunning looks, celebrity red carpets, cosplay, beauty, fashion & scroll-stopping visuals.",
     "matchKeywords": ["huawei", "honor"],
-    "primaryCategory": "🐾 Life & Stories",
+    "primaryCategory": "💃 Glamour & Beauty",
     "platforms": [
       { "id": "all", "name": "✨ Tất cả nền tảng", "badge": "Auto", "hashtags": false },
-      { "id": "instagram", "name": "📸 Instagram", "badge": "Aesthetic Vibes", "hashtags": true, "tags": ["#aesthetic", "#lifestyle", "#mood", "#explorepage", "#vibes"] },
-      { "id": "tiktok", "name": "🎵 TikTok", "badge": "Visual Hook", "hashtags": true, "tags": ["#fyp", "#satisfying", "#cozy", "#aesthetic"] },
-      { "id": "youtube", "name": "▶️ YouTube Shorts", "badge": "Quick Shorts", "hashtags": true, "tags": ["#shorts", "#lifestyle", "#satisfying"] }
+      { "id": "instagram", "name": "📸 Instagram", "badge": "Glamour / OOTD", "hashtags": true, "tags": ["#beauty", "#glamour", "#ootd", "#style", "#model", "#explorepage"] },
+      { "id": "tiktok", "name": "🎵 TikTok", "badge": "Visual Hook", "hashtags": true, "tags": ["#fyp", "#beauty", "#gorgeous", "#outfitinspo", "#slay"] },
+      { "id": "x", "name": "𝕏 Twitter / X", "badge": "Photo Drop", "hashtags": false }
     ],
     "templates": {
       "instagram": [
-        "{title} ✨ Aesthetic level 100.\n.\n{tags}",
-        "This just made my entire day: {title} 🤍\n.\n{tags}",
-        "Cozy energy for your feed: {title} ✨\n.\n{tags}",
-        "Honestly so satisfying to see: {title} 🌿\n.\n{tags}"
+        "Respectfully staring... she absolutely ate this look ✨\n.\n{tags}",
+        "This fit is actually unreal: {title} 🤍\n.\n{tags}",
+        "Aesthetic level 100: {title} ✨\n.\n{tags}",
+        "Jaw dropped seeing this: {title} 🔥\n.\n{tags}"
       ],
       "tiktok": [
-        "New comfort content unlocked 😭: {title} {tags}",
-        "This is pure therapy for the eyes: {title} ✨ {tags}",
-        "Why is this so relatable though: {title} {tags}"
+        "The outfit / look is actually insane: {title} ✨ {tags}",
+        "Obsessed with this vibe honestly: {title} 🤍 {tags}",
+        "Drop the routine right now: {title} 😭 {tags}"
       ],
-      "youtube": [
-        "Wait till you see this... {title} 👀 {tags}",
-        "Most satisfying moment today: {title} ✨ {tags}"
+      "x": [
+        "She understood the assignment: {title} ✨",
+        "Respectfully... 10/10 look: {title} 🤍",
+        "Ate and left zero crumbs: {title} 🔥"
       ],
       "debate": [
-        "Rate this aesthetic from 1 to 10: {title} ✨",
-        "Would you live here / try this? {title} 🤍"
+        "Rate this look from 1 to 10: {title} ✨",
+        "W or L fit? {title} 👇"
       ],
       "short": [
-        "{title} ✨",
-        "Pure comfort: {title} 🤍",
-        "Aesthetic perfection: {title}"
+        "Stunning: {title} ✨",
+        "10/10 look: {title} 🤍",
+        "Obsessed: {title} 🔥"
       ],
       "default": [
-        "{title} ✨ Aesthetic level 100.",
-        "This just made my entire day: {title} 🤍"
+        "Respectfully staring... {title} ✨",
+        "This fit is unreal: {title} 🤍"
       ]
     }
   },
