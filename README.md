@@ -41,6 +41,23 @@ node server.js
 ```
 The server listens on port `7777` by default.
 
+## Content Routes
+
+Open `http://<server-ip>:7777/content-routes.html` on the laptop to use the
+editorial desk. Open the main hub on each Android, give every device a clear
+name, and keep it open while receiving an approved caption.
+
+- Draft and review captions on the laptop.
+- Route approved content to one specific online Android device.
+- Track `draft -> ready -> sent -> posted -> archived`, the post URL, and
+  24-hour/7-day views.
+- BingX-related drafts automatically include the selected route's disclosure.
+- The hub prepares and transfers content only. It never auto-posts or creates
+  engagement.
+
+The Vietnamese channel map, example topics, weekly cadence, and four-week view
+experiment are documented in [`CONTENT-ROUTES.md`](CONTENT-ROUTES.md).
+
 ---
 
 ## 🛡️ Ubuntu Firewall (UFW) Configuration

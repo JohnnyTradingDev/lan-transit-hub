@@ -9,6 +9,7 @@ const qrcode = require('qrcode');
 const cors = require('cors');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const feeder = require('./feeder');
+const { createContentWorkflow } = require('./content_workflow');
 
 const PORT = process.env.PORT || 7777;
 const STORAGE_DIR = path.join(__dirname, 'storage');
@@ -19,6 +20,8 @@ const RETENTION_MS = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
 if (!fs.existsSync(STORAGE_DIR)) {
   fs.mkdirSync(STORAGE_DIR, { recursive: true });
 }
+
+const contentWorkflow = createContentWorkflow(STORAGE_DIR);
 
 // Load or initialize history
 let history = [];
@@ -401,9 +404,20 @@ app.get('/api/server-tools', async (req, res) => {
       icon: '🍱',
       port: 7777,
       path: '#buffet',
-      description: 'Hot news + natural human captions for phone farming with 1-tap push',
+      description: 'Source ideas and hand approved captions to a chosen device',
       isIntegrated: true,
       tag: '1-Tap Push'
+    },
+    {
+      id: 'content-routes',
+      name: 'Content Routes',
+      category: 'Media Tools',
+      icon: '🧭',
+      port: 7777,
+      path: '/content-routes.html',
+      description: 'Laptop editorial queue to Android with approval and post tracking',
+      isIntegrated: true,
+      tag: 'Human Approved'
     },
     {
       id: 'rednote',
@@ -785,6 +799,86 @@ app.post('/api/buffet/personas', (req, res) => {
     res.json({ success: true, count: list.length });
   } catch (e) {
     res.status(500).json({ error: e.message });
+  }
+});
+
+// Content Routes: an editorial queue with a required human approval step.
+// It prepares and hands content to a device; it intentionally never posts to a social platform.
+app.get('/api/content-routes', (req, res) => {
+  res.json(contentWorkflow.getRoutes());
+});
+
+app.put('/api/content-routes', (req, res) => {
+  try {
+    res.json(contentWorkflow.saveRoutes(req.body));
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+app.get('/api/content-queue', (req, res) => {
+  res.json(contentWorkflow.getQueue({ status: req.query.status, routeId: req.query.routeId }));
+});
+
+app.get('/api/content-queue/stats', (req, res) => {
+  res.json(contentWorkflow.getStats());
+});
+
+app.post('/api/content-queue', (req, res) => {
+  try {
+    res.status(201).json(contentWorkflow.createItem(req.body));
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+app.patch('/api/content-queue/:id', (req, res) => {
+  try {
+    res.json(contentWorkflow.updateItem(req.params.id, req.body));
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+app.post('/api/content-queue/:id/send', (req, res) => {
+  try {
+    const targetDeviceId = String(req.body.targetDeviceId || '').trim();
+    const activeInfo = Array.from(clients.values()).find((device) => device.deviceId === targetDeviceId);
+    const isBridge = targetDeviceId === 'scrcpy-bridge' && bridgeState.online;
+    if (!activeInfo && !isBridge) {
+      return res.status(409).json({ error: 'Thiết bị đích đang offline hoặc chưa mở LAN Transit Hub' });
+    }
+
+    const targetDeviceName = activeInfo ? activeInfo.name : (bridgeState.deviceModel || 'Scrcpy Bridge');
+    const current = contentWorkflow.getQueue().find((item) => item.id === req.params.id);
+    if (!current) return res.status(404).json({ error: 'Không tìm thấy nội dung' });
+    if (!['ready', 'sent'].includes(current.status)) {
+      return res.status(409).json({ error: 'Phải duyệt nội dung trước khi gửi sang Android' });
+    }
+
+    const blocks = [current.caption];
+    if (current.disclosure) blocks.push(current.disclosure);
+    if (current.sourceUrl) blocks.push(`Nguồn tham khảo: ${current.sourceUrl}`);
+    const text = blocks.filter(Boolean).join('\n\n');
+    const relayItem = {
+      id: 'content-msg-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
+      senderId: 'content-routes',
+      senderName: 'Content Routes',
+      senderType: 'editorial-desk',
+      target: targetDeviceId,
+      targetName: targetDeviceName,
+      contentType: 'text',
+      text,
+      file: null,
+      timestamp: new Date().toISOString(),
+      contentQueueId: current.id
+    };
+
+    dispatchItem(relayItem);
+    const item = contentWorkflow.markSent(current.id, { id: targetDeviceId, name: targetDeviceName });
+    res.json({ success: true, item, relayItem });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
   }
 });
 

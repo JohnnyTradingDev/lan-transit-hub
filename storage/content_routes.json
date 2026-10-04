@@ -1,0 +1,82 @@
+[
+  {
+    "id": "vivo-internet-culture",
+    "name": "Internet Culture & Creator Economy",
+    "deviceLabel": "Vivo",
+    "matchKeywords": ["vivo"],
+    "platforms": ["x", "instagram", "reddit"],
+    "promise": "Giải thích xu hướng internet, công cụ creator và các câu chuyện công nghệ dễ chia sẻ.",
+    "pillars": [
+      { "name": "Internet culture / xu hướng", "weight": 50 },
+      { "name": "Công cụ và kinh nghiệm creator", "weight": 30 },
+      { "name": "Crypto culture, scam và lịch sử", "weight": 20 }
+    ],
+    "weeklyMix": { "evergreen": 60, "timely": 30, "bingx": 10 },
+    "disclosure": "Nội dung có hợp tác với BingX; không phải lời khuyên tài chính.",
+    "guardrails": [
+      "Không giả trải nghiệm cá nhân hoặc danh tính.",
+      "Không câu tương tác bằng tin sai, drama bịa hoặc nội dung trùng lặp.",
+      "Crypto chỉ xuất hiện khi có liên hệ tự nhiên với văn hóa internet hoặc creator economy."
+    ]
+  },
+  {
+    "id": "samsung-money-markets",
+    "name": "Money, Markets & Crypto Safety",
+    "deviceLabel": "Samsung",
+    "matchKeywords": ["samsung", "galaxy", "j7"],
+    "platforms": ["x", "instagram", "reddit", "telegram"],
+    "promise": "Biến tài chính và crypto thành kiến thức thực dụng, có nguồn và ưu tiên quản trị rủi ro.",
+    "pillars": [
+      { "name": "Tài chính cá nhân và quản trị rủi ro", "weight": 40 },
+      { "name": "Giải thích dữ liệu vĩ mô / thị trường", "weight": 35 },
+      { "name": "Crypto education và hướng dẫn sản phẩm", "weight": 25 }
+    ],
+    "weeklyMix": { "evergreen": 55, "timely": 30, "bingx": 15 },
+    "disclosure": "Nội dung có hợp tác với BingX; không phải lời khuyên tài chính. Tự nghiên cứu trước khi giao dịch.",
+    "guardrails": [
+      "Không hứa lợi nhuận, dự báo chắc chắn hoặc kêu gọi mua bán khẩn cấp.",
+      "Mọi số liệu, biểu đồ và tin thị trường phải có nguồn và thời điểm.",
+      "Bài BingX tập trung vào tính năng, quy trình, phí, bảo mật và rủi ro."
+    ]
+  },
+  {
+    "id": "huawei-creator-visual",
+    "name": "Mobile Visual & Creator Tools",
+    "deviceLabel": "Huawei",
+    "matchKeywords": ["huawei", "honor"],
+    "platforms": ["instagram", "x", "reddit"],
+    "promise": "Mẹo hình ảnh, edit video và công cụ mobile giúp creator làm nội dung tốt hơn.",
+    "pillars": [
+      { "name": "Mobile photo / video storytelling", "weight": 50 },
+      { "name": "Ứng dụng và workflow creator", "weight": 35 },
+      { "name": "Kiếm tiền, thanh toán và an toàn số", "weight": 15 }
+    ],
+    "weeklyMix": { "evergreen": 70, "timely": 20, "bingx": 10 },
+    "disclosure": "Nội dung có hợp tác với BingX; không phải lời khuyên tài chính.",
+    "guardrails": [
+      "Không dùng ảnh không rõ quyền sử dụng hoặc nội dung body-bait không liên quan.",
+      "Crypto chỉ gắn với creator economy, thanh toán hoặc an toàn tài khoản.",
+      "Ưu tiên demo thật, before/after và checklist có thể áp dụng."
+    ]
+  },
+  {
+    "id": "iphone-tech-fintech",
+    "name": "Useful Tech, AI & Fintech",
+    "deviceLabel": "iPhone",
+    "matchKeywords": ["iphone", "apple", "ios"],
+    "platforms": ["x", "reddit", "instagram"],
+    "promise": "Mẹo Apple, AI và fintech hữu ích, giải thích ngắn gọn và có kiểm chứng.",
+    "pillars": [
+      { "name": "Apple / AI / ứng dụng hữu ích", "weight": 60 },
+      { "name": "Privacy, bảo mật và thanh toán", "weight": 25 },
+      { "name": "Hạ tầng fintech / crypto utility", "weight": 15 }
+    ],
+    "weeklyMix": { "evergreen": 60, "timely": 30, "bingx": 10 },
+    "disclosure": "Nội dung có hợp tác với BingX; không phải lời khuyên tài chính.",
+    "guardrails": [
+      "Không khẳng định tính năng hoặc tin đồn nếu chưa kiểm chứng.",
+      "Không ép crypto vào bài Apple/AI không liên quan.",
+      "Phân biệt rõ trải nghiệm cá nhân, nguồn tin và suy luận."
+    ]
+  }
+]

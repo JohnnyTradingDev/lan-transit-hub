@@ -1,259 +1,88 @@
 [
   {
-    "id": "vivo",
-    "name": "Vivo",
-    "icon": "📱",
-    "personaName": "Gen Z Viral & Meme Addict",
-    "school": "🌐 Viral & Culture",
-    "schoolIcon": "🔥",
-    "vibeTag": "Slang • Memes • Chaos",
-    "description": "Chronically online, loves internet drama, viral moments, slang & reaction memes.",
-    "matchKeywords": ["vivo"],
-    "primaryCategory": "🌐 Viral & Culture",
+    "id": "vivo", "name": "Vivo", "icon": "📱",
+    "personaName": "Internet Culture & Creator Economy", "school": "🌐 Culture & Creator", "schoolIcon": "🌐",
+    "vibeTag": "Trends · Creator tools · Digital safety",
+    "description": "Giải thích xu hướng internet, công cụ creator và crypto culture khi có liên hệ tự nhiên.",
+    "matchKeywords": ["vivo"], "primaryCategory": "🌐 Viral & Culture",
     "platforms": [
-      { "id": "all", "name": "✨ Tất cả", "badge": "Auto", "hashtags": false },
-      { "id": "x", "name": "𝕏 X", "badge": "Slang & Chaos", "hashtags": false },
-      { "id": "tiktok", "name": "🎵 TikTok", "badge": "Hook + Tags", "hashtags": true, "tags": ["#fyp", "#viral", "#trending", "#storytime"] },
-      { "id": "reddit", "name": "🤖 Reddit", "badge": "Relatable r/all", "hashtags": false }
+      { "id": "all", "name": "Tất cả", "badge": "Chọn lọc", "hashtags": false },
+      { "id": "x", "name": "X", "badge": "Quan sát ngắn", "hashtags": false },
+      { "id": "instagram", "name": "Instagram", "badge": "Carousel/Reel", "hashtags": true, "tags": ["#creatortips", "#digitalculture"] },
+      { "id": "reddit", "name": "Reddit", "badge": "Thảo luận có nguồn", "hashtags": false }
     ],
     "templates": {
-      "x": [
-        "ngl this is actually crazy lol: {title} 💀",
-        "bruh no way {title} 😭",
-        "wait is this actually real... {title} kinda wild ngl",
-        "honestly didn't have this on my 2026 bingo card: {title}",
-        "bro what is happening in 2026 💀 {title}",
-        "ain't no way {title} 😭",
-        "lowkey didn't expect this at all: {title} 💀"
-      ],
-      "tiktok": [
-        "wait is this actually real?? {title} 💀 {tags}",
-        "nah because why is nobody talking about this: {title} {tags}",
-        "New fear unlocked: {title} 😭 {tags}",
-        "bro this situation is actually insane: {title} {tags}"
-      ],
-      "reddit": [
-        "ain't no way: {title}",
-        "this feels like a simulation at this point lol: {title}",
-        "{title} - thoughts on this? 👀",
-        "bro what are they even doing here: {title}"
-      ],
-      "debate": [
-        "Wait are you guys rockin with this or nah? {title} 👇",
-        "Real or overhyped? {title} 👀",
-        "{title} • W or L?"
-      ],
-      "short": [
-        "{title} 💀",
-        "ain't no way: {title}",
-        "Bruh. {title} 😭"
-      ],
-      "default": [
-        "ngl this is actually crazy lol: {title} 💀",
-        "bruh no way {title} 😭"
-      ]
+      "x": ["Một chi tiết đáng chú ý trong xu hướng này: {title}. Điều gì khiến nó lan nhanh?", "{title} — góc nhìn dành cho người làm nội dung:"],
+      "instagram": ["Điều creator có thể học từ câu chuyện này: {title}\n\n{tags}", "3 ý thực dụng từ xu hướng này: {title}\n\n{tags}"],
+      "reddit": ["{title} — đâu là tác động thật với người dùng hoặc creator?", "Nguồn và bối cảnh: {title}. Mọi người nhìn nhận thế nào?"],
+      "debate": ["{title} — giá trị thật hay chỉ là hiệu ứng lan truyền?"], "short": ["Đáng chú ý: {title}"], "default": ["Một góc nhìn đáng chú ý: {title}"]
     }
   },
   {
-    "id": "iphone",
-    "name": "iPhone",
-    "icon": "🍏",
-    "personaName": "Tech Geek & Apple / AI Specialist",
-    "school": "💻 Tech & AI",
-    "schoolIcon": "🤖",
-    "vibeTag": "AI • Gadgets • Silicon Valley",
-    "description": "Tech analyst, follows AI breakthroughs, Apple ecosystem, hardware & future gadgets.",
-    "matchKeywords": ["iphone", "apple", "ios"],
+    "id": "iphone", "name": "iPhone", "icon": "🍏",
+    "personaName": "Useful Tech, AI & Fintech", "school": "💻 Tech & AI", "schoolIcon": "🤖",
+    "vibeTag": "Apple · AI · Privacy · Fintech",
+    "description": "Mẹo công nghệ hữu ích, giải thích ngắn gọn, phân biệt rõ dữ kiện và suy luận.",
+    "matchKeywords": ["iphone", "apple", "ios"], "primaryCategory": "💻 Tech & AI",
+    "platforms": [
+      { "id": "all", "name": "Tất cả", "badge": "Chọn lọc", "hashtags": false },
+      { "id": "x", "name": "X", "badge": "Tech note", "hashtags": false },
+      { "id": "instagram", "name": "Instagram", "badge": "How-to", "hashtags": true, "tags": ["#techtips", "#aitools"] },
+      { "id": "reddit", "name": "Reddit", "badge": "Discussion", "hashtags": false }
+    ],
+    "templates": {
+      "x": ["Điểm hữu ích nhất trong cập nhật này: {title}.", "{title} — đây là điều nên kiểm tra trước khi dùng:"],
+      "instagram": ["Một workflow đáng thử: {title}\n\n{tags}", "Tóm tắt nhanh và cách áp dụng: {title}\n\n{tags}"],
+      "reddit": ["{title} — có ai đã kiểm chứng tác động thực tế chưa?", "{title} — đâu là lợi ích và đánh đổi với người dùng?"],
+      "debate": ["{title} — cải tiến thật hay chủ yếu là marketing?"], "short": ["Tech note: {title}"], "default": ["Một cập nhật công nghệ đáng xem: {title}"]
+    }
+  },
+  {
+    "id": "samsung", "name": "Samsung", "icon": "📊",
+    "personaName": "Money, Markets & Crypto Safety", "school": "💰 Finance & Crypto", "schoolIcon": "🛡️",
+    "vibeTag": "Risk · Data · Security · Education",
+    "description": "Tài chính và crypto có nguồn, ưu tiên quản trị rủi ro; không hứa lợi nhuận hay ép mua bán.",
+    "matchKeywords": ["samsung", "galaxy", "j7"], "primaryCategory": "💰 Finance & Crypto",
+    "platforms": [
+      { "id": "all", "name": "Tất cả", "badge": "Chọn lọc", "hashtags": false },
+      { "id": "x", "name": "X", "badge": "Market context", "hashtags": false },
+      { "id": "instagram", "name": "Instagram", "badge": "Education", "hashtags": true, "tags": ["#taichinh", "#cryptosafety"] },
+      { "id": "reddit", "name": "Reddit", "badge": "Evidence first", "hashtags": false }
+    ],
+    "templates": {
+      "x": ["Dữ kiện cần chú ý trong tin này: {title}. Rủi ro nào dễ bị bỏ qua?", "{title} — tách tín hiệu khỏi nhiễu bằng 3 câu hỏi:"],
+      "instagram": ["Không dự đoán giá — đây là cách đọc dữ kiện: {title}\n\n{tags}", "Checklist quản trị rủi ro: {title}\n\n{tags}"],
+      "reddit": ["{title} — nguồn dữ liệu nào xác nhận và rủi ro phản biện là gì?", "{title} — tác động thực tế khác headline ở điểm nào?"],
+      "debate": ["{title} — dữ liệu đang nói gì và chưa nói gì?"], "short": ["Market context: {title}"], "default": ["Tóm tắt có nguồn: {title}"]
+    }
+  },
+  {
+    "id": "huawei", "name": "Huawei", "icon": "🎬",
+    "personaName": "Mobile Visual & Creator Tools", "school": "🎨 Visual Creator", "schoolIcon": "🎬",
+    "vibeTag": "Mobile edit · Storytelling · Workflow",
+    "description": "Mẹo quay dựng, hình ảnh và công cụ mobile; crypto chỉ gắn với creator economy hoặc an toàn số.",
+    "matchKeywords": ["huawei", "honor"], "primaryCategory": "🎨 Creator & Visual",
+    "platforms": [
+      { "id": "all", "name": "Tất cả", "badge": "Chọn lọc", "hashtags": false },
+      { "id": "instagram", "name": "Instagram", "badge": "Visual tutorial", "hashtags": true, "tags": ["#mobileediting", "#creatorworkflow"] },
+      { "id": "x", "name": "X", "badge": "Creator tip", "hashtags": false },
+      { "id": "reddit", "name": "Reddit", "badge": "Workflow", "hashtags": false }
+    ],
+    "templates": {
+      "instagram": ["Một cách kể chuyện hình ảnh tốt hơn: {title}\n\n{tags}", "Thử workflow mobile này: {title}\n\n{tags}"],
+      "x": ["Creator tip từ ví dụ này: {title}", "{title} — một thay đổi nhỏ giúp nội dung rõ hơn:"],
+      "reddit": ["{title} — workflow nào cho kết quả tương tự mà vẫn tiết kiệm thời gian?"],
+      "debate": ["{title} — kỹ thuật hữu ích hay chỉ là hiệu ứng đẹp mắt?"], "short": ["Creator tip: {title}"], "default": ["Một mẹo visual đáng thử: {title}"]
+    }
+  },
+  {
+    "id": "laptop", "name": "Laptop", "icon": "💻",
+    "personaName": "Editorial Desk", "school": "🧭 Planning & Review", "schoolIcon": "🧭",
+    "vibeTag": "Research · Draft · Approve · Measure",
+    "description": "Bàn biên tập trung tâm: kiểm tra nguồn, duyệt caption, phân tuyến và đo kết quả.",
+    "matchKeywords": ["laptop", "pc", "desktop", "chrome", "windows", "linux", "homeserver"],
     "primaryCategory": "💻 Tech & AI",
-    "platforms": [
-      { "id": "all", "name": "✨ Tất cả", "badge": "Auto", "hashtags": false },
-      { "id": "x", "name": "𝕏 X", "badge": "Tech News", "hashtags": false },
-      { "id": "threads", "name": "🧵 Threads", "badge": "Deep Discussion", "hashtags": false },
-      { "id": "reddit", "name": "🤖 Reddit", "badge": "r/technology", "hashtags": false }
-    ],
-    "templates": {
-      "x": [
-        "Honestly a pretty significant development in the space: {title}. Thoughts?",
-        "Big move for the tech industry: {title}. Curious how this plays out.",
-        "In case you missed it: {title}. Thoughts on this direction?",
-        "AI is moving faster than expected: {title}"
-      ],
-      "threads": [
-        "Curious how everyone feels about this: {title}. Huge leap forward if true.",
-        "Honestly did not expect this so soon: {title}. What's your take?",
-        "Thoughts on this tech update? {title}. W or L?"
-      ],
-      "reddit": [
-        "{title} - What are the real-world implications of this?",
-        "Is AI moving too fast or is this actually the right move? {title} 🤔",
-        "{title} - Is it just me or is this actually a good direction?"
-      ],
-      "debate": [
-        "Is this genuinely revolutionary or just good marketing? {title} 🤔",
-        "Would you actually use this daily? {title} 👇",
-        "{title} • Rate this development 1 to 10"
-      ],
-      "short": [
-        "Big move: {title} ⚡",
-        "In case you missed it: {title}",
-        "The future is wild: {title}"
-      ],
-      "default": [
-        "Honestly a pretty significant development in the space: {title}. Thoughts?",
-        "{title} - Big move for the industry"
-      ]
-    }
-  },
-  {
-    "id": "samsung",
-    "name": "Samsung",
-    "icon": "📱",
-    "personaName": "Crypto Hustler & Market Alpha",
-    "school": "💰 Finance & Crypto",
-    "schoolIcon": "💎",
-    "vibeTag": "Bitcoin • Alpha • Bull Run",
-    "description": "Market watcher, Bitcoin rallies, crypto alpha, stock shifts & wealth moves.",
-    "matchKeywords": ["samsung", "galaxy", "j7"],
-    "primaryCategory": "💰 Finance & Crypto",
-    "platforms": [
-      { "id": "all", "name": "✨ Tất cả", "badge": "Auto", "hashtags": false },
-      { "id": "x", "name": "𝕏 X", "badge": "Crypto Alpha", "hashtags": false },
-      { "id": "reddit", "name": "🤖 Reddit", "badge": "r/CryptoCurrency", "hashtags": false },
-      { "id": "youtube", "name": "▶️ YouTube", "badge": "Market Hook", "hashtags": true, "tags": ["#crypto", "#bitcoin", "#trading", "#finance", "#money"] }
-    ],
-    "templates": {
-      "x": [
-        "Bitcoin is doing something crazy right now: {title} 🚀",
-        "{title} • Bullish or Bearish? 👇",
-        "Are we entering a massive bull run? {title} 📈",
-        "In case you're not paying attention to the market right now: {title} 👀",
-        "Generational wealth or trap? {title} 🤔"
-      ],
-      "reddit": [
-        "{title} - What's your genuine take on this market move? 👇",
-        "Hot take: {title} • W or L for holders? 🤔",
-        "Is this the top or just getting started? {title} 🚀",
-        "{title} • Rate this development 1 to 10 👇"
-      ],
-      "youtube": [
-        "Massive crypto update just dropped: {title} 🚀 {tags}",
-        "You need to know this about the market today: {title} {tags}",
-        "Is Bitcoin about to explode? {title} 👀 {tags}"
-      ],
-      "debate": [
-        "Bullish or Bearish? {title} 👇",
-        "Would you buy or sell right now? {title} 🤔",
-        "Generational wealth or exit liquidity? {title}"
-      ],
-      "short": [
-        "Massive move: {title} 🚀",
-        "Bull run signal: {title} 📈",
-        "Market watch: {title} 💎"
-      ],
-      "default": [
-        "Bitcoin & Crypto update: {title} 🚀",
-        "{title} • Bullish or Bearish? 👇"
-      ]
-    }
-  },
-  {
-    "id": "huawei",
-    "name": "Huawei",
-    "icon": "📱",
-    "personaName": "Beauty, Glamour & SFW Aesthetic",
-    "school": "💃 Glamour & Beauty",
-    "schoolIcon": "✨",
-    "vibeTag": "Glamour • SFW Sexy • Chic",
-    "description": "Stunning looks, celebrity red carpets, cosplay, beauty, fashion & scroll-stopping visuals.",
-    "matchKeywords": ["huawei", "honor"],
-    "primaryCategory": "💃 Glamour & Beauty",
-    "platforms": [
-      { "id": "all", "name": "✨ Tất cả", "badge": "Auto", "hashtags": false },
-      { "id": "instagram", "name": "📸 Instagram", "badge": "Glamour / OOTD", "hashtags": true, "tags": ["#beauty", "#glamour", "#ootd", "#style", "#model", "#explorepage"] },
-      { "id": "tiktok", "name": "🎵 TikTok", "badge": "Visual Hook", "hashtags": true, "tags": ["#fyp", "#beauty", "#gorgeous", "#outfitinspo", "#slay"] },
-      { "id": "x", "name": "𝕏 X", "badge": "Photo Drop", "hashtags": false }
-    ],
-    "templates": {
-      "instagram": [
-        "Respectfully staring... she absolutely ate this look ✨\n.\n{tags}",
-        "This fit is actually unreal: {title} 🤍\n.\n{tags}",
-        "Aesthetic level 100: {title} ✨\n.\n{tags}",
-        "Jaw dropped seeing this: {title} 🔥\n.\n{tags}"
-      ],
-      "tiktok": [
-        "The outfit / look is actually insane: {title} ✨ {tags}",
-        "Obsessed with this vibe honestly: {title} 🤍 {tags}",
-        "Drop the routine right now: {title} 😭 {tags}"
-      ],
-      "x": [
-        "She understood the assignment: {title} ✨",
-        "Respectfully... 10/10 look: {title} 🤍",
-        "Ate and left zero crumbs: {title} 🔥"
-      ],
-      "debate": [
-        "Rate this look from 1 to 10: {title} ✨",
-        "W or L fit? {title} 👇"
-      ],
-      "short": [
-        "Stunning: {title} ✨",
-        "10/10 look: {title} 🤍",
-        "Obsessed: {title} 🔥"
-      ],
-      "default": [
-        "Respectfully staring... {title} ✨",
-        "This fit is unreal: {title} 🤍"
-      ]
-    }
-  },
-  {
-    "id": "laptop",
-    "name": "Laptop",
-    "icon": "💻",
-    "personaName": "Gamer & Nerd Culture Specialist",
-    "school": "🎮 Gaming & Pop",
-    "schoolIcon": "🎮",
-    "vibeTag": "Steam • PC Master • Lore",
-    "description": "PC Master Race, Steam sales, gaming industry insider, movie easter eggs.",
-    "matchKeywords": ["laptop", "pc", "desktop", "chrome", "windows", "linux", "homesever"],
-    "primaryCategory": "🎮 Gaming & Pop",
-    "platforms": [
-      { "id": "all", "name": "✨ Tất cả", "badge": "Auto", "hashtags": false },
-      { "id": "x", "name": "𝕏 X", "badge": "Gamer Hype", "hashtags": false },
-      { "id": "reddit", "name": "🤖 Reddit", "badge": "r/gaming", "hashtags": false },
-      { "id": "tiktok", "name": "🎵 TikTok", "badge": "Gaming Clips", "hashtags": true, "tags": ["#gaming", "#gamer", "#steam", "#videogames", "#pcbuild"] }
-    ],
-    "templates": {
-      "x": [
-        "Gaming industry is cooking right now lol: {title}",
-        "{title} - 10/10 Game of the Year or total skip? 👇",
-        "Steam record broken again: {title} 🎮",
-        "Bro the lore behind this is crazy: {title}"
-      ],
-      "reddit": [
-        "{title} • Hot take: does anyone actually want this?",
-        "{title} - Is this a W or an L for gamers? Discuss.",
-        "Honestly did not expect this from the developers: {title}",
-        "{title} - Rate this from 1 to 10 👇"
-      ],
-      "tiktok": [
-        "Nah this game update is insane: {title} 🎮 {tags}",
-        "Gamers won today: {title} 🔥 {tags}",
-        "Wait is this game actually coming out? {title} {tags}"
-      ],
-      "debate": [
-        "{title} • 10/10 Masterpiece or massive flop? 👇",
-        "Are developers going too far with this? {title} 🤔",
-        "W or L update for gamers? {title}"
-      ],
-      "short": [
-        "{title} 🎮",
-        "Gamer moment: {title}",
-        "Steam record: {title} 🔥"
-      ],
-      "default": [
-        "Gaming industry is cooking right now lol: {title}",
-        "{title} • 10/10 Game of the Year or total skip? 👇"
-      ]
-    }
+    "platforms": [{ "id": "all", "name": "Tất cả", "badge": "Editorial", "hashtags": false }],
+    "templates": { "default": ["{title}"], "debate": ["{title}"], "short": ["{title}"] }
   }
 ]
