@@ -69,6 +69,11 @@ function cleanupExpiredHistory() {
     );
     activeFilenames.add('history.json');
     activeFilenames.add('.gitkeep');
+    activeFilenames.add('device_personas.json');
+    activeFilenames.add('content_routes.json');
+    activeFilenames.add('content_queue.json');
+    activeFilenames.add('buffet.json');
+    activeFilenames.add('buffet_dismissed.json');
 
     files.forEach(f => {
       if (!activeFilenames.has(f)) {
