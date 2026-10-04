@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0b1220">
+  <title>Gửi file vào điện thoại</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#0b1220;color:#e5eefc;font:15px/1.45 system-ui,sans-serif}.wrap{width:min(680px,calc(100% - 24px));margin:32px auto}.card{background:#121d30;border:1px solid #29364b;border-radius:18px;padding:18px;margin-bottom:14px}h1{font-size:25px;margin:0 0 4px}h2{font-size:15px;margin:0 0 10px}.muted{color:#94a3b8}.status{display:flex;align-items:center;gap:9px;margin-top:14px;padding:11px;border-radius:12px;background:#0a1424}.dot{width:11px;height:11px;border-radius:50%;background:#64748b}.dot.ok{background:#34d399;box-shadow:0 0 14px #34d399}.dot.bad{background:#fb7185}.grid{display:grid;grid-template-columns:1fr auto;gap:10px}textarea,input,button{font:inherit}textarea{width:100%;min-height:120px;resize:vertical;background:#08111f;color:#fff;border:1px solid #334155;border-radius:12px;padding:12px}input[type=file]{width:100%;background:#08111f;border:1px dashed #475569;border-radius:12px;padding:12px;margin:10px 0;color:#cbd5e1}button{border:0;border-radius:12px;padding:12px 18px;font-weight:800;cursor:pointer;background:#38bdf8;color:#06111d}button:disabled{opacity:.45;cursor:not-allowed}.secondary{background:#26364d;color:#dbeafe;padding:8px 11px}.hint{font-size:12px;color:#94a3b8;margin-top:9px}.progress{height:6px;background:#1e293b;border-radius:99px;overflow:hidden;margin-top:10px;display:none}.bar{height:100%;width:0;background:#38bdf8}.item{padding:9px 0;border-top:1px solid #253247;font-size:13px}.item:first-child{border:0}.top{display:flex;justify-content:space-between;gap:10px;align-items:start}.links{font-size:12px;margin-top:8px}.links a{color:#7dd3fc;margin-right:12px}@media(max-width:520px){.wrap{margin:14px auto}.grid{grid-template-columns:1fr}button{width:100%}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card">
+      <div class="top"><div><h1>USB → Android</h1><div class="muted">Một trang để gửi caption và file qua dây cáp.</div></div><button class="secondary" onclick="checkStatus()">Kiểm tra</button></div>
+      <div class="status"><span class="dot" id="dot"></span><div><strong id="statusText">Đang kiểm tra…</strong><div class="muted" id="statusSub">ADB Bridge</div></div></div>
+    </section>
+
+    <section class="card">
+      <h2>Gửi vào điện thoại</h2>
+      <form id="sendForm">
+        <textarea id="text" placeholder="Caption hoặc nội dung cần copy vào điện thoại…"></textarea>
+        <input id="files" type="file" multiple>
+        <div class="grid"><div class="hint">Text → clipboard · File → thư mục Download trên Android.</div><button id="sendBtn" type="submit">Gửi qua USB</button></div>
+        <div class="progress" id="progress"><div class="bar" id="bar"></div></div>
+      </form>
+      <div class="hint" id="result"></div>
+      <div class="links"><a href="/content-routes.html">Content Rules</a><a href="/">Trang đầy đủ</a></div>
+    </section>
+
+    <section class="card"><h2>Đã gửi gần đây</h2><div id="history" class="muted">Chưa có dữ liệu.</div></section>
+  </main>
+  <script>
+    const $=id=>document.getElementById(id);
+    const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    async function checkStatus(){try{const r=await fetch('/api/bridge/status');const d=await r.json();const b=d.bridge||{};const ok=b.online&&b.deviceModel;$('dot').className='dot '+(ok?'ok':'bad');$('statusText').textContent=ok?`Đã nối: ${b.deviceModel}`:'Chưa thấy cầu nối USB';$('statusSub').textContent=ok?'Sẵn sàng nhận text và file':'Bấm lại file ngoài Desktop để kết nối';$('sendBtn').disabled=!ok}catch{$('dot').className='dot bad';$('statusText').textContent='Server chưa sẵn sàng';$('sendBtn').disabled=true}}
+    async function loadHistory(){try{const list=await fetch('/api/history').then(r=>r.json());const mine=list.filter(x=>x.target==='scrcpy-bridge').slice(0,6);$('history').innerHTML=mine.length?mine.map(x=>`<div class="item"><strong>${x.file?esc(x.file.originalName):'Text'}</strong><div class="muted">${new Date(x.timestamp).toLocaleString('vi-VN')}</div></div>`).join(''):'Chưa gửi gì qua USB.'}catch{}}
+    $('sendForm').addEventListener('submit',e=>{e.preventDefault();const text=$('text').value.trim();const files=$('files').files;if(!text&&!files.length)return;$('sendBtn').disabled=true;$('progress').style.display='block';const body=new FormData();body.append('senderId','simple-usb');body.append('senderName','Laptop');body.append('senderType','laptop');body.append('target','scrcpy-bridge');body.append('targetName','Android USB');body.append('text',text);[...files].forEach(f=>body.append('files',f));const xhr=new XMLHttpRequest();xhr.open('POST','/api/send');xhr.upload.onprogress=ev=>{if(ev.lengthComputable)$('bar').style.width=`${Math.round(ev.loaded/ev.total*100)}%`};xhr.onload=()=>{const ok=xhr.status>=200&&xhr.status<300;$('result').textContent=ok?'Đã gửi. File nằm trong Download/Album; caption ở clipboard.':'Gửi thất bại.';if(ok){$('text').value='';$('files').value='';loadHistory()}$('sendBtn').disabled=false;setTimeout(()=>{$('progress').style.display='none';$('bar').style.width='0'},700)};xhr.onerror=()=>{$('result').textContent='Mất kết nối với server.';$('sendBtn').disabled=false};xhr.send(body)});
+    checkStatus();loadHistory();setInterval(checkStatus,5000);
+  </script>
+</body>
+</html>

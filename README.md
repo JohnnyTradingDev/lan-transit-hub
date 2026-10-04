@@ -43,10 +43,11 @@ The server listens on port `7777` by default.
 
 ### Windows laptop direct mode
 
-Run `start-laptop.ps1` (or the `LAN Transit Hub.cmd` launcher placed on the
-Desktop). It starts the hub on the laptop, opens the file-transfer page and the
-Content Routes page. Android devices on the same Wi-Fi open the `serverUrl`
-shown by the launcher, normally `http://<laptop-lan-ip>:7777`.
+Run `start-laptop.ps1` (or the `KET NOI DIEN THOAI.cmd` launcher placed on the
+Desktop). One click checks the Android USB/ADB connection, starts the local
+server and cable bridge, opens scrcpy, then opens the simplified transfer page
+at `http://localhost:7777/simple.html`. Text is copied to the phone clipboard;
+uploaded files are pushed into the Android Download folder.
 
 ## Content Routes
 

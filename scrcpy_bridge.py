@@ -40,7 +40,7 @@ if sys.platform == "win32":
     except Exception:
         pass
 
-DEFAULT_SERVER = "http://100.75.112.62:7777"
+DEFAULT_SERVER = "http://127.0.0.1:7777"
 SERVER_URL = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_SERVER
 SERVER_URL = SERVER_URL.rstrip('/')
 
@@ -293,7 +293,7 @@ def listen_sse():
                         if data_content:
                             try:
                                 payload = json.loads(data_content)
-                                if payload.get("type") == "scrcpy_push":
+                                if payload.get("type") in ("scrcpy_push", "scrcpy_text"):
                                     handle_post_event(payload)
                             except Exception as pe:
                                 pass
