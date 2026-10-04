@@ -69,6 +69,12 @@ function createContentWorkflow(storageDir) {
         ? route.platforms.map((v) => cleanText(v, 30).toLowerCase()).filter(Boolean)
         : [],
       promise: cleanText(route.promise, 500),
+      style: cleanText(route.style, 500),
+      nurtureCadence: cleanText(route.nurtureCadence, 200),
+      dailyBaseline: cleanText(route.dailyBaseline, 300),
+      formats: Array.isArray(route.formats)
+        ? route.formats.map((v) => cleanText(v, 120)).filter(Boolean)
+        : [],
       pillars: Array.isArray(route.pillars) ? route.pillars.slice(0, 10) : [],
       weeklyMix: route.weeklyMix && typeof route.weeklyMix === 'object' ? route.weeklyMix : {},
       disclosure: cleanText(route.disclosure, 300),

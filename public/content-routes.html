@@ -27,7 +27,7 @@
       <a class="mobile-link" href="/">← Transit Hub</a>
     </header>
 
-    <div class="notice">Không tự đăng, không tự tạo tương tác và không lặp caption hàng loạt. Bài liên quan BingX phải có disclosure; số liệu và tin thị trường cần nguồn.</div>
+    <div class="notice"><strong>Quy tắc vận hành:</strong> Mỗi nick đã có tối thiểu 2 bài BingX/ngày từ task riêng. Trang này chỉ quản lý bài nuôi nick/trung lập bổ sung; không tính bài BingX vào content mix và không ép đăng thêm nếu chất lượng chưa đạt.</div>
     <section class="stats" id="stats"></section>
 
     <div class="grid">
@@ -40,7 +40,6 @@
             <label for="caption">Caption đã viết lại</label><textarea id="caption" maxlength="5000" required placeholder="Viết giá trị chính trước, CTA sau..."></textarea>
             <label for="sourceUrl">Nguồn tham khảo</label><input id="sourceUrl" type="url" placeholder="https://...">
             <label for="mediaNote">Ghi chú media / file cần gửi riêng</label><input id="mediaNote" maxlength="500" placeholder="VD: dùng chart đã kiểm tra lúc 09:00">
-            <label><input id="bingxRelated" type="checkbox" style="width:auto"> Có liên quan hoặc hợp tác BingX</label>
             <button class="btn" type="submit">Lưu bản nháp</button>
           </form>
         </section>
@@ -68,7 +67,7 @@
     async function api(url,options={}){const response=await fetch(url,{headers:{'Content-Type':'application/json',...(options.headers||{})},...options});const data=await response.json().catch(()=>({}));if(!response.ok)throw new Error(data.error||`HTTP ${response.status}`);return data}
     async function load(){[state.routes,state.queue,state.devices]=await Promise.all([api('/api/content-routes'),api('/api/content-queue'),api('/api/devices')]);renderRoutes();renderRouteSelect();renderQueue();renderStats()}
     function renderStats(){const counts={total:state.queue.length,draft:0,ready:0,sent:0,posted:0};state.queue.forEach(i=>{if(counts[i.status]!==undefined)counts[i.status]++});$('stats').innerHTML=Object.entries(counts).map(([k,v])=>`<div class="stat"><b>${v}</b><span>${k==='total'?'Tổng':labels[k]}</span></div>`).join('')}
-    function renderRoutes(){$('routes').innerHTML=state.routes.map(r=>`<article class="route"><strong>${esc(r.deviceLabel)} · ${esc(r.name)}</strong><small>${esc(r.promise)}</small><div class="chips">${r.pillars.map(p=>`<span class="chip">${esc(p.name)} ${p.weight}%</span>`).join('')}</div><small>Mix: ${r.weeklyMix.evergreen}% evergreen · ${r.weeklyMix.timely}% thời sự · tối đa ${r.weeklyMix.bingx}% BingX</small></article>`).join('')}
+    function renderRoutes(){$('routes').innerHTML=state.routes.map(r=>`<article class="route"><strong>${esc(r.deviceLabel)} · ${esc(r.name)}</strong><small>${esc(r.promise)}</small><small><b>Style:</b> ${esc(r.style||'Rõ ràng, hữu ích, đúng nguồn.')}</small><small><b>Nhịp nuôi nick:</b> ${esc(r.nurtureCadence||'3-5 bài/tuần')}</small><small><b>Baseline:</b> ${esc(r.dailyBaseline||'2 bài BingX/ngày được quản lý ở task riêng.')}</small><div class="chips">${r.pillars.map(p=>`<span class="chip">${esc(p.name)} ${p.weight}%</span>`).join('')}${(r.formats||[]).map(f=>`<span class="chip">${esc(f)}</span>`).join('')}</div><small>Content mix nuôi nick: ${r.weeklyMix.evergreen}% evergreen · ${r.weeklyMix.timely}% theo xu hướng${r.weeklyMix.cryptoAdjacent?` · ${r.weeklyMix.cryptoAdjacent}% crypto-adjacent`:''}. Không gồm bài BingX.</small></article>`).join('')}
     function renderRouteSelect(){const current=$('routeId').value;$('routeId').innerHTML=state.routes.map(r=>`<option value="${esc(r.id)}">${esc(r.deviceLabel)} · ${esc(r.name)}</option>`).join('');if(state.routes.some(r=>r.id===current))$('routeId').value=current;renderPlatforms()}
     function renderPlatforms(){const route=state.routes.find(r=>r.id===$('routeId').value);$('platform').innerHTML=(route?.platforms||[]).map(p=>`<option value="${esc(p)}">${esc(p.toUpperCase())}</option>`).join('')}
     function routeName(id){const r=state.routes.find(x=>x.id===id);return r?`${r.deviceLabel} · ${r.name}`:id}
@@ -81,7 +80,7 @@
     async function markPosted(id){const postUrl=prompt('Dán URL bài đã đăng (có thể để trống):','')??'';try{await api(`/api/content-queue/${id}`,{method:'PATCH',body:JSON.stringify({status:'posted',postUrl})});toast('Đã ghi nhận bài đăng');await load()}catch(e){toast(e.message,true)}}
     async function updateMetrics(id){const item=state.queue.find(i=>i.id===id);const views24h=prompt('Lượt xem sau 24h:',item.views24h??'');if(views24h===null)return;const views7d=prompt('Lượt xem sau 7 ngày:',item.views7d??'');if(views7d===null)return;try{await api(`/api/content-queue/${id}`,{method:'PATCH',body:JSON.stringify({views24h,views7d})});toast('Đã cập nhật lượt xem');await load()}catch(e){toast(e.message,true)}}
     $('routeId').addEventListener('change',renderPlatforms);$('statusFilter').addEventListener('change',renderQueue);
-    $('composer').addEventListener('submit',async(event)=>{event.preventDefault();const payload={routeId:$('routeId').value,platform:$('platform').value,title:$('title').value,caption:$('caption').value,sourceUrl:$('sourceUrl').value,mediaNote:$('mediaNote').value,bingxRelated:$('bingxRelated').checked};try{await api('/api/content-queue',{method:'POST',body:JSON.stringify(payload)});event.target.reset();renderPlatforms();toast('Đã lưu bản nháp');await load()}catch(e){toast(e.message,true)}});
+    $('composer').addEventListener('submit',async(event)=>{event.preventDefault();const payload={routeId:$('routeId').value,platform:$('platform').value,title:$('title').value,caption:$('caption').value,sourceUrl:$('sourceUrl').value,mediaNote:$('mediaNote').value,bingxRelated:false};try{await api('/api/content-queue',{method:'POST',body:JSON.stringify(payload)});event.target.reset();renderPlatforms();toast('Đã lưu bản nháp nuôi nick');await load()}catch(e){toast(e.message,true)}});
     $('confirmSend').addEventListener('click',async(event)=>{event.preventDefault();try{await api(`/api/content-queue/${state.sendId}/send`,{method:'POST',body:JSON.stringify({targetDeviceId:$('deviceId').value})});$('sendDialog').close();toast('Đã gửi sang thiết bị');await load()}catch(e){toast(e.message,true)}});
     load().catch(e=>toast(e.message,true));setInterval(()=>api('/api/devices').then(d=>state.devices=d).catch(()=>{}),15000);
   </script>

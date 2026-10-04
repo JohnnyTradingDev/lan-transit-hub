@@ -6,13 +6,17 @@
     "matchKeywords": ["vivo"],
     "platforms": ["x", "instagram", "reddit"],
     "promise": "Giải thích xu hướng internet, công cụ creator và các câu chuyện công nghệ dễ chia sẻ.",
+    "style": "Nhanh, tò mò, gần gũi; có chất Gen Z vừa phải nhưng không giả slang hoặc bịa trải nghiệm.",
+    "nurtureCadence": "4-5 bài nuôi nick/tuần, tối đa 1 bài bổ sung/ngày.",
+    "dailyBaseline": "Mỗi nick đã có tối thiểu 2 bài BingX/ngày ở task riêng; không tính vào mix này.",
+    "formats": ["Trend explainer", "Creator tip", "Scam breakdown", "Câu hỏi thảo luận"],
     "pillars": [
       { "name": "Internet culture / xu hướng", "weight": 50 },
       { "name": "Công cụ và kinh nghiệm creator", "weight": 30 },
       { "name": "Crypto culture, scam và lịch sử", "weight": 20 }
     ],
-    "weeklyMix": { "evergreen": 60, "timely": 30, "bingx": 10 },
-    "disclosure": "Nội dung có hợp tác với BingX; không phải lời khuyên tài chính.",
+    "weeklyMix": { "evergreen": 60, "timely": 30, "cryptoAdjacent": 10 },
+    "disclosure": "",
     "guardrails": [
       "Không giả trải nghiệm cá nhân hoặc danh tính.",
       "Không câu tương tác bằng tin sai, drama bịa hoặc nội dung trùng lặp.",
@@ -26,17 +30,21 @@
     "matchKeywords": ["samsung", "galaxy", "j7"],
     "platforms": ["x", "instagram", "reddit", "telegram"],
     "promise": "Biến tài chính và crypto thành kiến thức thực dụng, có nguồn và ưu tiên quản trị rủi ro.",
+    "style": "Bình tĩnh, có nguồn và thời điểm; cấu trúc dữ kiện → ý nghĩa → rủi ro → cách kiểm tra.",
+    "nurtureCadence": "4-5 bài nuôi nick/tuần, tối đa 1 bài bổ sung/ngày.",
+    "dailyBaseline": "Mỗi nick đã có tối thiểu 2 bài BingX/ngày ở task riêng; không tính vào mix này.",
+    "formats": ["Risk checklist", "Market explainer", "Security tip", "Myth vs fact"],
     "pillars": [
       { "name": "Tài chính cá nhân và quản trị rủi ro", "weight": 40 },
       { "name": "Giải thích dữ liệu vĩ mô / thị trường", "weight": 35 },
       { "name": "Crypto education và hướng dẫn sản phẩm", "weight": 25 }
     ],
-    "weeklyMix": { "evergreen": 55, "timely": 30, "bingx": 15 },
-    "disclosure": "Nội dung có hợp tác với BingX; không phải lời khuyên tài chính. Tự nghiên cứu trước khi giao dịch.",
+    "weeklyMix": { "evergreen": 55, "timely": 30, "cryptoAdjacent": 15 },
+    "disclosure": "",
     "guardrails": [
       "Không hứa lợi nhuận, dự báo chắc chắn hoặc kêu gọi mua bán khẩn cấp.",
       "Mọi số liệu, biểu đồ và tin thị trường phải có nguồn và thời điểm.",
-      "Bài BingX tập trung vào tính năng, quy trình, phí, bảo mật và rủi ro."
+      "Bài nuôi nick không quảng bá BingX; task BingX được quản lý riêng."
     ]
   },
   {
@@ -46,13 +54,17 @@
     "matchKeywords": ["huawei", "honor"],
     "platforms": ["instagram", "x", "reddit"],
     "promise": "Mẹo hình ảnh, edit video và công cụ mobile giúp creator làm nội dung tốt hơn.",
+    "style": "Trực quan, tích cực, ít chữ; ưu tiên before/after, checklist và demo có thể áp dụng.",
+    "nurtureCadence": "3-4 bài nuôi nick/tuần, tối đa 1 bài bổ sung/ngày.",
+    "dailyBaseline": "Mỗi nick đã có tối thiểu 2 bài BingX/ngày ở task riêng; không tính vào mix này.",
+    "formats": ["Before/after", "Carousel 3-5 slide", "Reel 20-30 giây", "Workflow mobile"],
     "pillars": [
       { "name": "Mobile photo / video storytelling", "weight": 50 },
       { "name": "Ứng dụng và workflow creator", "weight": 35 },
       { "name": "Kiếm tiền, thanh toán và an toàn số", "weight": 15 }
     ],
-    "weeklyMix": { "evergreen": 70, "timely": 20, "bingx": 10 },
-    "disclosure": "Nội dung có hợp tác với BingX; không phải lời khuyên tài chính.",
+    "weeklyMix": { "evergreen": 70, "timely": 20, "cryptoAdjacent": 10 },
+    "disclosure": "",
     "guardrails": [
       "Không dùng ảnh không rõ quyền sử dụng hoặc nội dung body-bait không liên quan.",
       "Crypto chỉ gắn với creator economy, thanh toán hoặc an toàn tài khoản.",
@@ -66,13 +78,17 @@
     "matchKeywords": ["iphone", "apple", "ios"],
     "platforms": ["x", "reddit", "instagram"],
     "promise": "Mẹo Apple, AI và fintech hữu ích, giải thích ngắn gọn và có kiểm chứng.",
+    "style": "Gọn, sạch, thực dụng như tech reviewer; phân biệt dữ kiện, trải nghiệm và suy luận.",
+    "nurtureCadence": "3-4 bài nuôi nick/tuần, tối đa 1 bài bổ sung/ngày.",
+    "dailyBaseline": "Mỗi nick đã có tối thiểu 2 bài BingX/ngày ở task riêng; không tính vào mix này.",
+    "formats": ["Tech tip", "So sánh công cụ", "Privacy checklist", "How-to ngắn"],
     "pillars": [
       { "name": "Apple / AI / ứng dụng hữu ích", "weight": 60 },
       { "name": "Privacy, bảo mật và thanh toán", "weight": 25 },
       { "name": "Hạ tầng fintech / crypto utility", "weight": 15 }
     ],
-    "weeklyMix": { "evergreen": 60, "timely": 30, "bingx": 10 },
-    "disclosure": "Nội dung có hợp tác với BingX; không phải lời khuyên tài chính.",
+    "weeklyMix": { "evergreen": 60, "timely": 30, "cryptoAdjacent": 10 },
+    "disclosure": "",
     "guardrails": [
       "Không khẳng định tính năng hoặc tin đồn nếu chưa kiểm chứng.",
       "Không ép crypto vào bài Apple/AI không liên quan.",

@@ -41,6 +41,13 @@ node server.js
 ```
 The server listens on port `7777` by default.
 
+### Windows laptop direct mode
+
+Run `start-laptop.ps1` (or the `LAN Transit Hub.cmd` launcher placed on the
+Desktop). It starts the hub on the laptop, opens the file-transfer page and the
+Content Routes page. Android devices on the same Wi-Fi open the `serverUrl`
+shown by the launcher, normally `http://<laptop-lan-ip>:7777`.
+
 ## Content Routes
 
 Open `http://<server-ip>:7777/content-routes.html` on the laptop to use the
@@ -51,7 +58,8 @@ name, and keep it open while receiving an approved caption.
 - Route approved content to one specific online Android device.
 - Track `draft -> ready -> sent -> posted -> archived`, the post URL, and
   24-hour/7-day views.
-- BingX-related drafts automatically include the selected route's disclosure.
+- BingX publishing is tracked in separate daily tasks. Content Routes is for
+  additional nurture/editorial posts and does not count BingX posts in its mix.
 - The hub prepares and transfers content only. It never auto-posts or creates
   engagement.
 
