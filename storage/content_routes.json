@@ -9,7 +9,7 @@
     "style": "Nhanh, tò mò, gần gũi; có chất Gen Z vừa phải nhưng không giả slang hoặc bịa trải nghiệm.",
     "nurtureCadence": "4-5 bài nuôi nick/tuần, tối đa 1 bài bổ sung/ngày.",
     "dailyBaseline": "Mỗi nick đã có tối thiểu 2 bài BingX/ngày ở task riêng; không tính vào mix này.",
-    "formats": ["Trend explainer", "Creator tip", "Scam breakdown", "Câu hỏi thảo luận"],
+    "formats": ["X: 1 ý ngắn", "IG: Reel/4-6 slide", "Reddit: bối cảnh + nguồn + hỏi"],
     "pillars": [
       { "name": "Internet culture / xu hướng", "weight": 50 },
       { "name": "Công cụ và kinh nghiệm creator", "weight": 30 },
@@ -33,7 +33,7 @@
     "style": "Bình tĩnh, có nguồn và thời điểm; cấu trúc dữ kiện → ý nghĩa → rủi ro → cách kiểm tra.",
     "nurtureCadence": "4-5 bài nuôi nick/tuần, tối đa 1 bài bổ sung/ngày.",
     "dailyBaseline": "Mỗi nick đã có tối thiểu 2 bài BingX/ngày ở task riêng; không tính vào mix này.",
-    "formats": ["Risk checklist", "Market explainer", "Security tip", "Myth vs fact"],
+    "formats": ["X: dữ kiện → rủi ro", "IG: checklist/Reel", "Reddit: phân tích có nguồn", "Telegram: brief + nguồn"],
     "pillars": [
       { "name": "Tài chính cá nhân và quản trị rủi ro", "weight": 40 },
       { "name": "Giải thích dữ liệu vĩ mô / thị trường", "weight": 35 },
@@ -57,7 +57,7 @@
     "style": "Trực quan, tích cực, ít chữ; ưu tiên before/after, checklist và demo có thể áp dụng.",
     "nurtureCadence": "3-4 bài nuôi nick/tuần, tối đa 1 bài bổ sung/ngày.",
     "dailyBaseline": "Mỗi nick đã có tối thiểu 2 bài BingX/ngày ở task riêng; không tính vào mix này.",
-    "formats": ["Before/after", "Carousel 3-5 slide", "Reel 20-30 giây", "Workflow mobile"],
+    "formats": ["X: creator tip", "IG: demo dọc/4-6 slide", "Reddit: workflow đã thử"],
     "pillars": [
       { "name": "Mobile photo / video storytelling", "weight": 50 },
       { "name": "Ứng dụng và workflow creator", "weight": 35 },
@@ -81,7 +81,7 @@
     "style": "Gọn, sạch, thực dụng như tech reviewer; phân biệt dữ kiện, trải nghiệm và suy luận.",
     "nurtureCadence": "3-4 bài nuôi nick/tuần, tối đa 1 bài bổ sung/ngày.",
     "dailyBaseline": "Mỗi nick đã có tối thiểu 2 bài BingX/ngày ở task riêng; không tính vào mix này.",
-    "formats": ["Tech tip", "So sánh công cụ", "Privacy checklist", "How-to ngắn"],
+    "formats": ["X: tech note", "IG: how-to/comparison", "Reddit: thông số + câu hỏi"],
     "pillars": [
       { "name": "Apple / AI / ứng dụng hữu ích", "weight": 60 },
       { "name": "Privacy, bảo mật và thanh toán", "weight": 25 },

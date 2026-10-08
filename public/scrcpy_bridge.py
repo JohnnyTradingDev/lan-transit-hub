@@ -33,6 +33,10 @@ import tempfile
 import re
 import threading
 
+WINDOWS_SUBPROCESS_FLAGS = {
+    "creationflags": subprocess.CREATE_NO_WINDOW
+} if sys.platform == "win32" else {}
+
 if sys.platform == "win32":
     try:
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -52,7 +56,8 @@ def find_adb():
     global ADB_BIN
     # 1. Check system PATH
     try:
-        res = subprocess.run([ADB_BIN, "version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=3)
+        res = subprocess.run([ADB_BIN, "version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=3,
+                             **WINDOWS_SUBPROCESS_FLAGS)
         if res.returncode == 0:
             return True
     except Exception:
@@ -71,7 +76,8 @@ def find_adb():
     for c in candidates:
         if os.path.isfile(c):
             try:
-                res = subprocess.run([c, "version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=3)
+                res = subprocess.run([c, "version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=3,
+                                     **WINDOWS_SUBPROCESS_FLAGS)
                 if res.returncode == 0:
                     ADB_BIN = c
                     return True
@@ -83,7 +89,8 @@ def find_adb():
 def get_connected_device():
     """Returns (serial, model_name) or (None, None)"""
     try:
-        res = subprocess.run([ADB_BIN, "devices", "-l"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=4)
+        res = subprocess.run([ADB_BIN, "devices", "-l"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=4,
+                             **WINDOWS_SUBPROCESS_FLAGS)
         if res.returncode != 0:
             return None, None
 
@@ -128,7 +135,8 @@ def set_clipboard(text):
         if sys.platform == 'win32':
             # PowerShell Set-Clipboard with safe stdin pipe
             p = subprocess.Popen(['powershell', '-NoProfile', '-Command', '$Input | Set-Clipboard'],
-                                 stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                                 stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                                 **WINDOWS_SUBPROCESS_FLAGS)
             p.communicate(input=text.encode('utf-8'), timeout=3)
         elif sys.platform == 'darwin':
             p = subprocess.Popen(['pbcopy'], stdin=subprocess.PIPE)
@@ -151,7 +159,8 @@ def set_clipboard(text):
         safe_text = text.replace("'", "'\\''")
         subprocess.run(
             [ADB_BIN, "shell", "cmd", "clipboard", "set", "text", safe_text],
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=3
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=3,
+            **WINDOWS_SUBPROCESS_FLAGS
         )
     except Exception:
         pass
@@ -168,7 +177,8 @@ def push_image_to_phone(image_path, filename):
     try:
         # Push file
         cmd_push = [ADB_BIN, "-s", serial, "push", image_path, remote_path]
-        res = subprocess.run(cmd_push, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=15)
+        res = subprocess.run(cmd_push, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=15,
+                             **WINDOWS_SUBPROCESS_FLAGS)
         if res.returncode != 0:
             return False, f"ADB push lỗi: {res.stderr.strip()}"
 
@@ -178,7 +188,8 @@ def push_image_to_phone(image_path, filename):
             "-a", "android.intent.action.MEDIA_SCANNER_SCAN_FILE",
             "-d", f"file://{remote_path}"
         ]
-        subprocess.run(cmd_scan, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=5)
+        subprocess.run(cmd_scan, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=5,
+                       **WINDOWS_SUBPROCESS_FLAGS)
 
         return True, model
     except Exception as e:

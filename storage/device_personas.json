@@ -12,9 +12,9 @@
       { "id": "reddit", "name": "Reddit", "badge": "Thảo luận có nguồn", "hashtags": false }
     ],
     "templates": {
-      "x": ["Một chi tiết đáng chú ý trong xu hướng này: {title}. Điều gì khiến nó lan nhanh?", "{title} — góc nhìn dành cho người làm nội dung:"],
-      "instagram": ["Điều creator có thể học từ câu chuyện này: {title}\n\n{tags}", "3 ý thực dụng từ xu hướng này: {title}\n\n{tags}"],
-      "reddit": ["{title} — đâu là tác động thật với người dùng hoặc creator?", "Nguồn và bối cảnh: {title}. Mọi người nhìn nhận thế nào?"],
+      "x": ["Một điều đáng chú ý: {title}. Vì sao chi tiết này đang được chia sẻ?", "Góc nhìn creator về {title}: điều gì hữu ích, điều gì chỉ là hiệu ứng?"],
+      "instagram": ["Từ {title}, creator có thể rút ra: [một bài học đã kiểm chứng].\n\n{tags}", "Vì sao {title} được chia sẻ nhiều? [Nêu 1-2 lý do có căn cứ và takeaway.]\n\n{tags}"],
+      "reddit": ["Bối cảnh và nguồn về {title}; nêu điều đã xác minh rồi hỏi một câu thảo luận cụ thể.", "Tóm tắt {title} bằng dữ kiện và nguồn; hỏi cộng đồng về tác động thực tế."],
       "debate": ["{title} — giá trị thật hay chỉ là hiệu ứng lan truyền?"], "short": ["Đáng chú ý: {title}"], "default": ["Một góc nhìn đáng chú ý: {title}"]
     }
   },
@@ -31,9 +31,9 @@
       { "id": "reddit", "name": "Reddit", "badge": "Discussion", "hashtags": false }
     ],
     "templates": {
-      "x": ["Điểm hữu ích nhất trong cập nhật này: {title}.", "{title} — đây là điều nên kiểm tra trước khi dùng:"],
-      "instagram": ["Một workflow đáng thử: {title}\n\n{tags}", "Tóm tắt nhanh và cách áp dụng: {title}\n\n{tags}"],
-      "reddit": ["{title} — có ai đã kiểm chứng tác động thực tế chưa?", "{title} — đâu là lợi ích và đánh đổi với người dùng?"],
+      "x": ["Tech note: {title}. Nêu một điểm hữu ích và một giới hạn cần kiểm tra.", "{title} — tóm tắt điều đã xác nhận, kèm phiên bản/nguồn nếu cần."],
+      "instagram": ["Một workflow đáng thử: {title}. [Bước 1] → [bước 2] → [kết quả/giới hạn].\n\n{tags}", "Tóm tắt nhanh {title}: [điểm khác nhau] và [ai sẽ thấy hữu ích].\n\n{tags}"],
+      "reddit": ["Bối cảnh, app/model/version và điều đã thử về {title}; hỏi một câu kỹ thuật cụ thể.", "Tóm tắt nguồn về {title}, phân biệt dữ kiện với suy luận rồi mời thảo luận."],
       "debate": ["{title} — cải tiến thật hay chủ yếu là marketing?"], "short": ["Tech note: {title}"], "default": ["Một cập nhật công nghệ đáng xem: {title}"]
     }
   },
@@ -50,9 +50,9 @@
       { "id": "reddit", "name": "Reddit", "badge": "Evidence first", "hashtags": false }
     ],
     "templates": {
-      "x": ["Dữ kiện cần chú ý trong tin này: {title}. Rủi ro nào dễ bị bỏ qua?", "{title} — tách tín hiệu khỏi nhiễu bằng 3 câu hỏi:"],
-      "instagram": ["Không dự đoán giá — đây là cách đọc dữ kiện: {title}\n\n{tags}", "Checklist quản trị rủi ro: {title}\n\n{tags}"],
-      "reddit": ["{title} — nguồn dữ liệu nào xác nhận và rủi ro phản biện là gì?", "{title} — tác động thực tế khác headline ở điểm nào?"],
+      "x": ["Dữ kiện về {title}: nêu nguồn/thời điểm, ý nghĩa và điều dữ kiện chưa chứng minh.", "Market context: {title}. Thêm một rủi ro hoặc câu hỏi cần kiểm tra."],
+      "instagram": ["Không dự đoán giá: {title} có nghĩa là [giải thích đơn giản]. Cần nhớ thêm [rủi ro/giới hạn].\n\n{tags}", "Checklist về {title}: [điểm 1] · [điểm 2] · [điểm 3]. Nguồn: [link].\n\n{tags}"],
+      "reddit": ["Bối cảnh, dữ kiện và nguồn về {title}; hỏi về cách diễn giải, không hỏi tín hiệu vào lệnh.", "Tóm tắt {title} và nguồn gốc; nêu điều chưa biết hoặc phản biện cụ thể."],
       "debate": ["{title} — dữ liệu đang nói gì và chưa nói gì?"], "short": ["Market context: {title}"], "default": ["Tóm tắt có nguồn: {title}"]
     }
   },
@@ -69,9 +69,9 @@
       { "id": "reddit", "name": "Reddit", "badge": "Workflow", "hashtags": false }
     ],
     "templates": {
-      "instagram": ["Một cách kể chuyện hình ảnh tốt hơn: {title}\n\n{tags}", "Thử workflow mobile này: {title}\n\n{tags}"],
-      "x": ["Creator tip từ ví dụ này: {title}", "{title} — một thay đổi nhỏ giúp nội dung rõ hơn:"],
-      "reddit": ["{title} — workflow nào cho kết quả tương tự mà vẫn tiết kiệm thời gian?"],
+      "instagram": ["Thử workflow này: {title}. [Thao tác] → [kết quả trước/sau] → [điều cần lưu ý].\n\n{tags}", "Một cách làm nội dung dễ đọc hơn: {title}. [Chia sẻ 2-3 bước đã tự thử.]\n\n{tags}"],
+      "x": ["Creator tip: {title}. Nêu một thao tác cụ thể và kết quả mong đợi.", "{title} — một thay đổi nhỏ giúp nội dung dễ đọc hơn."],
+      "reddit": ["Mô tả workflow đã tự thử cho {title}, gồm công cụ/bước chính; hỏi cách làm thay thế cụ thể."],
       "debate": ["{title} — kỹ thuật hữu ích hay chỉ là hiệu ứng đẹp mắt?"], "short": ["Creator tip: {title}"], "default": ["Một mẹo visual đáng thử: {title}"]
     }
   },
