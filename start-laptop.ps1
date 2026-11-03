@@ -64,7 +64,7 @@ try {
     }
 
     if ((Test-Path $scrcpyExe) -and -not (Get-Process scrcpy -ErrorAction SilentlyContinue)) {
-        Start-Process -FilePath $scrcpyExe -ArgumentList '--turn-screen-off --stay-awake' -WorkingDirectory $adbDir
+        Start-Process -FilePath $scrcpyExe -WorkingDirectory $adbDir
     }
 
     Start-Process 'http://localhost:7777/simple.html'

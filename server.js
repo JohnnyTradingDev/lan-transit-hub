@@ -1,3 +1,4 @@
+const {isPrivateAddress,privateNetwork}=require('./private-network.cjs');
 const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
@@ -125,6 +126,7 @@ const upload = multer({
 });
 
 const app = express();
+app.use(privateNetwork);
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server, path: '/ws' });
 
@@ -274,6 +276,7 @@ function broadcastDeviceList() {
 
 // WebSocket logic
 wss.on('connection', (ws, req) => {
+  if (!isPrivateAddress(req.socket.remoteAddress)) { ws.close(1008, 'Private network access only'); return; }
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
   
   ws.on('message', (message) => {
